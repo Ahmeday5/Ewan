@@ -20,13 +20,40 @@ import { UserData } from '../../features/auth/models/login.model';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+  pageTitle: string = '';
+  pageSubtitle: string = '';
+
   constructor(
     private sidebarService: SidebarService,
     private authService: AuthService, // حقن AuthService لتسجيل الخروج
     private router: Router, // حقن Router للتعامل مع التنقل
     private activatedRoute: ActivatedRoute, // حقن ActivatedRoute للوصول للروت الحالي
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    // 👇 أول مرة (بعد الريفريش)
+    this.setPageData();
+
+    // 👇 مع كل navigation بعد كده
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.setPageData();
+      });
+  }
+
+  setPageData(): void {
+    let route = this.router.routerState.root;
+
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+
+    const data = route.snapshot.data;
+
+    this.pageTitle = data['title'] || 'لوحة التحكم الرئيسية';
+    this.pageSubtitle = data['subtitle'] || '';
   }
 
   toggleSidebar() {

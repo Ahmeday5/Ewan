@@ -69,66 +69,174 @@
   min-height: 100vh;
   background: var(--second-color);
   overflow-y: auto;
-  border-top-left-radius: 30px;
+  overflow-x: hidden;
   transition: all 0.35s ease;
   z-index: 1000;
-  padding: 15px;
-  padding-left: 0 !important;
-  overflow-x: hidden;
+  padding: 15px 0;
+  position: relative;
 }
 
+// --------------------- Logo ---------------------
+.logo {
+  text-align: center;
+  padding: 1rem;
+  img {
+    max-width: 100px;
+  }
+}
+
+// --------------------- Nav Links & Buttons ---------------------
 .sidebar-btn,
 .nav-link {
   display: flex;
   align-items: center;
   gap: 0.9rem;
   width: 100%;
-  padding: 9px 15px;
+  padding: 12px 20px;
   border: none;
   background: transparent;
   transition: all 0.22s ease;
   text-align: right;
   color: var(--main-color);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .sidebar-btn i,
 .nav-link i {
   color: var(--main-color);
-  font-size: 15px;
+  font-size: 16px;
   transition: all 0.2s;
 }
 
-.sidebar-btn:hover,
-.nav-link:hover {
-  background: var(--main-color);
-  color: var(--second-color);
-  border-radius: 20px 30px 30px 20px;
-}
-
-.sidebar-btn:hover i,
-.nav-link:hover i {
-  color: var(--second-color);
-}
-
+// --------------------- Active State with Notch/Cutout ---------------------
+// RTL: الـ sidebar على اليمين، القائمة تفتح من اليمين لليسار
+// الـ notch المطلوب على الجانب الأيسر (left) — الأبيض يبرز من اليسار
 .sidebar-btn.active,
+.nav-link.active,
 .nav-active {
   background: var(--main-color);
-  color: var(--second-color);
-  border-radius: 20px 30px 30px 20px;
+  color: var(--second-color); // البرتقالي من المتغيرات الرئيسية
+  // top-right=0, bottom-right=0 عشان اليمين ملاصق للـ sidebar
+  // top-left وbottom-left فيهم الانحناء
+  border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
+  margin-left: 0;
+  position: relative;
+  z-index: 1;
+
+  i {
+    color: var(--second-color);
+  }
+
+  // الـ pseudo-element العلوي — inverse corner فوق على اليسار
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--notch-radius));
+    left: 0;
+    width: var(--notch-radius);
+    height: var(--notch-radius);
+    background: #fff;
+    -webkit-mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+    mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+    pointer-events: none;
+  }
+
+  // الـ pseudo-element السفلي — inverse corner تحت على اليسار
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: calc(-1 * var(--notch-radius));
+    left: 0;
+    width: var(--notch-radius);
+    height: var(--notch-radius);
+    background: #fff;
+    -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+    mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+    pointer-events: none;
+  }
 }
 
-.sidebar-btn.active i,
-.nav-active i {
-  color: var(--second-color);
+// Hover — أبسط بدون notch
+.sidebar-btn:not(.active):hover,
+.nav-link:not(.active):hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
+  color: #fff;
 }
 
-.sidebar-header .close-btn:focus {
-  border: 0;
+// --------------------- Submenu ---------------------
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+
+  .nav-link {
+    font-size: 14px;
+    padding: 9px 30px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+
+    &.active {
+      background: #fff;
+      color: var(--main-color);
+      border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
+
+      i { color: var(--main-color); }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: calc(-1 * var(--notch-radius));
+        left: 0;
+        width: var(--notch-radius);
+        height: var(--notch-radius);
+        background: #fff;
+        -webkit-mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+        mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+        pointer-events: none;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: calc(-1 * var(--notch-radius));
+        left: 0;
+        width: var(--notch-radius);
+        height: var(--notch-radius);
+        background: #fff;
+        -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+        mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
+        pointer-events: none;
+      }
+    }
+  }
 }
 
-// زر التصغير/التكبير
+.submenu.open {
+  max-height: 2500px;
+  opacity: 1;
+}
+
+.submenu-arrow {
+  font-size: 0.8rem;
+  color: #fff;
+  transition: transform 0.25s ease;
+}
+
+.submenu-arrow.fa-chevron-up {
+  transform: rotate(180deg);
+}
+
+// --------------------- Header / Collapse Button ---------------------
+.sidebar-header {
+  padding: 0 10px;
+}
+
 .desktop-minimize-btn {
   width: 38px;
   height: 38px;
@@ -138,81 +246,77 @@
   align-items: center;
   justify-content: center;
   transition: all 0.25s;
-  margin-top: -15px;
-  color: var(--main-color);
-}
-
-.desktop-minimize-btn:focus {
+  color: #fff;
+  background: transparent;
   border: none;
+
+  &:focus { outline: none; border: none; }
+  &:hover { background: rgba(255,255,255,0.2); }
 }
 
-// القوائم الفرعية
-.submenu .nav-link {
-  padding-right: 1rem;
-  font-size: 15px;
-  color: var(--main-color);
-  margin-top: 10px;
-  font-weight: 600;
+// --------------------- Mini Sidebar Mode ---------------------
+.sidebar.sidebar-mini {
+  width: 90px !important;
+  min-width: 90px !important;
+  max-width: 90px !important;
+  padding: 1rem 0;
+  transition: all 0.35s ease;
+
+  .sidebar-header .search-container,
+  .menu-section-title {
+    display: none !important;
+  }
+
+  > nav > .nav-sections > .menu-section > ul > li > a span {
+    display: none !important;
+  }
+
+  .submenu:not(.open) .nav-link span {
+    display: none !important;
+  }
+
+  .submenu.open .nav-link span {
+    display: inline !important;
+  }
+
+  .submenu .nav-link.active span {
+    display: inline !important;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 0.9rem 0;
+    margin: 0.25rem 0;
+  }
+
+  .sidebar-btn {
+    justify-content: center !important;
+  }
+
+  .logo {
+    display: none;
+  }
+
+  .submenu {
+    position: relative;
+    right: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    padding-right: 0;
+
+    &.open {
+      max-height: none;
+      opacity: 1;
+    }
+  }
 }
 
-.submenu-arrow {
-  font-size: 0.8rem;
-  color: var(--second-color);
-  font-weight: bold;
-  transition: transform 0.25s ease;
-}
-
-.submenu-arrow:hover,
-.submenu .nav-link:hover,
-.submenu-arrow:focus,
-.submenu .nav-link:focus {
-  background: var(--bg-main);
-  color: var(--main-color);
-  border-top-left-radius: 27px !important;
-  border-bottom-right-radius: 27px !important;
-  border-top-right-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
-}
-
-.submenu-arrow.fa-chevron-up {
-  transform: rotate(180deg);
-}
-
-/* ضمان إن الـ submenu يظهر ويختفي بشكل صحيح */
-.submenu {
-  max-height: 0;
-  overflow: hidden;
-  transition:
-    max-height 0.35s ease,
-    opacity 0.25s ease;
-  opacity: 0;
-}
-
-.submenu.open {
-  max-height: 2500px; /* قيمة كبيرة كفاية لمعظم الحالات */
-  opacity: 1;
-}
-
-/* في الـ mini mode نمنع الـ submenu من الظهور أو نعملها compact */
-.sidebar.sidebar-mini .submenu {
-  position: relative;
-  right: 0;
-  top: 0;
-  width: 100%;
-  box-shadow: none;
-  padding-right: 0;
-}
-
-.sidebar.sidebar-mini .submenu.open {
-  max-height: none;
-  opacity: 1;
-}
-
-// الموبايل
+// --------------------- Mobile ---------------------
 @media (max-width: 992px) {
   .sidebar {
     position: fixed;
-    top: 77px; /* تحت الهيدر */
+    top: 77px;
     right: 0;
     min-height: 100vh;
     transform: translateX(100%);
@@ -234,8 +338,9 @@
 
 @media (min-width: 993px) {
   .desktop-minimize-btn {
-    display: block; /* زر التصغير يظهر في الديسكتوب فقط */
+    display: block;
   }
+
   .sidebar {
     position: relative;
     transform: none !important;

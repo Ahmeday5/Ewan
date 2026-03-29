@@ -299,7 +299,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         items: [
           {
             label: 'العقارات',
-            path: 'categories/main-category',
+            path: 'properties/mainProperties',
             icons: 'fas fa-building', // مبنى، مناسب للعقارات
             isOpen: false,
           },
@@ -309,7 +309,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         items: [
           {
             label: 'الحجوزات',
-            path: 'categories/sub-category',
+            path: 'bookings/mainBooking',
             icons: 'fas fa-calendar-check', // تقويم مع علامة ✔️
             isOpen: false,
           },

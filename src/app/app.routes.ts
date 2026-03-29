@@ -30,6 +30,20 @@ export const routes: Routes = [
             (m) => m.DASHBOARD_ROUTES,
           ),
       },
+      {
+        path: 'properties',
+        loadChildren: () =>
+          import('./features/realStates/realState.routes').then(
+            (m) => m.PROPERTIES_ROUTES,
+          ),
+      },
+      {
+        path: 'bookings',
+        loadChildren: () =>
+          import('./features/Booking/booking.route').then(
+            (m) => m.BOOKING_ROUTES,
+          ),
+      },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

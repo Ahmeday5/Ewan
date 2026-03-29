@@ -9,7 +9,13 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: 'mainDashboard',
     loadComponent: () =>
-      import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./pages/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
     title: 'اللوحة الرئيسية',
+    data: {
+      title: 'لوحة التحكم الرئيسية',
+      subtitle: 'مرحباً بك في لوحة تحكم إيوان',
+    },
   },
 ];
