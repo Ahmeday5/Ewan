@@ -1,0 +1,33 @@
+.header {
+  height: 100px;
+  z-index: 1030;
+  color: var(--thrid-color);
+  padding: 0 30px;
+}
+
+.container-fluid {
+  border-bottom: 1px solid rgba(179, 179, 179, 0.58);
+}
+
+.header-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  background: var(--second-color);
+}
+
+// للشاشات الصغيرة
+@media (max-width: 576px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  .header-logo {
+    height: 40px;
+  }
+}

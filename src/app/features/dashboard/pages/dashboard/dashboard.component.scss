@@ -1,0 +1,31 @@
+.cards .card .card-body .icon-container i {
+  font-size: 50px;
+}
+
+/**************/
+
+#expensesChart {
+  max-width: 320px;
+  max-height: 320px;
+  margin: 0 auto;
+  display: block;
+}
+
+/********************************************************/
+
+.content,
+.Morecontent {
+  background: rgba(217, 217, 217, 0.19);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.content p {
+  color: var(--second-color);
+  font-weight: 800;
+}
+
+.Morecontent p {
+  color: rgba(12, 186, 101, 1);
+  font-weight: 800;
+}
