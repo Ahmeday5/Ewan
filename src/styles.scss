@@ -77,11 +77,13 @@ body {
 .badge.bg-success,
 .badge.bg-primary,
 .badge.bg-danger,
-.badge.bg-warning {
+.badge.bg-warning,
+.badge.bg-black {
   font-weight: 700;
   font-size: 14px;
   border-radius: 50px !important;
   color: rgba(0, 0, 0, 0.59) !important;
+  padding: 10px 20px !important;
 }
 .badge.bg-success {
   background-color: rgba(12, 186, 101, 0.41) !important;
@@ -94,6 +96,10 @@ body {
 }
 .badge.bg-warning {
   background-color: rgba(255, 157, 0, 0.64) !important;
+}
+.badge.bg-black {
+  background-color: rgba(0, 0, 0, 0.11) !important;
+  color: rgba(0, 0, 0, 0.59) !important;
 }
 
 /******************************************form*************************************************/
@@ -193,6 +199,43 @@ body {
 .modal-content {
   color: var(--second-color) !important;
   border-radius: 33px !important;
+}
+
+.custom-modal {
+  border-radius: 20px !important;
+  overflow: hidden;
+}
+
+/* section */
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* gray box */
+.info-box {
+  background: #f2f2f2;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+/* rows */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.info-row span:first-child {
+  color: #555;
 }
 
 /**********************************************table*********************************************************/

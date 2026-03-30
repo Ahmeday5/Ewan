@@ -40,8 +40,27 @@ export const routes: Routes = [
       {
         path: 'bookings',
         loadChildren: () =>
-          import('./features/Booking/booking.route').then(
+          import('./features/Booking/booking.routes').then(
             (m) => m.BOOKING_ROUTES,
+          ),
+      },
+      {
+        path: 'users',
+        loadChildren: () =>
+          import('./features/users/user.routes').then((m) => m.USER_ROUTES),
+      },
+      {
+        path: 'categories',
+        loadChildren: () =>
+          import('./features/Categoiers/category.routes').then(
+            (m) => m.CATEGORY_ROUTES,
+          ),
+      },
+      {
+        path: 'Notificaion',
+        loadChildren: () =>
+          import('./features/Notificaion/notification.routes').then(
+            (m) => m.NOTIFICATION_ROUTES,
           ),
       },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },

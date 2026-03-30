@@ -73,129 +73,6 @@
       </div>
     </div>
 
-    <!-- Modal addProperty -->
-    <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <!-- ================= Header ================= -->
-          <div class="modal-header justify-content-between">
-            <h1 class="modal-title fs-5 fw-bold">
-              إضافة عقار جديد
-            </h1>
-            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <!-- ================= Form ================= -->
-          <form>
-            <div class="modal-body">
-
-              <div class="row">
-                <div class="col-12">
-                  <!-- ================= Property Name ================= -->
-                  <div>
-                    <label class="form-label">اسم العقار</label>
-                    <input type="text" class="form-control" name="property-name"
-                      placeholder="مثال : شالية البحر الفاخر">
-                  </div>
-                </div>
-                <div class="col-12"> <!-- ================= Description ================= -->
-
-                  <div>
-                    <label class="form-label">الوصف</label>
-                    <textarea class="form-control" name="description" id="" cols="30" rows="10"
-                      placeholder="وصف تفصيلي عن العقار......"></textarea>
-                  </div>
-                </div>
-                <div class="col-md-6"> <!-- ================= Category Select ================= -->
-
-                  <div>
-                    <label class="form-label">الفئة</label>
-                    <select class="form-select" name="category" aria-label="Status select">
-                      <option selected disabled>اختر الفئة</option>
-                      <option value="1">شالية</option>
-                      <option value="2">فيلا</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6"> <!-- ================= Status Select ================= -->
-
-                  <div>
-                    <label class="form-label">الحالة</label>
-                    <select class="form-select" name="status" aria-label="Status select">
-                      <option selected disabled>اختر الحالة</option>
-                      <option value="1">نشط</option>
-                      <option value="2">غير نشط</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-12">
-
-                  <!-- ================= Location ================= -->
-
-                  <div>
-                    <label class="form-label">الموقع</label>
-                    <input type="text" class="form-control" name="location" placeholder="اكتب الموقع هنا .....">
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <!-- ================= Price ================= -->
-
-                  <div>
-                    <label class="form-label">السعر</label>
-                    <input type="number" class="form-control" name="price" placeholder="0">
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6"> <!-- ================= Rooms ================= -->
-
-                  <div>
-                    <label class="form-label">عدد الغرف</label>
-                    <input type="number" class="form-control" name="rooms" placeholder="5">
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <!-- ================= Guests ================= -->
-
-                  <div>
-                    <label class="form-label">عدد الضيوف</label>
-                    <input type="number" class="form-control" name="guests" placeholder="4">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <!-- ================= Image ================= -->
-
-                  <div>
-                    <label class="form-label">صورة العقار</label>
-                    <input type="file" class="form-control" name="image">
-                  </div>
-                </div>
-                <div class="col-12">
-
-                  <!-- ================= Amenities ================= -->
-
-                  <div>
-                    <label class="form-label">المرافق والخدمات</label>
-                    <select class="form-select" name="amenities" aria-label="Status select">
-                      <option selected disabled>اختر المرافق</option>
-                      <option value="1">واي فاي مجاني</option>
-                      <option value="2">تلفاز</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- ================= Footer ================= -->
-
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-addModel w-100 fw-bold">
-                إضافة العقار
-              </button>
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </div>
-
     <div class="row mt-4">
       <div class="col-12">
         <div class="card">
@@ -237,7 +114,8 @@
                       <div class="badge bg-primary">مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل
+                      </div>
                     </td>
                   </tr>
                   <tr>
@@ -262,7 +140,7 @@
                       <div class="badge bg-danger">غير مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
                     </td>
                   </tr>
                   <tr>
@@ -287,7 +165,7 @@
                       <div class="badge bg-danger">غير مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
                     </td>
                   </tr>
                   <tr>
@@ -312,7 +190,7 @@
                       <div class="badge bg-primary">مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
                     </td>
                   </tr>
                   <tr>
@@ -337,7 +215,7 @@
                       <div class="badge bg-primary">مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
                     </td>
                   </tr>
                   <tr>
@@ -362,13 +240,110 @@
                       <div class="badge bg-primary">مدفوع</div>
                     </td>
                     <td>
-                      <div class="badge bg-primary">التفاصيل</div>
+                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Details -->
+    <div class="modal fade" id="DetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+
+          <!-- Header -->
+          <div class="modal-header bg-orange border-0">
+            <h5 class="modal-title fw-bold fs-4">تفاصيل الحجز</h5>
+            <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
+          </div>
+
+          <!-- Body -->
+          <div class="modal-body p-4">
+            <!-- معلومات العميل -->
+            <div class="section">
+              <div class="section-title">
+                <i class="fa-regular fa-user text-orange ms-2"></i>
+                معلومات العميل
+              </div>
+
+              <div class="info-box">
+                <div class="info-row">
+                  <span>الاسم :</span>
+                  <span>محمد أحمد</span>
+                </div>
+                <div class="info-row">
+                  <span>البريد الإلكتروني :</span>
+                  <span>mohammed-email.com</span>
+                </div>
+                <div class="info-row">
+                  <span>رقم الجوال :</span>
+                  <span>0501234567</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- معلومات العقار -->
+            <div class="section">
+              <div class="section-title">
+                <i class="fa-solid fa-house text-orange ms-2"></i>
+                معلومات العقار
+              </div>
+
+              <div class="info-box">
+                <div class="info-row">
+                  <span>اسم العقار :</span>
+                  <span>شالية البحر الفاخر</span>
+                </div>
+                <div class="info-row">
+                  <span>عدد الغرف :</span>
+                  <span>2 غرفه</span>
+                </div>
+                <div class="info-row">
+                  <span>عدد الضيوف :</span>
+                  <span>4 ضيف</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- معلومات الحجز -->
+            <div class="section">
+              <div class="section-title">
+                <i class="fa-regular fa-calendar text-orange ms-2"></i>
+                معلومات الحجز
+              </div>
+
+              <div class="info-box">
+                <div class="info-row">
+                  <span>تاريخ الدخول :</span>
+                  <span>2026-3-20</span>
+                </div>
+                <div class="info-row">
+                  <span>تاريخ الخروج :</span>
+                  <span>2026-3-25</span>
+                </div>
+                <div class="info-row">
+                  <span>عدد الليالي :</span>
+                  <span>4 ليلة</span>
+                </div>
+                <div class="info-row">
+                  <span>تاريخ الحجز :</span>
+                  <span>2026-03-10</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer border-0 px-4 pb-4">
+            <button class="btn btn-addModel w-100 fw-bold">إغلاق</button>
+          </div>
+
         </div>
       </div>
     </div>
