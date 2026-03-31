@@ -1,67 +1,77 @@
-// --------------------- Mini Sidebar Mode ---------------------
-.sidebar.sidebar-mini {
-  width: 90px !important;
-  min-width: 90px !important;
-  max-width: 90px !important;
-  padding: 1rem 0.5rem;
-  transition: all 0.35s ease;
+// --------------------- Notch Placeholders ---------------------
+%notch-base {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: var(--notch-radius);
+  height: var(--notch-radius);
+  background: #fff;
+  pointer-events: none;
 }
 
-.sidebar.sidebar-mini .sidebar-header .search-container,
-.sidebar.sidebar-mini .menu-section-title {
-  display: none !important;
+%notch-before {
+  @extend %notch-base;
+  top: calc(-1 * var(--notch-radius));
+  -webkit-mask-image: radial-gradient(
+    circle at 100% 0%,
+    transparent var(--notch-radius),
+    black calc(var(--notch-radius) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at 100% 0%,
+    transparent var(--notch-radius),
+    black calc(var(--notch-radius) + 1px)
+  );
 }
 
-.sidebar.sidebar-mini > nav > .nav-sections > .menu-section > ul > li > a span {
-  display: none !important;
+%notch-after {
+  @extend %notch-base;
+  bottom: calc(-1 * var(--notch-radius));
+  -webkit-mask-image: radial-gradient(
+    circle at 100% 100%,
+    transparent var(--notch-radius),
+    black calc(var(--notch-radius) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at 100% 100%,
+    transparent var(--notch-radius),
+    black calc(var(--notch-radius) + 1px)
+  );
 }
 
-/* إظهار النص داخل submenu */
-/* إخفاء النص فقط لو submenu مقفولة */
-.sidebar.sidebar-mini .submenu:not(.open) .nav-link span {
-  display: none !important;
+%active-notch {
+  background: var(--main-color);
+  color: var(--second-color);
+  border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
+  position: relative;
+  z-index: 1;
+  i {
+    color: var(--second-color);
+  }
+  &::before {
+    @extend %notch-before;
+  }
+  &::after {
+    @extend %notch-after;
+  }
 }
 
-/* إظهار النص لو submenu مفتوحة */
-.sidebar.sidebar-mini .submenu.open .nav-link span {
-  display: inline !important;
+%submenu-active-notch {
+  background: #fff;
+  color: var(--main-color);
+  border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
+  i {
+    color: var(--main-color);
+  }
+  &::before {
+    @extend %notch-before;
+  }
+  &::after {
+    @extend %notch-after;
+  }
 }
 
-/* إظهار النص للـ active route */
-.sidebar.sidebar-mini .submenu .nav-link.active span {
-  display: inline !important;
-}
-
-.sidebar.sidebar-mini .nav-link {
-  justify-content: center;
-  padding: 0.9rem 0;
-  margin: 0.25rem 0;
-}
-
-.sidebar.sidebar-mini .icon-text {
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-}
-
-.sidebar.sidebar-mini .icon-text i {
-  font-size: 1.35rem;
-  margin-left: 0 !important;
-}
-
-.sidebar.sidebar-mini .sidebar-btn {
-  justify-content: center !important;
-}
-
-.sidebar.sidebar-mini .sidebar-btn i {
-  margin: 0 !important;
-}
-
-.sidebar.sidebar-mini .logo {
-  display: none;
-}
-
-// --------------------- Main Sidebar Styles ---------------------
+// --------------------- Main Sidebar ---------------------
 .sidebar {
   width: 17vw;
   max-width: 280px;
@@ -76,7 +86,6 @@
   position: relative;
 }
 
-// --------------------- Logo ---------------------
 .logo {
   text-align: center;
   padding: 1rem;
@@ -85,7 +94,32 @@
   }
 }
 
-// --------------------- Nav Links & Buttons ---------------------
+.sidebar-header {
+  padding: 0 10px;
+}
+
+.desktop-minimize-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  color: #fff;
+  background: transparent;
+  border: none;
+  &:focus {
+    outline: none;
+    border: none;
+  }
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// --------------------- Nav Links ---------------------
 .sidebar-btn,
 .nav-link {
   display: flex;
@@ -103,64 +137,19 @@
   position: relative;
   cursor: pointer;
   text-decoration: none;
+  i {
+    color: var(--main-color);
+    font-size: 16px;
+    transition: all 0.2s;
+  }
 }
 
-.sidebar-btn i,
-.nav-link i {
-  color: var(--main-color);
-  font-size: 16px;
-  transition: all 0.2s;
-}
-
-// --------------------- Active State with Notch/Cutout ---------------------
-// RTL: الـ sidebar على اليمين، القائمة تفتح من اليمين لليسار
-// الـ notch المطلوب على الجانب الأيسر (left) — الأبيض يبرز من اليسار
 .sidebar-btn.active,
 .nav-link.active,
 .nav-active {
-  background: var(--main-color);
-  color: var(--second-color); // البرتقالي من المتغيرات الرئيسية
-  // top-right=0, bottom-right=0 عشان اليمين ملاصق للـ sidebar
-  // top-left وbottom-left فيهم الانحناء
-  border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
-  margin-left: 0;
-  position: relative;
-  z-index: 1;
-
-  i {
-    color: var(--second-color);
-  }
-
-  // الـ pseudo-element العلوي — inverse corner فوق على اليسار
-  &::before {
-    content: '';
-    position: absolute;
-    top: calc(-1 * var(--notch-radius));
-    left: 0;
-    width: var(--notch-radius);
-    height: var(--notch-radius);
-    background: #fff;
-    -webkit-mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-    mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-    pointer-events: none;
-  }
-
-  // الـ pseudo-element السفلي — inverse corner تحت على اليسار
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: calc(-1 * var(--notch-radius));
-    left: 0;
-    width: var(--notch-radius);
-    height: var(--notch-radius);
-    background: #fff;
-    -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-    mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-    pointer-events: none;
-  }
+  @extend %active-notch;
 }
 
-// Hover — أبسط بدون notch
 .sidebar-btn:not(.active):hover,
 .nav-link:not(.active):hover {
   background: rgba(255, 255, 255, 0.15);
@@ -172,7 +161,9 @@
 .submenu {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease;
   opacity: 0;
 
   .nav-link {
@@ -180,105 +171,45 @@
     padding: 9px 30px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
-
     &.active {
-      background: #fff;
-      color: var(--main-color);
-      border-radius: 0 var(--notch-radius) var(--notch-radius) 0;
-
-      i { color: var(--main-color); }
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: calc(-1 * var(--notch-radius));
-        left: 0;
-        width: var(--notch-radius);
-        height: var(--notch-radius);
-        background: #fff;
-        -webkit-mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-        mask-image: radial-gradient(circle at 100% 0%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-        pointer-events: none;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: calc(-1 * var(--notch-radius));
-        left: 0;
-        width: var(--notch-radius);
-        height: var(--notch-radius);
-        background: #fff;
-        -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-        mask-image: radial-gradient(circle at 100% 100%, transparent var(--notch-radius), black calc(var(--notch-radius) + 1px));
-        pointer-events: none;
-      }
+      @extend %submenu-active-notch;
     }
   }
-}
 
-.submenu.open {
-  max-height: 2500px;
-  opacity: 1;
+  &.open {
+    max-height: 2500px;
+    opacity: 1;
+  }
 }
 
 .submenu-arrow {
   font-size: 0.8rem;
   color: #fff;
   transition: transform 0.25s ease;
+  &.fa-chevron-up {
+    transform: rotate(180deg);
+  }
 }
 
-.submenu-arrow.fa-chevron-up {
-  transform: rotate(180deg);
-}
-
-// --------------------- Header / Collapse Button ---------------------
-.sidebar-header {
-  padding: 0 10px;
-}
-
-.desktop-minimize-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s;
-  color: #fff;
-  background: transparent;
-  border: none;
-
-  &:focus { outline: none; border: none; }
-  &:hover { background: rgba(255,255,255,0.2); }
-}
-
-// --------------------- Mini Sidebar Mode ---------------------
+// --------------------- Mini Sidebar ---------------------
 .sidebar.sidebar-mini {
   width: 90px !important;
   min-width: 90px !important;
   max-width: 90px !important;
   padding: 1rem 0;
-  transition: all 0.35s ease;
 
   .sidebar-header .search-container,
-  .menu-section-title {
+  .menu-section-title,
+  .logo {
     display: none !important;
   }
 
-  > nav > .nav-sections > .menu-section > ul > li > a span {
-    display: none !important;
-  }
-
+  > nav > .nav-sections > .menu-section > ul > li > a span,
   .submenu:not(.open) .nav-link span {
     display: none !important;
   }
 
-  .submenu.open .nav-link span {
-    display: inline !important;
-  }
-
+  .submenu.open .nav-link span,
   .submenu .nav-link.active span {
     display: inline !important;
   }
@@ -293,10 +224,6 @@
     justify-content: center !important;
   }
 
-  .logo {
-    display: none;
-  }
-
   .submenu {
     position: relative;
     right: 0;
@@ -304,7 +231,6 @@
     width: 100%;
     box-shadow: none;
     padding-right: 0;
-
     &.open {
       max-height: none;
       opacity: 1;
@@ -312,7 +238,7 @@
   }
 }
 
-// --------------------- Mobile ---------------------
+// --------------------- Responsive ---------------------
 @media (max-width: 992px) {
   .sidebar {
     position: fixed;
@@ -321,18 +247,15 @@
     min-height: 100vh;
     transform: translateX(100%);
     z-index: 10000;
+    &.sidebar-open {
+      transform: translateX(0);
+    }
+    &.sidebar-mini {
+      width: 280px !important;
+    }
   }
-
-  .sidebar.sidebar-open {
-    transform: translateX(0);
-  }
-
   .desktop-minimize-btn {
     display: none !important;
-  }
-
-  .sidebar.sidebar-mini {
-    width: 280px !important;
   }
 }
 
@@ -340,7 +263,6 @@
   .desktop-minimize-btn {
     display: block;
   }
-
   .sidebar {
     position: relative;
     transform: none !important;

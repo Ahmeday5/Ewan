@@ -44,15 +44,11 @@ export class LoginComponent {
     try {
       await this.authService.login(this.email, this.password, this.rememberMe);
       this.errorMessage = null;
-      await this.router.navigate(['/dashboard']);
+      await this.router.navigate(['/dashboard/mainDashboard']);
     } catch (error: any) {
       this.errorMessage = error.message || 'بيانات الدخول غير صحيحة';
     } finally {
       this.isLoading = false;
     }
-  }
-
-  goToDashboard() {
-    this.router.navigate(['dashboard/mainDashboard']);
   }
 }

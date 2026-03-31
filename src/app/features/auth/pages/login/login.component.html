@@ -21,7 +21,7 @@
         </svg>
         <div class="card mt-4">
           <div class="card-body">
-            <form>
+            <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
               <h2 class="text-center">تسجيل الدخول</h2>
               <h5 class="text-center">أدخل بياناتك للدخول إلى حسابك</h5>
               <div class="form-floating mt-4">
@@ -64,8 +64,8 @@
               </div>
               }
               <div class="submit text-center mt-3">
-                <button (click)="goToDashboard();" type="submit" class="btn fw-bold" [disabled]="isLoading"><span
-                    *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+                <button type="submit" class="btn fw-bold" [disabled]="isLoading"><span *ngIf="isLoading"
+                    class="spinner-border spinner-border-sm"></span>
                   تسجيل الدخول</button>
               </div>
             </form>

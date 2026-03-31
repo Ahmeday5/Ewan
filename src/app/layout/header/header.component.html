@@ -34,8 +34,23 @@
           </button>
 
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-            <li style="cursor: pointer;"><a class="dropdown-item text-danger fw-bold" (click)="logout()">تسجيل
-                الخروج</a></li>
+            <li>
+              <a class="dropdown-item text-danger fw-bold" (click)="logoutCurrent()">
+                تسجيل الخروج من هذا الجهاز
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item text-danger fw-bold" (click)="logoutOthers()">
+                تسجيل الخروج من الأجهزة الأخرى
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item text-danger fw-bold" (click)="logoutAll()">
+                تسجيل الخروج من كل الأجهزة
+              </a>
+            </li>
           </ul>
         </div>
       </div>

@@ -77,7 +77,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   handleSpecialAction(subItem: any): void {
     if (subItem.key === 'تسجيل الخروج') {
       if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-        this.authService.logout();
+        this.authService.logoutCurrent();
         this.router.navigate(['/login']);
         this.sidebarService.close(); // إغلاق الـ sidebar لو موبايل
       }
@@ -244,57 +244,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         ],
       },
-      /*{
-        items: [
-          {
-            label: 'التجميل اللاجراحي',
-            icons: 'fas fa-syringe',
-            isOpen: false,
-            submenu: [
-              {
-                key: 'ادوية وعلاجات اساسية',
-                path: 'PayToBayya',
-                icon: 'fas fa-pills',
-              },
-              {
-                key: 'حالات الجلدية الاساسية',
-                path: 'PayToBayya',
-                icon: 'fas fa-notes-medical',
-              },
-              {
-                key: 'روشتات OTC',
-                path: 'PayToBayya',
-                icon: 'fas fa-file-prescription',
-              },
-              {
-                key: 'مستحضرات التجميل',
-                path: 'PayToBayya',
-                icon: 'fas fa-pump-soap',
-              },
-              {
-                key: 'العناية بالبشره',
-                path: 'PayToBayya',
-                icon: 'fas fa-spa',
-              },
-              {
-                key: 'العناية بالشعر',
-                path: 'PayToBayya',
-                icon: 'fas fa-cut',
-              },
-              {
-                key: 'روتينات العنايه بالبشره والشعر',
-                path: 'PayToBayya',
-                icon: 'fas fa-list-check',
-              },
-              {
-                key: 'اختر تصميمك',
-                path: 'PayToBayya',
-                icon: 'fas fa-palette',
-              },
-            ],
-          },
-        ],
-      },*/
       {
         items: [
           {

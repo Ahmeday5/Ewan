@@ -4,6 +4,11 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { authGuard, loginGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'auth/login',
+  },
   // 🔹 Auth Layout (Login)
   {
     path: 'auth',
@@ -21,7 +26,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',

@@ -21,6 +21,10 @@
   background: var(--second-color);
 }
 
+.dropdown-item {
+  cursor: pointer;
+}
+
 // للشاشات الصغيرة
 @media (max-width: 576px) {
   .header {

@@ -9,9 +9,6 @@ import {
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { UserData } from '../../features/auth/models/login.model';
-//import { UserData } from '../../core/types/login.type';
 
 @Component({
   selector: 'app-header',
@@ -61,13 +58,23 @@ export class HeaderComponent implements OnInit {
   }
 
   // دالة تسجيل الخروج
-  logout(): void {
-    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-      this.authService.logout(); // ← ينظف فوراً
-      this.router.navigate(['/auth/login'], {
-        replaceUrl: true, // 🔥 مهم جداً عشان يمسح التاريخ ويمنع الرجوع
-      });
+  logoutCurrent() {
+    if (confirm('تسجيل الخروج من هذا الجهاز؟')) {
+      this.authService.logoutCurrent();
       this.sidebarService.close();
+    }
+  }
+
+  logoutAll() {
+    if (confirm('تسجيل الخروج من جميع الأجهزة؟')) {
+      this.authService.logoutAll();
+      this.sidebarService.close();
+    }
+  }
+
+  logoutOthers() {
+    if (confirm('تسجيل الخروج من باقي الأجهزة؟')) {
+      this.authService.logoutOthers();
     }
   }
 }
