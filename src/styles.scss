@@ -101,12 +101,50 @@ body {
   background-color: rgba(0, 0, 0, 0.11) !important;
   color: rgba(0, 0, 0, 0.59) !important;
 }
+.badge.bg-success:hover {
+  background-color: rgba(12, 186, 101, 0.7) !important; /* يشبع اللون أكتر */
+  color: #fff !important; /* نص أبيض على الهوفر */
+  transform: scale(1.05); /* تكبير خفيف */
+  box-shadow: 0 4px 15px rgba(12, 186, 101, 0.4);
+  transition: all 0.3s ease;
+}
+
+.badge.bg-primary:hover {
+  background-color: rgba(37, 139, 241, 0.7) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(37, 139, 241, 0.4);
+  transition: all 0.3s ease;
+}
+
+.badge.bg-danger:hover {
+  background-color: rgba(255, 76, 60, 0.8) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 76, 60, 0.4);
+  transition: all 0.3s ease;
+}
+
+.badge.bg-warning:hover {
+  background-color: rgba(255, 157, 0, 0.8) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 157, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.badge.bg-black:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
 
 /******************************************form*************************************************/
 .form-label {
   font-size: 17px;
   font-weight: 600;
-  color: var(--main-color);
 }
 
 .form-control,
@@ -197,8 +235,12 @@ body {
 /*********************************************modal*********************************************************/
 
 .modal-content {
-  color: var(--second-color) !important;
+  color: var(--third-color) !important;
   border-radius: 33px !important;
+}
+
+.modal-body {
+  color: var(--third-color) !important;
 }
 
 .custom-modal {

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RealStateComponent } from './real-state.component';
+import { PropertiesComponent } from './Properties.component';
 
-describe('RealStateComponent', () => {
-  let component: RealStateComponent;
-  let fixture: ComponentFixture<RealStateComponent>;
+describe('PropertiesComponent', () => {
+  let component: PropertiesComponent;
+  let fixture: ComponentFixture<PropertiesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RealStateComponent]
+      imports: [PropertiesComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RealStateComponent);
+    fixture = TestBed.createComponent(PropertiesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment.development';
@@ -12,11 +12,25 @@ export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
 
   constructor() {}
-  
+
   // ====================== GET ======================
-  get<T>(endpoint: string): Observable<T> {
+  get<T>(endpoint: string, params?: any): Observable<T> {
+    let httpParams = new HttpParams();
+
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (
+          params[key] !== null &&
+          params[key] !== undefined &&
+          params[key] !== ''
+        ) {
+          httpParams = httpParams.set(key, params[key]);
+        }
+      });
+    }
+
     return this.http
-      .get<T>(`${this.baseUrl}${endpoint}`)
+      .get<T>(`${this.baseUrl}${endpoint}`, { params: httpParams })
       .pipe(catchError(this.handleError));
   }
 

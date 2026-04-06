@@ -1,18 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import { map, Observable } from 'rxjs';
-import {
-  propertyGroups,
-  PropertyGroupsResponse,
-} from '../models/main-category.model';
-import { apiResponse } from '../../../core/model/apiResponse.model';
+import { facilitiesGroups, facilitiesGroupsResponse } from '../models/facilities.model';
+import { apiResponse, postResponse } from '../../../core/model/apiResponse.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MainCategoryService {
+export class facilitiesService {
   private readonly api = inject(ApiService);
-  private readonly endpoint = '/api/dashboard/property-groups';
+  private readonly endpoint = '/api/dashboard/facilities';
   constructor() {}
 
   // ==========================
@@ -22,18 +19,18 @@ export class MainCategoryService {
   getAll(
     pageIndex: number = 1,
     pageSize: number = 10,
-  ): Observable<PropertyGroupsResponse> {
+  ): Observable<facilitiesGroupsResponse> {
     const params: any = {
       pageIndex,
       pageSize,
     };
 
     return this.api
-      .get<apiResponse<propertyGroups>>(this.endpoint, params)
+      .get<apiResponse<facilitiesGroups>>(this.endpoint, params)
       .pipe(
         map((res) => {
           return {
-            categories: res.data.data,
+            facilities: res.data.data,
             totalPages: res.data.totalPages,
             totalCount: res.data.count,
           };
@@ -45,9 +42,9 @@ export class MainCategoryService {
   // GET BY ID
   // ==========================
 
-  getById(id: number): Observable<propertyGroups> {
+  getById(id: number): Observable<facilitiesGroups> {
     return this.api
-      .get<{ data: propertyGroups }>(`${this.endpoint}/${id}`)
+      .get<{ data: facilitiesGroups }>(`${this.endpoint}/${id}`)
       .pipe(
         map((res) => res.data), // 👈 هنا ناخد الجزء اللي فعليًا فيه object الفئة
       );
@@ -57,8 +54,8 @@ export class MainCategoryService {
   // CREATE
   // ==========================
 
-  create(body: { name: string }): Observable<{ message: string }> {
-    return this.api.post<{ message: string }>(this.endpoint, body);
+  create(body: { name: string }): Observable<postResponse> {
+    return this.api.post<postResponse>(this.endpoint, body);
   }
 
   // ==========================

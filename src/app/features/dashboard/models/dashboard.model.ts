@@ -1,12 +1,9 @@
-export interface Category {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-}
-
-export interface CategoryResponse {
-  statusCode: number;
-  message: string;
-  data: any;
+// ==============================
+// Booking Stats
+// ==============================
+export interface kpisStats {
+  totalProperties: number;
+  totalClients: number;
+  totalBookings: number;
+  totalRevenue: number;
 }

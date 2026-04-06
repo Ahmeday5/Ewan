@@ -1,30 +1,12 @@
 // ==============================
-// موديل السب كاتيجوري
+// موديل  كاتيجوري
 // ==============================
-
-export interface SubCategory {
+export interface PropertyGroupsResponse {
+  categories: propertyGroups[];
+  totalPages: number;
+  totalCount: number;
+}
+export interface propertyGroups {
   id: number;
-  categoryId: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  sortOrder: number;
-}
-
-// ==============================
-// ريسبونس create / update
-// ==============================
-
-export interface SubCategoryResponse {
-  statusCode: number;
-  message: string;
-  data: number;
-}
-
-// ==============================
-// ريسبونس SortOrder
-// ==============================
-
-export interface NextSortOrderResponse {
-  nextSortOrder: number;
+  name: string;
 }

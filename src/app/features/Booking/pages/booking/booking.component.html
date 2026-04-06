@@ -1,5 +1,8 @@
 <div class="properties">
   <div class="container-fluid mb-3 mt-4">
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+      {{ errorMessage }}
+    </div>
     <div class="row p-0 justify-content-between gap-2">
       <div class="col-md-5">
         <input type="search" class="form-control" placeholder="ابحث عن حجز....">
@@ -14,9 +17,10 @@
       </div>
     </div>
 
+    @if (bookingStats) {
     <div class="row p-0 justify-content-center mt-4">
       <div class="col-12">
-        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+        <div class="row cards row-cols-xl-5 row-cols-lg-3 row-cols-md-3  row-cols-sm-2 row-cols-1 g-4">
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
@@ -24,7 +28,7 @@
                   <i class="fa-solid fa-layer-group text-primary"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">5</h5>
+                  <h5 class="fw-700">{{bookingStats.totalBookings}}</h5>
                   <h5 class="text-mutedd">إجمالي الحجوزات</h5>
                 </div>
               </div>
@@ -37,7 +41,7 @@
                   <i class="fa-solid fa-circle-check text-success"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">15</h5>
+                  <h5 class="fw-700">{{bookingStats.completedBookings}}</h5>
                   <h5 class="text-mutedd">مؤكدة</h5>
                 </div>
               </div>
@@ -50,7 +54,7 @@
                   <i class="fa-solid fa-hourglass-half text-warning"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">3</h5>
+                  <h5 class="fw-700">{{bookingStats.pendingBookings}}</h5>
                   <h5 class="text-mutedd">معلق</h5>
                 </div>
               </div>
@@ -63,8 +67,21 @@
                   <i class="fa-solid fa-money-bill-wave text-info"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">2</h5>
-                  <h5 class="text-mutedd"> الايرادات</h5>
+                  <h5 class="fw-700">{{bookingStats.completedBookings}}</h5>
+                  <h5 class="text-mutedd">مكتملة</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-money-bill-wave text-info"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">{{bookingStats.cancelledBookings}}</h5>
+                  <h5 class="text-mutedd">ملغية</h5>
                 </div>
               </div>
             </div>
@@ -72,6 +89,8 @@
         </div>
       </div>
     </div>
+    }
+
 
     <div class="row mt-4">
       <div class="col-12">
@@ -84,175 +103,73 @@
                     <th>#</th>
                     <th>العميل</th>
                     <th>العقار</th>
+                    <th>عدد الغرف</th>
                     <th>التاريخ</th>
                     <th>المبلغ</th>
                     <th>حالة الحجز</th>
                     <th>حالة الدفع</th>
+                    <th>طريقة الدفع</th>
                     <th>الاجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
+                  @if (Bookings.length > 0) {
+                  @for (book of Bookings; track book.id; let i = $index) {
                   <tr>
-                    <td>1</td>
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
                     <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
+                      <h6 class="fw-700 m-0">{{book.clientName}}</h6>
                     </td>
                     <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
+                      <h6 class="fw-700 m-0">{{book.propertyName}}</h6>
                       <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-success">مؤكدة</div>
+                        {{book.guestsCount}} ليالي •{{book.roomsCount}}  ضيوف</p>
                     </td>
                     <td>
-                      <div class="badge bg-primary">مدفوع</div>
+                      <h6 class="fw-700 m-0">{{book.roomsCount}}</h6>
+                    </td>
+                    <td>من : {{formatDate(book.checkInDate)}} الي : {{formatDate(book.checkOutDate)}}</td>
+                    <td class="text-success">{{book.totalAmount}} ج</td>
+                    <td>
+                      <span class="badge" [ngClass]="(book.status | status:'status').class">
+                        {{ (book.status | status:'status').text }}
+                      </span>
                     </td>
                     <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل
+                      <span class="badge" [ngClass]="(book.paymentStatus | status:'PaymentStatus').class">
+                        {{ (book.paymentStatus | status:'PaymentStatus').text }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="(book.paymentMethod | status:'paymentMethod').class">
+                        {{ (book.paymentMethod | status:'paymentMethod').text }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="badge bg-primary" (click)="openModal(book.id)">التفاصيل
                       </div>
                     </td>
                   </tr>
+                  }
+
+                  }@else {
                   <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
-                    </td>
-                    <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-warning">معلق</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-danger">غير مدفوع</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
-                    </td>
+                    <td colspan="7" class="text-muted py-3">لا توجد حجوزات</td>
                   </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
-                    </td>
-                    <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-warning">معلق</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-danger">غير مدفوع</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
-                    </td>
-                    <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-success">مؤكدة</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary">مدفوع</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
-                    </td>
-                    <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-success">مؤكدة</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary">مدفوع</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 class="fw-700 m-0">علي احمد</h6>
-                      <h6 class="fw-700 m-0">Ahmed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">01154113708</p>
-                    </td>
-                    <td>
-                      <h6 class="fw-700 m-0">شالية البحر الفاخر</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        5 ليالي • 4 ضيوف</p>
-                    </td>
-                    <td>من: 2026-03-20
-                      إلى: 2026-03-25</td>
-                    <td class="text-success">4,000 ج</td>
-                    <td>
-                      <div class="badge bg-warning">معلق</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary">مدفوع</div>
-                    </td>
-                    <td>
-                      <div class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#DetailsModal">التفاصيل</div>
-                    </td>
-                  </tr>
+                  }
                 </tbody>
               </table>
             </div>
+            <!-- ================= Pagination ================= -->
+            <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+            </app-pagination>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modal Details -->
-    <div class="modal fade" id="DetailsModal" tabindex="-1">
+    <div class="modal fade" id="BookingModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal">
 
@@ -262,6 +179,7 @@
             <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
           </div>
 
+          @if(bookingDetails) {
           <!-- Body -->
           <div class="modal-body p-4">
             <!-- معلومات العميل -->
@@ -274,15 +192,15 @@
               <div class="info-box">
                 <div class="info-row">
                   <span>الاسم :</span>
-                  <span>محمد أحمد</span>
+                  <span>{{bookingDetails.clientName}}</span>
                 </div>
                 <div class="info-row">
                   <span>البريد الإلكتروني :</span>
-                  <span>mohammed-email.com</span>
+                  <span>{{bookingDetails.clientEmail}}</span>
                 </div>
                 <div class="info-row">
                   <span>رقم الجوال :</span>
-                  <span>0501234567</span>
+                  <span>{{bookingDetails.clientPhoneNumber}}</span>
                 </div>
               </div>
             </div>
@@ -297,15 +215,15 @@
               <div class="info-box">
                 <div class="info-row">
                   <span>اسم العقار :</span>
-                  <span>شالية البحر الفاخر</span>
+                  <span>{{bookingDetails.propertyName}}</span>
                 </div>
                 <div class="info-row">
                   <span>عدد الغرف :</span>
-                  <span>2 غرفه</span>
+                  <span>{{bookingDetails.propertyRoomCount}} غرفه</span>
                 </div>
                 <div class="info-row">
                   <span>عدد الضيوف :</span>
-                  <span>4 ضيف</span>
+                  <span>{{bookingDetails.propertyGuestCount}} ضيف</span>
                 </div>
               </div>
             </div>
@@ -320,28 +238,29 @@
               <div class="info-box">
                 <div class="info-row">
                   <span>تاريخ الدخول :</span>
-                  <span>2026-3-20</span>
+                  <span>{{formatDate(bookingDetails.checkInDate)}}</span>
                 </div>
                 <div class="info-row">
                   <span>تاريخ الخروج :</span>
-                  <span>2026-3-25</span>
+                  <span>{{formatDate(bookingDetails.checkOutDate)}}</span>
                 </div>
                 <div class="info-row">
                   <span>عدد الليالي :</span>
-                  <span>4 ليلة</span>
+                  <span>{{bookingDetails.nightsCount}} ليلة</span>
                 </div>
                 <div class="info-row">
                   <span>تاريخ الحجز :</span>
-                  <span>2026-03-10</span>
+                  <span>{{formatDate(bookingDetails.createdAt)}}</span>
                 </div>
               </div>
             </div>
 
           </div>
+          }
 
           <!-- Footer -->
           <div class="modal-footer border-0 px-4 pb-4">
-            <button class="btn btn-addModel w-100 fw-bold">إغلاق</button>
+            <button class="btn btn-addModel w-100 fw-bold" data-bs-dismiss="modal">إغلاق</button>
           </div>
 
         </div>

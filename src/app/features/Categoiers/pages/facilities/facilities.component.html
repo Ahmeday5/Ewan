@@ -1,10 +1,10 @@
-<div class="properties">
+<div class="Facilities">
   <div class="container-fluid mb-3 mt-4">
     <div class="row p-0 justify-content-start gap-2">
       <div class="col-md-5">
         <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
           <i class="fa-solid fa-plus"></i>
-          إضافة فئة جديدة
+          إضافة مرفق او خدمة جديدة
         </button>
       </div>
     </div>
@@ -28,7 +28,7 @@
           <!-- ================= Header ================= -->
           <div class="modal-header justify-content-between">
             <h1 class="modal-title fs-5 fw-bold">
-              {{ isEditMode ? 'تعديل القسم' : 'إضافة قسم جديد' }}
+              {{ isEditMode ? 'تعديل المرفق او الخدمة' : 'إضافة مرفق او خدمة جديد' }}
             </h1>
             <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close"></button>
           </div>
@@ -43,10 +43,10 @@
 
               <div class="row">
                 <div class="col-12">
-                  <!-- ================= category Name ================= -->
+                  <!-- ================= facility Name ================= -->
                   <div>
-                    <label class="form-label">اسم الفئة</label>
-                    <input type="text" class="form-control" name="category-name" placeholder="مثال :  شاليه، فيلا، شقة"
+                    <label class="form-label">اسم المرفق او الخدمة</label>
+                    <input type="text" class="form-control" name="facility-name" placeholder="مثال :  شاليه، فيلا، شقة"
                       formControlName="name">
                     @if(nameControl?.invalid && nameControl?.touched){
                     <small class="text-danger">
@@ -72,7 +72,7 @@
     <div class="row mt-4">
       @if(!hasLoaded) {
       <!-- فاضي خالص عشان عندك loader global -->
-      } @else if(propertyGroups.length > 0) {
+      } @else if(Facilities.length > 0) {
       <div class="col-12">
         <div class="card">
           <div class="card-body">
@@ -81,12 +81,12 @@
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>اسم الفئة</th>
+                    <th>اسم المرفق او الخدمة</th>
                     <th>الاجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
-                  @for (cat of propertyGroups; track cat.id) {
+                  @for (cat of Facilities; track cat.id) {
                   <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ cat.name }}</td>

@@ -18,4 +18,16 @@ export const CATEGORY_ROUTES: Routes = [
       subtitle: 'إضافة وتعديل وحذف الفئات',
     },
   },
+  {
+    path: 'facilities',
+    loadComponent: () =>
+      import('./pages/facilities/facilities.component').then(
+        (m) => m.FacilitiesComponent,
+      ),
+    title: 'المرافق والخدمات',
+    data: {
+      title: 'إدارة المرافق والخدمات',
+      subtitle: 'إضافة وتعديل وحذف المرافق والخدمات',
+    },
+  },
 ];

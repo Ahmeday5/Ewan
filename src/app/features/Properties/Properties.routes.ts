@@ -9,8 +9,8 @@ export const PROPERTIES_ROUTES: Routes = [
   {
     path: 'mainProperties',
     loadComponent: () =>
-      import('./pages/real-state/real-state.component').then(
-        (m) => m.RealStateComponent,
+      import('./pages/Properties/Properties.component').then(
+        (m) => m.PropertiesComponent,
       ),
     title: 'العقارات',
     data: {

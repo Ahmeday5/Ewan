@@ -1,0 +1,425 @@
+<div class="properties">
+  <div class="container-fluid mb-3 mt-4">
+    <!-- ═══════════════════════════════════════════
+         رسائل النجاح والخطأ العامة
+    ═══════════════════════════════════════════ -->
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+      {{ errorMessage }}
+    </div>
+
+    <!-- ================= Filters ================= -->
+    <div class="row p-0 justify-content-center gap-2">
+      <div class="col-md-5">
+        <input type="search" class="form-control" placeholder="ابحث عن عقار....">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select">
+          <option selected>جميع الحالات</option>
+          <option value="true">متاح</option>
+          <option value="false">غير متاح</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
+          <i class="fa-solid fa-plus"></i>
+          إضافة عقار جديد
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= Stats ================= -->
+    <div class="row p-0 justify-content-center mt-4">
+      <div class="col-12">
+        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-building text-primary"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">5</h5>
+                  <h5 class="text-mutedd">إجمالي العقارات</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-calendar-check text-warning"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">15</h5>
+                  <h5 class="text-mutedd">الحجوزات</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-check-circle text-success"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">3</h5>
+                  <h5 class="text-mutedd">محجوزة</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-tools text-danger"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">2</h5>
+                  <h5 class="text-mutedd">الصيانة</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= Modal ================= -->
+    <div class="modal fade" id="PropertyModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header justify-content-between">
+            <h1 class="modal-title fs-5 fw-bold">
+              {{ isEditMode ? 'تعديل عقار' : 'إضافة عقار جديد' }}
+            </h1>
+            <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+          </div>
+
+          <!-- رسالة خطأ داخل المودال -->
+          <div *ngIf="errorMessageModel" class="alert alert-danger mx-3 mt-2 mb-0">
+            {{ errorMessageModel }}
+          </div>
+
+          <!-- ================= FORM ================= -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="modal-body">
+              <div class="row g-3">
+
+                <!-- ─── الاسم ─── -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">اسم العقار <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="name" placeholder="مثال: شالية البحر الفاخر"
+                    [class.is-invalid]="nameControl?.invalid && nameControl?.touched">
+                  <div class="invalid-feedback">
+                    <span *ngIf="nameControl?.errors?.['required']">الاسم مطلوب</span>
+                    <span *ngIf="nameControl?.errors?.['minlength']">الاسم لا يقل عن 3 أحرف</span>
+                  </div>
+                </div>
+
+                <!-- ─── الوصف ─── -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">الوصف <span class="text-danger">*</span></label>
+                  <textarea class="form-control" rows="3" formControlName="description"
+                    [class.is-invalid]="descriptionControl?.invalid && descriptionControl?.touched">
+                  </textarea>
+                  <div class="invalid-feedback">
+                    <span *ngIf="descriptionControl?.errors?.['required']">الوصف مطلوب</span>
+                    <span *ngIf="descriptionControl?.errors?.['minlength']">الوصف لا يقل عن 10 أحرف</span>
+                  </div>
+                </div>
+
+                <!-- ─── الفئة (Select من الـ API) ─── -->
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">الفئة <span class="text-danger">*</span></label>
+                  <select class="form-select" formControlName="groupId"
+                    [class.is-invalid]="groupControl?.invalid && groupControl?.touched">
+                    <option [ngValue]="null" disabled>-- اختر الفئة --</option>
+                    <option *ngFor="let group of allGroups" [value]="group.id">
+                      {{ group.name }}
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">يرجى اختيار الفئة</div>
+                </div>
+
+                <!-- ─── الحالة (Edit فقط) ─── -->
+                <div class="col-md-6" *ngIf="isEditMode">
+                  <label class="form-label fw-bold">الحالة</label>
+                  <select class="form-select" formControlName="isAvailable">
+                    <option [ngValue]="true">متاح</option>
+                    <option [ngValue]="false">غير متاح</option>
+                  </select>
+                </div>
+
+                <!-- ─── رقم المالك ─── -->
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">رقم المالك <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="ownerPhoneNumber"
+                    placeholder="مثال: 01xxxxxxxxx" [class.is-invalid]="phoneControl?.invalid && phoneControl?.touched">
+                  <div class="invalid-feedback">
+                    <span *ngIf="phoneControl?.errors?.['required']">رقم المالك مطلوب</span>
+                    <span *ngIf="phoneControl?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                  </div>
+                </div>
+
+                <!-- ─── كلمة المرور ─── -->
+                <div class="col-md-6" *ngIf="isAddMode">
+                  <label class="form-label fw-bold">كلمة المرور <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" formControlName="ownerPassword"
+                    [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched">
+                  <div class="invalid-feedback">
+                    <span *ngIf="passwordControl?.errors?.['required']">كلمة المرور مطلوبة</span>
+                    <span *ngIf="passwordControl?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                  </div>
+                </div>
+
+                <!-- ─── العنوان ─── -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">العنوان <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="address"
+                    [class.is-invalid]="addressControl?.invalid && addressControl?.touched">
+                  <div class="invalid-feedback">العنوان مطلوب (5 أحرف على الأقل)</div>
+                </div>
+
+                <!-- ─── الموقع ─── -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">الموقع <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="location"
+                    [class.is-invalid]="locationControl?.invalid && locationControl?.touched">
+                  <div class="invalid-feedback">الموقع مطلوب (5 أحرف على الأقل)</div>
+                </div>
+
+                <!-- ─── السعر / الغرف / الضيوف ─── -->
+                <div class="col-lg-4">
+                  <label class="form-label fw-bold">السعر/الليلة <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" min="1" formControlName="pricePerNight"
+                    [class.is-invalid]="priceControl?.invalid && priceControl?.touched">
+                  <div class="invalid-feedback">السعر مطلوب ويجب أن يكون أكبر من 0</div>
+                </div>
+
+                <div class="col-lg-4">
+                  <label class="form-label fw-bold">عدد الغرف <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" min="1" formControlName="roomCount"
+                    [class.is-invalid]="roomControl?.invalid && roomControl?.touched">
+                  <div class="invalid-feedback">عدد الغرف مطلوب</div>
+                </div>
+
+                <div class="col-lg-4">
+                  <label class="form-label fw-bold">عدد الضيوف <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" min="1" formControlName="guestCount"
+                    [class.is-invalid]="guestControl?.invalid && guestControl?.touched">
+                  <div class="invalid-feedback">عدد الضيوف مطلوب</div>
+                </div>
+
+                <!-- ══════════════════════════════════════════
+     الصور الحالية (Edit mode فقط)
+══════════════════════════════════════════ -->
+                <div class="col-12" *ngIf="isEditMode">
+                  <label class="form-label fw-bold">الصور الحالية</label>
+
+                  <div *ngIf="existingImageUrls.length === 0" class="text-muted small mb-2">
+                    لا توجد صور حالية
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-2 mb-2">
+                    <div *ngFor="let url of existingImageUrls; let i = index" class="position-relative">
+
+                      <img [src]="url"
+                        style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #dee2e6;"
+                        alt="صورة حالية">
+
+                      <!-- زر الحذف -->
+                      <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                        style="width:20px; height:20px; padding:0; font-size:12px; line-height:1; border-radius:50%;"
+                        (click)="removeExistingImage(i)" title="حذف هذه الصورة">
+                        ×
+                      </button>
+                    </div>
+                  </div>
+
+                  <small class="text-muted d-block mb-1">
+                    <i class="fa-solid fa-circle-info"></i>
+                    الصور المتبقية: {{ existingImageUrls.length }} صورة — اضغط × لحذف أي صورة
+                  </small>
+                </div>
+
+                <!-- ══════════════════════════════════════════
+     رفع صور جديدة (Add + Edit)
+══════════════════════════════════════════ -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">
+                    {{ isEditMode ? 'إضافة صور جديدة' : 'الصور' }}
+                    <span class="text-danger" *ngIf="!isEditMode">*</span>
+                    <small class="text-muted fw-normal me-1">(يمكن اختيار أكثر من صورة)</small>
+                  </label>
+
+                  <!-- Input الرفع — ✅ multiple + accept -->
+                  <input type="file" class="form-control" multiple accept="image/*" (change)="onFileChange($event)">
+
+                  <!-- ✅ معاينة الصور الجديدة المختارة -->
+                  <div *ngIf="newImageFiles.length > 0" class="mt-2">
+                    <small class="text-success fw-bold d-block mb-2">
+                      <i class="fa-solid fa-check-circle"></i>
+                      {{ newImageFiles.length }} صورة جديدة مختارة
+                    </small>
+
+                    <div class="d-flex flex-wrap gap-2">
+                      <div *ngFor="let file of newImageFiles; let i = index" class="position-relative">
+
+                        <!-- معاينة الصورة قبل الرفع -->
+                        <img [src]="newImagePreviews[i]"
+                          style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid #0d6efd;"
+                          alt="صورة جديدة">
+
+                        <!-- اسم الصورة -->
+                        <div
+                          style="width:80px; font-size:9px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                          class="text-muted mt-1" [title]="file.name">
+                          {{ file.name }}
+                        </div>
+
+                        <!-- زر حذف الصورة الجديدة -->
+                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                          style="width:20px; height:20px; padding:0; font-size:12px; line-height:1; border-radius:50%;"
+                          (click)="removeNewImage(i)" title="إزالة هذه الصورة">
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ══════════════════════════════════
+                     المرافق (Checkboxes)
+                ══════════════════════════════════ -->
+                <div class="col-12">
+                  <label class="form-label fw-bold">
+                    المرافق <span class="text-danger">*</span>
+                  </label>
+
+                  <!-- عداد المختار -->
+                  <div *ngIf="selectedFacilityIds.length > 0" class="mb-2">
+                    <span class="badge bg-primary">
+                      {{ selectedFacilityIds.length }} مرافق مختارة
+                    </span>
+                  </div>
+
+                  <!-- قائمة الـ Checkboxes -->
+                  <div class="border rounded p-3" style="max-height:180px;overflow-y:auto;">
+                    <div *ngIf="allFacilities.length === 0" class="text-muted text-center py-2">
+                      جاري التحميل...
+                    </div>
+                    <div *ngFor="let facility of allFacilities" class="form-check mb-1">
+                      <input class="form-check-input" type="checkbox" [id]="'fac-' + facility.id"
+                        [checked]="isFacilitySelected(facility.id)" (change)="toggleFacility(facility.id)">
+                      <label class="form-check-label" [for]="'fac-' + facility.id">
+                        {{ facility.name }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+              <button type="submit" class="btn btn-addModel fw-bold px-4">
+                <i class="fa-solid fa-save me-1"></i>
+                {{ isEditMode ? 'حفظ التعديلات' : 'إضافة العقار' }}
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>العقار</th>
+                    <th>الوصف</th>
+                    <th>الفئة</th>
+                    <th>العنوان</th>
+                    <th>السعر</th>
+                    <th>رقم تليفون المالك</th>
+                    <th>المرافق والخدمات</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngIf="properties.length === 0">
+                    <td colspan="7" class="text-muted py-3">لا توجد عقارات</td>
+                  </tr>
+                  <tr *ngFor="let item of properties; let i = index">
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <td style="max-width: 200px; min-width: 150px;">
+                      <div class="d-flex justify-content-center align-items-center gap-2">
+                        <img [src]="item.imageUrls[0]"
+                          style="width:35px;height:35px;border-radius:6px;object-fit:cover;" alt="صورة العقار">
+                        <div class="text-start">
+                          <h6 class="fw-700 m-0">{{ item.name }}</h6>
+                          <small class="text-muted">
+                            {{ item.roomCount }} غرف · {{ item.guestCount }} ضيوف
+                          </small>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="max-width: 250px; min-width: 200px; font-size: 14px;">{{ item.description }}</td>
+                    <td>
+                      <span class="badge bg-secondary">{{ item.groupName }}</span>
+                    </td>
+                    <td>{{ item.address }}</td>
+                    <td class="text-success fw-bold">{{ item.pricePerNight }} ج</td>
+                    <td class="fw-bold">{{ item.ownerPhoneNumber }}</td>
+                    <td>
+                      <span class="badge bg-success" style="font-size: 12px;">
+                        {{ item.facilities }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="item.isAvailable ? 'bg-success' : 'bg-danger'">
+                        {{ item.isAvailable ? 'متاح' : 'غير متاح' }}
+                      </span>
+                    </td>
+                    <td>
+                      <i class="fa-solid fa-pen text-primary me-3 cursor-pointer" (click)="openEditModal(item.id)"
+                        title="تعديل"></i>
+                      <i class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteSub(item.id)"
+                        title="حذف"></i>
+                    </td>
+                  </tr>
+                </tbody>
+
+              </table>
+            </div>
+
+            <!-- ================= Pagination ================= -->
+            <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+            </app-pagination>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

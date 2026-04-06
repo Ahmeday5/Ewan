@@ -287,6 +287,16 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
+            label: 'المرافق والخدمات',
+            path: 'categories/facilities',
+            icons: 'fa-solid fa-layer-group', // طبقات، مناسب للفئات
+            isOpen: false,
+          },
+        ],
+      },
+      {
+        items: [
+          {
             label: 'التحليلات',
             path: 'categories/sub-category',
             icons: 'fas fa-chart-line', // رسم بياني خطي

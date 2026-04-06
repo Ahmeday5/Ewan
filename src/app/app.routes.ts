@@ -38,7 +38,7 @@ export const routes: Routes = [
       {
         path: 'properties',
         loadChildren: () =>
-          import('./features/realStates/realState.routes').then(
+          import('./features/Properties/Properties.routes').then(
             (m) => m.PROPERTIES_ROUTES,
           ),
       },

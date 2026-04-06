@@ -6,22 +6,22 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { propertyGroups } from '../../models/main-category.model';
-import { MainCategoryService } from '../../services/main-category.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PaginationComponent } from "../../../../shared/components/pagination/pagination.component";
+import { facilitiesService } from '../../services/facilities.service';
+import { facilitiesGroups } from '../../models/facilities.model';
 
 @Component({
   selector: 'app-main-category',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, PaginationComponent],
-  templateUrl: './main-category.component.html',
-  styleUrl: './main-category.component.scss',
+  templateUrl: './facilities.component.html',
+  styleUrl: './facilities.component.scss',
 })
-export class MainCategoryComponent implements OnInit, AfterViewInit {
-  propertyGroups: propertyGroups[] = [];
-  //أنا مستني Array من propertyGroups
-  selectedGroup!: propertyGroups;
+export class FacilitiesComponent implements OnInit, AfterViewInit {
+  Facilities: facilitiesGroups[] = [];
+  //أنا مستني Array من facilitiesGroups
+  selectedGroup!: facilitiesGroups;
   // بقوله هاخد من بروبلتي جروب بس مش Array، هاخد عنصر واحد بس
   successMessage: string | null = null;
   errorMessage: string | null = null;
@@ -41,11 +41,11 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   // ====================== pagination ======================
   totalCount: number = 0;
   pageIndex: number = 1;
-  pageSize: number = 1;
+  pageSize: number = 10;
   totalPages: number = 1;
 
   constructor(
-    private apiService: MainCategoryService,
+    private apiService: facilitiesService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
   ) {}
@@ -97,7 +97,7 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
 
     this.apiService.getAll(this.pageIndex, this.pageSize).subscribe({
       next: (res) => {
-        this.propertyGroups = res.categories;
+        this.Facilities = res.facilities;
         this.totalPages = res.totalPages;
         this.totalCount = res.totalCount;
         this.hasLoaded = true;
