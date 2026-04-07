@@ -40,6 +40,10 @@ export class HeaderComponent implements OnInit {
       });
   }
 
+  get currentUser$() {
+    return this.authService.currentUser$;
+  }
+
   setPageData(): void {
     let route = this.router.routerState.root;
 

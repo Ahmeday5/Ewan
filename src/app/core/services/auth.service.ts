@@ -167,6 +167,10 @@ export class AuthService {
     return new Date(date).getTime() < Date.now();
   }
 
+  get currentUser$() {
+    return this.user$.asObservable();
+  }
+
   getAccessToken() {
     return this.user$.value?.accessToken;
   }
