@@ -46,7 +46,7 @@ export class LoginComponent {
       this.errorMessage = null;
       await this.router.navigate(['/dashboard/mainDashboard']);
     } catch (error: any) {
-      this.errorMessage = error.message || 'بيانات الدخول غير صحيحة';
+      this.errorMessage = 'البريد الالكتروني او كلمة المرور غير صحيحة';
     } finally {
       this.isLoading = false;
     }

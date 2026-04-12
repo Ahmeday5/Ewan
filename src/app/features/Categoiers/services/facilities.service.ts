@@ -1,8 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import { map, Observable } from 'rxjs';
-import { facilitiesGroups, facilitiesGroupsResponse } from '../models/facilities.model';
-import { apiResponse, postResponse } from '../../../core/model/apiResponse.model';
+import {
+  facilitiesGroups,
+  facilitiesGroupsResponse,
+} from '../models/facilities.model';
+import {
+  apiResponse,
+  postResponse,
+} from '../../../core/model/apiResponse.model';
 
 @Injectable({
   providedIn: 'root',

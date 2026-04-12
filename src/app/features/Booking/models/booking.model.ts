@@ -11,9 +11,9 @@ export interface Bookings {
   roomsCount: number;
   guestsCount: number;
   totalAmount: number;
-  status: number;
-  paymentStatus: number;
-  paymentMethod: number;
+  status: string;
+  paymentStatus: string;
+  paymentMethod: string;
   createdAt: string;
 }
 

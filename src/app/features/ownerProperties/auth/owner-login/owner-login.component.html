@@ -1,0 +1,93 @@
+<div class="login-page">
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-12">
+        <div class="text-center imgs mb-4 mt-5">
+          <img src="/assets/img/logo.png" alt="شعار إيوان" class="img-fluid">
+        </div>
+        <h3 class="text-center fw-600">مرحباً بك يا صاحب العقار</h3>
+        <p class="text-center fw-600">سجّل دخولك لإدارة حجوزات عقاراتك</p>
+      </div>
+
+      <div class="col-lg-8 col-md-10">
+        <div class="card mt-4">
+          <div class="card-body">
+
+            <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+              <h2 class="text-center">تسجيل الدخول</h2>
+              <h5 class="text-center">أدخل بياناتك للوصول إلى حجوزاتك</h5>
+
+              <!-- رقم الهاتف -->
+              <div class="form-section mt-4">
+                <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  [(ngModel)]="phoneNumber"
+                  required
+                  pattern="^[0-9]{10,15}$"
+                  class="form-control text-end"
+                  dir="rtl"
+                  placeholder="01XXXXXXXXX"
+                  #phoneControl="ngModel"
+                />
+                @if (phoneControl.invalid && (phoneControl.touched || phoneControl.dirty)) {
+                  <div class="text-danger small mt-1 text-end">
+                    @if (phoneControl.errors?.['required']) { يرجى إدخال رقم الهاتف }
+                    @if (phoneControl.errors?.['pattern']) { رقم الهاتف غير صحيح }
+                  </div>
+                }
+              </div>
+
+              <!-- كلمة المرور -->
+              <div class="form-section mt-3">
+                <label for="password" class="form-label">كلمة المرور</label>
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  id="password"
+                  name="password"
+                  [(ngModel)]="password"
+                  required
+                  minlength="6"
+                  class="form-control text-end"
+                  dir="rtl"
+                  #passwordControl="ngModel"
+                />
+                <span class="password-toggle" (click)="togglePassword()">
+                  <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}"
+                     style="color: var(--second-color);"></i>
+                </span>
+                @if (passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)) {
+                  <div class="text-danger small mt-1 text-end">
+                    @if (passwordControl.errors?.['required']) { يرجى إدخال كلمة المرور }
+                    @if (passwordControl.errors?.['minlength']) { كلمة المرور يجب أن تكون 6 أحرف على الأقل }
+                  </div>
+                }
+              </div>
+
+              <!-- رسالة الخطأ -->
+              @if (errorMessage) {
+                <div class="alert alert-danger d-flex align-items-center mt-4" role="alert">
+                  <i class="fa-solid fa-triangle-exclamation me-2 ms-3"></i>
+                  <div>{{ errorMessage }}</div>
+                </div>
+              }
+
+              <!-- زر الدخول -->
+              <div class="submit text-center mt-4">
+                <button type="submit" class="btn fw-bold" [disabled]="isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  تسجيل الدخول
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

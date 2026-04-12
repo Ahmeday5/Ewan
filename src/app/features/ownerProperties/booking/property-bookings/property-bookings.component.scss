@@ -1,0 +1,305 @@
+// ── Page header ──────────────────────────────────────────
+.page-header {
+  .total-badge {
+    background: var(--second-color);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(241, 90, 36, 0.3);
+  }
+}
+
+// ── Booking card ─────────────────────────────────────────
+.booking-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  // entrance animation (driven by parent [style.animation-delay])
+  animation: fadeSlideUp 0.45s ease both;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(241, 90, 36, 0.18);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Card image ───────────────────────────────────────────
+.card-img-wrapper {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .status-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.booking-card:hover .card-img {
+  transform: scale(1.06);
+}
+
+// ── Card body ────────────────────────────────────────────
+.card-content {
+  padding: 18px 20px 16px;
+}
+
+.property-name {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.address {
+  font-size: 12px;
+  margin: 0;
+}
+
+.divider {
+  border-color: rgba(0, 0, 0, 0.07);
+  margin: 12px 0;
+}
+
+// ── Info row ─────────────────────────────────────────────
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  i {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .info-label {
+    display: block;
+    font-size: 10px;
+    color: rgba(179, 179, 179, 1);
+    line-height: 1.2;
+  }
+
+  .info-value {
+    display: block;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+}
+
+// ── Dates ────────────────────────────────────────────────
+.dates-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  .date-box {
+    flex: 1;
+
+    small {
+      display: block;
+      font-size: 10px;
+      color: rgba(179, 179, 179, 1);
+    }
+
+    strong {
+      font-size: 13px;
+      display: block;
+    }
+  }
+
+  i {
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+}
+
+// ── Meta chips ───────────────────────────────────────────
+.meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .meta-chip {
+    background: rgba(241, 90, 36, 0.08);
+    color: var(--second-color);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+
+    i {
+      margin-left: 4px;
+    }
+  }
+}
+
+// ── Card footer ──────────────────────────────────────────
+.card-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .amount {
+    font-size: 15px;
+    color: #1a1a1a;
+  }
+}
+
+// ── Skeleton loading ─────────────────────────────────────
+.skeleton-card {
+  animation: none;
+  cursor: default;
+
+  &:hover {
+    transform: none;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.skeleton-img {
+  height: 190px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeleton-body {
+  padding: 18px 20px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 12px;
+
+  &.wide   { width: 80%; }
+  &.medium { width: 55%; }
+  &.narrow { width: 35%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Empty state ──────────────────────────────────────────
+.empty-state {
+  .empty-icon {
+    font-size: 5rem;
+    color: rgba(179, 179, 179, 0.6);
+  }
+}
+
+// ── Modal styles ─────────────────────────────────────────
+.custom-modal {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.section {
+  margin-bottom: 1.25rem;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #1a1a1a;
+}
+
+.info-box {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px 16px;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    span:first-child {
+      color: rgba(179, 179, 179, 1);
+      font-weight: 500;
+    }
+
+    span:last-child {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+  }
+}
+
+.total-amount-box {
+  background: rgba(241, 90, 36, 0.07);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .amount-value {
+    color: var(--second-color);
+  }
+}
+
+.btn-addModel {
+  background: var(--second-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.88;
+    color: #fff;
+  }
+}

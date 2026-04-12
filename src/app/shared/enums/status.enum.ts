@@ -1,16 +1,17 @@
-export enum status {
-  Confirmed = 1,
-  Completed = 2,
-  Pending = 3,
-  Cancelled = 4,
+export enum BookingStatus {
+  Confirmed = 'Confirmed',
+  Completed = 'Completed',
+  Pending = 'Pending',
+  Cancelled = 'Cancelled',
 }
 
 export enum PaymentStatus {
-  Paid = 1,
-  Unpaid = 2,
+  Pending = 'Pending',
+  Paid = 'Paid',
+  Failed = 'Failed',
+  Refunded = 'Refunded',
 }
 
-export enum paymentMethod {
-  cash = 1,
-  visa = 2,
+export enum PaymentMethod {
+  CashOnArrival = 'CashOnArrival',
 }

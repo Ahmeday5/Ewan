@@ -171,7 +171,7 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
     }
 
     const body = this.form.value as { id?: number; name: string };
-
+    
     const request$ = this.isEditMode
       ? this.apiService.update(body)
       : this.apiService.create({ name: body.name });

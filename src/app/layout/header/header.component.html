@@ -2,56 +2,80 @@
   <div class="container-fluid px-4 py-3">
     <div class="d-flex align-items-center justify-content-between">
 
+      <!-- Left: hamburger + page title -->
       <div class="d-flex align-items-center gap-4">
-        <button class="btn btn-link p-0 mobile-toggle d-lg-none" (click)="toggleSidebar()" type="button">
+        <button class="btn btn-link p-0 mobile-toggle d-lg-none"
+                (click)="toggleSidebar()"
+                type="button">
           <i class="fas fa-bars fs-4 text-muted"></i>
         </button>
 
-        <div class="d-flex align-items-center gap-3">
-          <div class="d-none d-sm-block">
-            <h1 class="fs-5 fw-bold mb-2">{{ pageTitle }}</h1>
-            <h5 class="text-mutedd">{{ pageSubtitle }}</h5>
-          </div>
+        <div class="d-none d-sm-block">
+          <h1 class="fs-5 fw-bold mb-2">{{ pageTitle }}</h1>
+          <h5 class="text-mutedd">{{ pageSubtitle }}</h5>
         </div>
       </div>
-      
+
+      <!-- Right: user avatar + dropdown -->
       <div class="d-flex align-items-center gap-3">
         <div class="dropdown">
           <button class="btn btn-link p-0 dropdown-toggle d-flex align-items-center gap-3 text-decoration-none"
-            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+
             <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center">
               <i class="fas fa-user text-white"></i>
             </div>
 
-            @if (currentUser$ | async; as user) {
+            @if (activeUser$ | async; as user) {
               <div class="d-none d-md-block text-end">
                 <div class="fw-medium text-dark">{{ user.userName }}</div>
-                <div class="text-muted small">{{ user.email }}</div>
+                @if (!isOwnerPortal && user.email) {
+                  <div class="text-muted small">{{ user.email }}</div>
+                }
+                @if (isOwnerPortal) {
+                  <div class="text-muted small">صاحب العقار</div>
+                }
               </div>
             }
           </button>
 
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-            <li>
-              <a class="dropdown-item text-danger fw-bold" (click)="logoutCurrent()">
-                تسجيل الخروج من هذا الجهاز
-              </a>
-            </li>
 
-            <li>
-              <a class="dropdown-item text-danger fw-bold" (click)="logoutOthers()">
-                تسجيل الخروج من الأجهزة الأخرى
-              </a>
-            </li>
+            <!-- Owner portal: single logout -->
+            @if (isOwnerPortal) {
+              <li>
+                <a class="dropdown-item text-danger fw-bold" (click)="ownerLogout()">
+                  <i class="fas fa-sign-out-alt me-2"></i>
+                  تسجيل الخروج
+                </a>
+              </li>
+            }
 
-            <li>
-              <a class="dropdown-item text-danger fw-bold" (click)="logoutAll()">
-                تسجيل الخروج من كل الأجهزة
-              </a>
-            </li>
+            <!-- Admin portal: three logout options -->
+            @if (!isOwnerPortal) {
+              <li>
+                <a class="dropdown-item text-danger fw-bold" (click)="logoutCurrent()">
+                  تسجيل الخروج من هذا الجهاز
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-danger fw-bold" (click)="logoutOthers()">
+                  تسجيل الخروج من الأجهزة الأخرى
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-danger fw-bold" (click)="logoutAll()">
+                  تسجيل الخروج من كل الأجهزة
+                </a>
+              </li>
+            }
+
           </ul>
         </div>
       </div>
+
     </div>
   </div>
 </header>

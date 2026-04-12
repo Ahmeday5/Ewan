@@ -1,131 +1,228 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, of, firstValueFrom } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, OnDestroy } from '@angular/core';
+import {
+  BehaviorSubject,
+  Observable,
+  firstValueFrom,
+  filter,
+  take,
+} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import {
   StoredUser,
   AuthResponse,
 } from '../../features/auth/models/login.model';
 import { environment } from '../../../environments/environment.development';
-import { Router } from '@angular/router';
 import { DeviceService } from './device.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
-  private user$ = new BehaviorSubject<StoredUser | null>(null);
-  private refreshTimeout: any;
-  private BASE_URL = environment.apiBaseUrl;
+export class AuthService implements OnDestroy {
+  private readonly BASE_URL = environment.apiBaseUrl;
+  private readonly REFRESH_BUFFER_MS = 2 * 60 * 1000;
+
+  // ── Separate storage keys — sessions never overwrite each other ──
+  private readonly ADMIN_KEY = 'ewan_admin';
+  private readonly OWNER_KEY = 'ewan_owner';
+
+  // ── Admin session ────────────────────────────────────────────────
+  private adminUser$ = new BehaviorSubject<StoredUser | null>(null);
+  private isAdminRefreshing = false;
+  private adminRefreshSubject$ = new BehaviorSubject<StoredUser | null>(null);
+  private adminRefreshTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // ── Owner session (no refresh token — no refresh machinery needed)
+  private ownerUser$ = new BehaviorSubject<StoredUser | null>(null);
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private deviceService: DeviceService,
   ) {
-    this.restoreSession();
+    this.restoreAdminSession();
+    this.restoreOwnerSession();
+    this.setupVisibilityHandler();
   }
 
-  // ====================== LOGIN ======================
-  // === تسجيل الدخول ===
-  login(email: string, password: string, rememberMe = true) {
-    const body = {
-      email,
-      password,
-      rememberMe,
-      deviceInfo: this.deviceService.getDeviceInfo(),
-      deviceId: this.deviceService.getDeviceId(),
-    };
+  ngOnDestroy(): void {
+    if (this.adminRefreshTimer) clearTimeout(this.adminRefreshTimer);
+  }
 
+  // ================================================================
+  // LOGIN
+  // ================================================================
+
+  /** Admin portal login — email + password + rememberMe. */
+  login(email: string, password: string, rememberMe = true): Promise<StoredUser> {
     return firstValueFrom(
-      this.http.post<AuthResponse>(`${this.BASE_URL}/api/Auth/login`, body),
+      this.http.post<AuthResponse>(`${this.BASE_URL}/api/Auth/login`, {
+        email,
+        password,
+        rememberMe,
+        deviceInfo: this.deviceService.getDeviceInfo(),
+        deviceId: this.deviceService.getDeviceId(),
+      }),
     ).then((res) => {
       const user = this.mapUser(res.data);
-      this.saveSession(user);
-
-      if (rememberMe) {
-        localStorage.setItem('savedEmail', email);
-      }
-
+      this.saveAdminSession(user);
+      if (rememberMe) localStorage.setItem('savedEmail', email);
       return user;
     });
   }
 
-  // ====================== REFRESH TOKEN (يستدعى تلقائياً في الـ Interceptor) ======================
-  // === تجديد التوكن ===
-  async refresh(): Promise<StoredUser> {
-    const current = this.user$.value;
-
-    if (!current?.refreshToken) {
-      await this.logoutCurrent(); // بدل logout() القديم
-      throw new Error('No refresh token available');
-    }
-
-    try {
-      const res = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.BASE_URL}/api/Auth/refresh`, {
-          refreshToken: current.refreshToken,
-        }),
-      );
-
+  /** Owner portal login — phone + password only. Stored under a separate key. */
+  ownerLogin(phoneNumber: string, password: string): Promise<StoredUser> {
+    return firstValueFrom(
+      this.http.post<AuthResponse>(
+        `${this.BASE_URL}/api/Auth/property-owner-login`,
+        { phoneNumber, password },
+      ),
+    ).then((res) => {
       const user = this.mapUser(res.data);
-      this.saveSession(user); // 🔥 مهم جداً لتحديث session
+      this.saveOwnerSession(user);
       return user;
-    } catch (error) {
-      await this.logoutCurrent();
-      throw error;
-    }
+    });
   }
 
-  // ====================== LOGOUT (يستدعى من الـ UI) ======================
-  // === تسجيل الخروج ===
-  // ================= LOGOUT CURRENT =================
-  logoutCurrent(): Promise<void> {
-    const token = this.user$.value?.refreshToken;
+  // ================================================================
+  // 401 HANDLING (called by the interceptor)
+  // ================================================================
 
+  /**
+   * Admin 401 — queues concurrent requests behind a single /refresh call.
+   * Multiple simultaneous 401s result in exactly ONE refresh HTTP request;
+   * all others wait on adminRefreshSubject$ and retry with the new token.
+   */
+  handleAdminUnauthorized(): Observable<StoredUser> {
+    if (!this.isAdminRefreshing) {
+      this.startAdminRefresh();
+    }
+    return this.adminRefreshSubject$.pipe(
+      filter((u): u is StoredUser => u !== null),
+      take(1),
+    );
+  }
+
+  /**
+   * Owner 401 — owners have no refresh token.
+   * Immediately clears the owner session and redirects to owner login.
+   */
+  handleOwnerUnauthorized(): void {
+    this.handleOwnerLogout();
+  }
+
+  // ================================================================
+  // LOGOUT — admin
+  // ================================================================
+
+  logoutCurrent(): void {
+    const token = this.adminUser$.value?.refreshToken;
     if (token) {
       this.http
-        .post(`${this.BASE_URL}/api/Auth/logout`, {
-          refreshToken: token,
-        })
-        .subscribe();
+        .post(`${this.BASE_URL}/api/Auth/logout`, { refreshToken: token })
+        .subscribe({ error: () => {} });
     }
-
-    this.handleClientLogout();
-    return Promise.resolve();
+    this.handleAdminLogout();
   }
 
-  // ================= LOGOUT ALL =================
-  logoutAll(): Promise<void> {
-    this.http.post(`${this.BASE_URL}/api/Auth/logout-all`, {}).subscribe();
-
-    this.handleClientLogout();
-    return Promise.resolve();
+  logoutAll(): void {
+    this.http
+      .post(`${this.BASE_URL}/api/Auth/logout-all`, {})
+      .subscribe({ error: () => {} });
+    this.handleAdminLogout();
   }
 
-  // ================= LOGOUT OTHERS =================
-  logoutOthers(): Promise<void> {
+  logoutOthers(): void {
     const deviceId = this.deviceService.getDeviceId();
-
     this.http
       .post(`${this.BASE_URL}/api/Auth/logout-others?deviceId=${deviceId}`, {})
-      .subscribe();
-
-    // ❗ هنا مهم: منعملش logout للجهاز الحالي
-    return Promise.resolve();
+      .subscribe({ error: () => {} });
+    // Do NOT call handleAdminLogout — current device stays logged in.
   }
 
-  private handleClientLogout() {
-    this.deviceService.clearDeviceData(); // يمسح deviceInfo بس
-    this.clearSession();
+  // ================================================================
+  // LOGOUT — owner
+  // ================================================================
+
+  ownerLogout(): void {
+    this.handleOwnerLogout();
+  }
+
+  // ================================================================
+  // ACCESSORS
+  // ================================================================
+
+  get adminCurrentUser$(): Observable<StoredUser | null> {
+    return this.adminUser$.asObservable();
+  }
+
+  get ownerCurrentUser$(): Observable<StoredUser | null> {
+    return this.ownerUser$.asObservable();
+  }
+
+  /** Token used by the interceptor for admin-portal API calls. */
+  getAdminToken(): string | undefined {
+    return this.adminUser$.value?.accessToken;
+  }
+
+  /** Token used by the interceptor for owner-portal API calls. */
+  getOwnerToken(): string | undefined {
+    return this.ownerUser$.value?.accessToken;
+  }
+
+  get adminUserValue(): StoredUser | null {
+    return this.adminUser$.value;
+  }
+
+  get ownerUserValue(): StoredUser | null {
+    return this.ownerUser$.value;
+  }
+
+  // ================================================================
+  // PRIVATE — session persistence
+  // ================================================================
+
+  private saveAdminSession(user: StoredUser): void {
+    this.adminUser$.next(user);
+    localStorage.setItem(this.ADMIN_KEY, JSON.stringify(user));
+    this.scheduleAdminProactiveRefresh(user);
+  }
+
+  private saveOwnerSession(user: StoredUser): void {
+    this.ownerUser$.next(user);
+    localStorage.setItem(this.OWNER_KEY, JSON.stringify(user));
+    // No proactive refresh — owner has no refresh token.
+  }
+
+  private clearAdminSession(): void {
+    this.adminUser$.next(null);
+    localStorage.removeItem(this.ADMIN_KEY);
+    if (this.adminRefreshTimer) {
+      clearTimeout(this.adminRefreshTimer);
+      this.adminRefreshTimer = null;
+    }
+  }
+
+  private clearOwnerSession(): void {
+    this.ownerUser$.next(null);
+    localStorage.removeItem(this.OWNER_KEY);
+  }
+
+  private handleAdminLogout(): void {
+    this.deviceService.clearDeviceData();
+    this.clearAdminSession();
     this.router.navigate(['/auth/login'], { replaceUrl: true });
   }
 
-  // ================= HELPERS =================
+  private handleOwnerLogout(): void {
+    this.clearOwnerSession();
+    this.router.navigate(['/ownerProperties/login'], { replaceUrl: true });
+  }
 
-  private mapUser(data: any): StoredUser {
+  private mapUser(data: AuthResponse['data']): StoredUser {
     return {
       accessToken: data.accessToken,
       refreshToken: data.refreshToken,
       expiresAtUtc: data.expiresAtUtc,
-
       userId: data.userId,
       email: data.email,
       userName: data.userName,
@@ -133,60 +230,134 @@ export class AuthService {
     };
   }
 
-  private saveSession(user: StoredUser) {
-    this.user$.next(user);
-    localStorage.setItem('user', JSON.stringify(user));
-    this.startAutoRefresh();
+  // ================================================================
+  // PRIVATE — admin token refresh
+  // ================================================================
+
+  private startAdminRefresh(): void {
+    const current = this.adminUser$.value;
+
+    if (!current?.refreshToken) {
+      this.handleAdminLogout();
+      return;
+    }
+
+    this.isAdminRefreshing = true;
+    this.adminRefreshSubject$.next(null);
+
+    this.http
+      .post<AuthResponse>(`${this.BASE_URL}/api/Auth/refresh`, {
+        refreshToken: current.refreshToken,
+        deviceInfo: this.deviceService.getDeviceInfo(),
+        deviceId: this.deviceService.getDeviceId(),
+      })
+      .subscribe({
+        next: (res) => {
+          const user = this.mapUser(res.data);
+          this.saveAdminSession(user);        // also re-arms the proactive timer
+          this.isAdminRefreshing = false;
+          this.adminRefreshSubject$.next(user); // unblocks all queued interceptors
+        },
+        error: () => {
+          this.isAdminRefreshing = false;
+          this.handleAdminLogout();
+        },
+      });
   }
 
-  private clearSession() {
-    this.user$.next(null);
-    localStorage.removeItem('user');
-    clearTimeout(this.refreshTimeout);
-  }
+  // ================================================================
+  // PRIVATE — session restoration on app start
+  // ================================================================
 
-  private async restoreSession() {
-    const data = localStorage.getItem('user');
-    if (!data) return;
+  private restoreAdminSession(): void {
+    const raw = localStorage.getItem(this.ADMIN_KEY);
+    if (!raw) return;
 
-    const user = JSON.parse(data) as StoredUser;
-    this.user$.next(user);
+    let user: StoredUser;
+    try {
+      user = JSON.parse(raw) as StoredUser;
+    } catch {
+      localStorage.removeItem(this.ADMIN_KEY);
+      return;
+    }
+
+    this.adminUser$.next(user);
 
     if (this.isExpired(user.expiresAtUtc)) {
-      try {
-        await this.refresh();
-      } catch {
-        await this.logoutCurrent();
-      }
+      this.startAdminRefresh();
     } else {
-      this.startAutoRefresh();
+      this.scheduleAdminProactiveRefresh(user);
     }
   }
 
+  private restoreOwnerSession(): void {
+    const raw = localStorage.getItem(this.OWNER_KEY);
+    if (!raw) return;
+
+    let user: StoredUser;
+    try {
+      user = JSON.parse(raw) as StoredUser;
+    } catch {
+      localStorage.removeItem(this.OWNER_KEY);
+      return;
+    }
+
+    if (this.isExpired(user.expiresAtUtc)) {
+      // Token expired and no refresh token — silently clear the stale session.
+      localStorage.removeItem(this.OWNER_KEY);
+      return;
+    }
+
+    this.ownerUser$.next(user);
+  }
+
+  // ================================================================
+  // PRIVATE — proactive refresh scheduling + visibility handling
+  // ================================================================
+
+  private scheduleAdminProactiveRefresh(user: StoredUser): void {
+    if (this.adminRefreshTimer) clearTimeout(this.adminRefreshTimer);
+    if (!user.refreshToken) return;
+
+    const delay = Math.max(
+      0,
+      new Date(user.expiresAtUtc).getTime() - Date.now() - this.REFRESH_BUFFER_MS,
+    );
+
+    this.adminRefreshTimer = setTimeout(() => {
+      if (!this.isAdminRefreshing) this.startAdminRefresh();
+    }, delay);
+  }
+
+  /**
+   * Re-arms the admin proactive-refresh timer whenever the tab becomes visible.
+   * Browsers throttle/pause setTimeout in background tabs so we must re-check
+   * on focus to avoid serving stale tokens after the device wakes from sleep.
+   */
+  private setupVisibilityHandler(): void {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return;
+
+      const admin = this.adminUser$.value;
+      if (admin) {
+        if (this.isExpired(admin.expiresAtUtc) || this.isExpiringSoon(admin.expiresAtUtc)) {
+          if (!this.isAdminRefreshing) this.startAdminRefresh();
+        } else {
+          this.scheduleAdminProactiveRefresh(admin);
+        }
+      }
+
+      // Owner: token is short-lived, no proactive refresh.
+      // If it expired while tab was hidden, the next API call will 401
+      // → handleOwnerUnauthorized() → redirect to owner login.
+    });
+  }
+
   private isExpired(date: string): boolean {
-    return new Date(date).getTime() < Date.now();
+    return new Date(date).getTime() <= Date.now();
   }
 
-  get currentUser$() {
-    return this.user$.asObservable();
-  }
-
-  getAccessToken() {
-    return this.user$.value?.accessToken;
-  }
-
-  // ================= AUTO REFRESH =================
-  private startAutoRefresh() {
-    clearTimeout(this.refreshTimeout);
-
-    const user = this.user$.value;
-    if (!user) return;
-
-    const expires = new Date(user.expiresAtUtc).getTime();
-    const timeout = expires - Date.now() - 2 * 60 * 1000; // قبلها بدقيقتين
-
-    this.refreshTimeout = setTimeout(() => {
-      this.refresh();
-    }, timeout);
+  private isExpiringSoon(date: string): boolean {
+    return new Date(date).getTime() - Date.now() < this.REFRESH_BUFFER_MS;
   }
 }

@@ -134,8 +134,8 @@
                   <input type="text" class="form-control" formControlName="name" placeholder="مثال: شالية البحر الفاخر"
                     [class.is-invalid]="f['name'].invalid && f['name'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="f['name']?.errors?.['required']">الاسم مطلوب</span>
-                    <span *ngIf="f['name']?.errors?.['minlength']">الاسم لا يقل عن 3 أحرف</span>
+                    <span *ngIf="f['name'].errors?.['required']">الاسم مطلوب</span>
+                    <span *ngIf="f['name'].errors?.['minlength']">الاسم لا يقل عن 3 أحرف</span>
                   </div>
                 </div>
 
@@ -146,8 +146,8 @@
                     [class.is-invalid]="f['description'].invalid && f['description'].touched">
                   </textarea>
                   <div class="invalid-feedback">
-                    <span *ngIf="f['description']?.errors?.['required']">الوصف مطلوب</span>
-                    <span *ngIf="f['description']?.errors?.['minlength']">الوصف لا يقل عن 10 أحرف</span>
+                    <span *ngIf="f['description'].errors?.['required']">الوصف مطلوب</span>
+                    <span *ngIf="f['description'].errors?.['minlength']">الوصف لا يقل عن 10 أحرف</span>
                   </div>
                 </div>
 
@@ -162,7 +162,7 @@
                     <option [value]="PropertyType.Hall">قاعة</option>
                   </select>
                   <div class="invalid-feedback">
-                    <span *ngIf="f['propertyType']?.errors?.['required']">الفئة مطلوبة</span>
+                    <span *ngIf="f['propertyType'].errors?.['required']">الفئة مطلوبة</span>
                   </div>
                 </div>
 
@@ -182,8 +182,8 @@
                     placeholder="مثال: 01xxxxxxxxx"
                     [class.is-invalid]="f['ownerPhoneNumber'].invalid && f['ownerPhoneNumber'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="f['ownerPhoneNumber']?.errors?.['required']">رقم المالك مطلوب</span>
-                    <span *ngIf="f['ownerPhoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                    <span *ngIf="f['ownerPhoneNumber'].errors?.['required']">رقم المالك مطلوب</span>
+                    <span *ngIf="f['ownerPhoneNumber'].errors?.['pattern']">رقم مصري غير صحيح</span>
                   </div>
                 </div>
 
@@ -193,8 +193,8 @@
                   <input type="password" class="form-control" formControlName="ownerPassword"
                     [class.is-invalid]="f['ownerPassword'].invalid && f['ownerPassword'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="f['ownerPassword']?.errors?.['required']">كلمة المرور مطلوبة</span>
-                    <span *ngIf="f['ownerPassword']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                    <span *ngIf="f['ownerPassword'].errors?.['required']">كلمة المرور مطلوبة</span>
+                    <span *ngIf="f['ownerPassword'].errors?.['minlength']">لا تقل عن 6 أحرف</span>
                   </div>
                 </div>
 
@@ -234,7 +234,7 @@
                 <div class="col-lg-4" *ngIf="isNormalProperty">
                   <label class="form-label fw-bold">عدد الغرف <span class="text-danger">*</span></label>
                   <input type="number" class="form-control" min="1" formControlName="roomCount"
-                    [class.is-invalid]="f['roomCount']?.invalid && f['roomCount']?.touched">
+                    [class.is-invalid]="f['roomCount'].invalid && f['roomCount'].touched">
                   <div class="invalid-feedback">عدد الغرف مطلوب</div>
                 </div>
 
@@ -397,14 +397,13 @@
                 <label class="form-label fw-semibold small">رقم هاتف المالك</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                  <input type="text" class="form-control" formControlName="ownerPhoneNumber"
-                    placeholder="01xxxxxxxxx"
-                    [class.is-invalid]="cf['ownerPhoneNumber']?.invalid && cf['ownerPhoneNumber']?.touched">
+                  <input type="text" class="form-control" formControlName="ownerPhoneNumber" placeholder="01xxxxxxxxx"
+                    [class.is-invalid]="cf['ownerPhoneNumber'].invalid && cf['ownerPhoneNumber'].touched">
                 </div>
                 <div class="invalid-feedback d-block"
-                  *ngIf="cf['ownerPhoneNumber']?.invalid && cf['ownerPhoneNumber']?.touched">
-                  <span *ngIf="cf['ownerPhoneNumber']?.errors?.['required']">الرقم مطلوب</span>
-                  <span *ngIf="cf['ownerPhoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                  *ngIf="cf['ownerPhoneNumber'].invalid && cf['ownerPhoneNumber'].touched">
+                  <span *ngIf="cf['ownerPhoneNumber'].errors?.['required']">الرقم مطلوب</span>
+                  <span *ngIf="cf['ownerPhoneNumber'].errors?.['pattern']">رقم مصري غير صحيح</span>
                 </div>
               </div>
 
@@ -415,12 +414,11 @@
                   <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                   <input type="password" class="form-control" formControlName="newPassword"
                     placeholder="6 أحرف على الأقل"
-                    [class.is-invalid]="cf['newPassword']?.invalid && cf['newPassword']?.touched">
+                    [class.is-invalid]="cf['newPassword'].invalid && cf['newPassword'].touched">
                 </div>
-                <div class="invalid-feedback d-block"
-                  *ngIf="cf['newPassword']?.invalid && cf['newPassword']?.touched">
-                  <span *ngIf="cf['newPassword']?.errors?.['required']">كلمة المرور مطلوبة</span>
-                  <span *ngIf="cf['newPassword']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                <div class="invalid-feedback d-block" *ngIf="cf['newPassword'].invalid && cf['newPassword'].touched">
+                  <span *ngIf="cf['newPassword'].errors?.['required']">كلمة المرور مطلوبة</span>
+                  <span *ngIf="cf['newPassword'].errors?.['minlength']">لا تقل عن 6 أحرف</span>
                 </div>
               </div>
 

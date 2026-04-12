@@ -77,9 +77,10 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   handleSpecialAction(subItem: any): void {
     if (subItem.key === 'تسجيل الخروج') {
       if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        this.sidebarService.close();
+        // logoutCurrent() handles navigation to the correct login page
+        // based on userType (admin → /auth/login, owner → /ownerProperties/login)
         this.authService.logoutCurrent();
-        this.router.navigate(['/login']);
-        this.sidebarService.close(); // إغلاق الـ sidebar لو موبايل
       }
     }
   }
@@ -233,7 +234,33 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateMenuItems(): void {
-    this.menuItems = [
+    // Use the current URL to determine which portal is active.
+    // This is reliable because the guard has already validated the route,
+    // and this method is only called from ngOnInit (after navigation).
+    if (this.router.url.startsWith('/ownerProperties')) {
+      this.menuItems = this.getOwnerMenuItems();
+    } else {
+      this.menuItems = this.getAdminMenuItems();
+    }
+  }
+
+  private getOwnerMenuItems(): any[] {
+    return [
+      {
+        items: [
+          {
+            label: 'حجوزاتي',
+            path: '/ownerProperties/properties',
+            icons: 'fas fa-calendar-check',
+            isOpen: false,
+          },
+        ],
+      },
+    ];
+  }
+
+  private getAdminMenuItems(): any[] {
+    return [
       {
         items: [
           {
@@ -249,7 +276,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'العقارات',
             path: 'properties/mainProperties',
-            icons: 'fas fa-building', // مبنى، مناسب للعقارات
+            icons: 'fas fa-building',
             isOpen: false,
           },
         ],
@@ -259,7 +286,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'الحجوزات',
             path: 'bookings/mainBooking',
-            icons: 'fas fa-calendar-check', // تقويم مع علامة ✔️
+            icons: 'fas fa-calendar-check',
             isOpen: false,
           },
         ],
@@ -269,7 +296,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'المستخدمين',
             path: 'users/mainUsers',
-            icons: 'fas fa-users', // مجموعة أشخاص
+            icons: 'fas fa-users',
             isOpen: false,
           },
         ],
@@ -279,7 +306,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'المرافق والخدمات',
             path: 'categories/facilities',
-            icons: 'fa-solid fa-layer-group', // طبقات، مناسب للفئات
+            icons: 'fa-solid fa-layer-group',
             isOpen: false,
           },
         ],
@@ -299,7 +326,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'الاشعارات',
             path: 'Notificaion/MainNotificaion',
-            icons: 'fas fa-bell', // جرس الإشعارات
+            icons: 'fas fa-bell',
             isOpen: false,
           },
         ],

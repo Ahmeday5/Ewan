@@ -71,7 +71,10 @@ export class ApiService {
     else if (err.status === 400)
       errorMsg = err.error?.message || 'البيانات غير صحيحة';
     else if (err.status === 401)
-      errorMsg = 'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى';
+      // Use the server message when available (e.g. "Invalid credentials" on login).
+      // Session-expired 401s on protected routes are handled by the interceptor
+      // before they ever reach this handler, so this branch covers login failures.
+      errorMsg = err.error?.message || err.error?.details || 'بيانات الدخول غير صحيحة';
     else if (err.status === 500) errorMsg = 'خطأ داخلي في السيرفر';
 
     console.error('API Error:', err);

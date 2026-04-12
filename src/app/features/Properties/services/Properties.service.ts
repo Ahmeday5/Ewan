@@ -20,6 +20,7 @@ export class PropertiesService {
   private readonly TTL = 10 * 60 * 1000; // 10 minutes
   private readonly CACHE_PREFIX = 'ewan_props_';
 
+  // بيعمل اي دي فريد للكاش
   private buildKey(
     pageIndex: number,
     pageSize: number,
@@ -29,6 +30,7 @@ export class PropertiesService {
     return `${this.CACHE_PREFIX}${pageIndex}|${pageSize}|${search}|${type}`;
   }
 
+  // يقرأ من الكاش
   private getEntry<T>(key: string): CacheEntry<T> | null {
     try {
       const raw = localStorage.getItem(key);
@@ -44,6 +46,7 @@ export class PropertiesService {
     }
   }
 
+  //يخزن في الكاش
   private setEntry(key: string, data: any): void {
     try {
       localStorage.setItem(
@@ -55,6 +58,7 @@ export class PropertiesService {
     }
   }
 
+  //يمسح الكاش
   invalidateCache(): void {
     Object.keys(localStorage)
       .filter((k) => k.startsWith(this.CACHE_PREFIX))

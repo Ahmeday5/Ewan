@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { status, PaymentStatus, paymentMethod } from '../enums/status.enum';
+import { BookingStatus, PaymentStatus, PaymentMethod } from '../enums/status.enum';
 
 @Pipe({
   name: 'status',
@@ -7,28 +7,30 @@ import { status, PaymentStatus, paymentMethod } from '../enums/status.enum';
 })
 export class StatusPipe implements PipeTransform {
   transform(
-    value: number,
+    value: string,
     type: 'status' | 'PaymentStatus' | 'paymentMethod',
   ): { text: string; class: string } {
     const maps = {
       status: {
-        [status.Confirmed]: { text: 'مؤكدة', class: 'bg-success' },
-        [status.Completed]: { text: 'مكتملة', class: 'bg-primary' },
-        [status.Pending]: { text: 'معلقة', class: 'bg-warning' },
-        [status.Cancelled]: { text: 'ملغية', class: 'bg-danger' },
+        [BookingStatus.Confirmed]: { text: 'مؤكدة', class: 'bg-success' },
+        [BookingStatus.Completed]: { text: 'مكتملة', class: 'bg-primary' },
+        [BookingStatus.Pending]: { text: 'معلقة', class: 'bg-warning' },
+        [BookingStatus.Cancelled]: { text: 'ملغية', class: 'bg-danger' },
       },
       PaymentStatus: {
+        [PaymentStatus.Pending]: { text: 'معلق', class: 'bg-warning' },
         [PaymentStatus.Paid]: { text: 'مدفوع', class: 'bg-success' },
-        [PaymentStatus.Unpaid]: { text: 'غير مدفوع', class: 'bg-danger' },
+        [PaymentStatus.Failed]: { text: 'فشل', class: 'bg-danger' },
+        [PaymentStatus.Refunded]: { text: 'مُسترد', class: 'bg-info' },
       },
       paymentMethod: {
-        [paymentMethod.cash]: { text: 'كاش', class: 'bg-success' },
-        [paymentMethod.visa]: { text: 'فيزا', class: 'bg-info' },
+        [PaymentMethod.CashOnArrival]: { text: 'كاش عند الوصول', class: 'bg-secondary' },
       },
     };
 
+    const map = maps[type] as Record<string, { text: string; class: string }>;
     return (
-      maps[type][value as keyof (typeof maps)[typeof type]] || {
+      map[value] || {
         text: 'غير معروف',
         class: 'bg-secondary',
       }

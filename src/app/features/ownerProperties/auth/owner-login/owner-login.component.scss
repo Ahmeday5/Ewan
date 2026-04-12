@@ -1,0 +1,34 @@
+.login-page {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(
+      to top right,
+      rgba(241, 90, 36, 0.81) 50%,
+      var(--main-color) 50%
+    ),
+    url('/assets/img/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.submit button {
+  width: 100%;
+  border-radius: 5px;
+  background: var(--second-color);
+  color: var(--main-color);
+}
+
+.form-section {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 72%;
+  left: 0.2%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 5px;
+}

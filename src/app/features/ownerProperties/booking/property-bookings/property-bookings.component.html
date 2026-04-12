@@ -1,0 +1,261 @@
+<div class="owner-bookings" dir="rtl">
+  <div class="container-fluid mb-3 mt-4">
+
+    <!-- Error -->
+    @if (errorMessage) {
+      <div class="alert alert-danger alert-dismissible fade show">{{ errorMessage }}</div>
+    }
+
+    <!-- Header row -->
+    <div class="page-header d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+      <div>
+        <h4 class="fw-700 mb-1">حجوزات عقارك</h4>
+        <p class="text-mutedd mb-0">
+          @if (totalCount > 0) { إجمالي {{ totalCount }} حجز }
+          @else { لا توجد حجوزات حتى الآن }
+        </p>
+      </div>
+      <div class="total-badge">
+        <i class="fa-solid fa-calendar-check me-2"></i>
+        {{ totalCount }} حجز
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    @if (isLoading) {
+      <div class="row row-cols-xl-3 row-cols-md-2 row-cols-1 g-4">
+        @for (s of [1,2,3,4,5,6]; track s) {
+          <div class="col">
+            <div class="booking-card skeleton-card">
+              <div class="skeleton-img"></div>
+              <div class="skeleton-body">
+                <div class="skeleton-line wide"></div>
+                <div class="skeleton-line medium"></div>
+                <div class="skeleton-line narrow"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Cards grid -->
+    @if (!isLoading && bookings.length > 0) {
+      <div class="row row-cols-xl-3 row-cols-md-2 row-cols-1 g-4">
+        @for (booking of bookings; track trackByBookingId($index, booking); let i = $index) {
+          <div class="col" [style.animation-delay]="(i * 60) + 'ms'">
+            <div class="booking-card" (click)="openDetails(booking)">
+
+              <!-- Property image -->
+              <div class="card-img-wrapper">
+                <img
+                  [src]="booking.propertyImageUrls[0] || '/assets/img/placeholder.png'"
+                  [alt]="booking.propertyName"
+                  class="card-img"
+                  loading="lazy"
+                  onerror="this.src='/assets/img/placeholder.png'"
+                />
+                <!-- Status overlay -->
+                <span class="status-overlay badge"
+                      [ngClass]="(booking.status | status:'status').class">
+                  {{ (booking.status | status:'status').text }}
+                </span>
+              </div>
+
+              <!-- Card body -->
+              <div class="card-content">
+
+                <!-- Property name -->
+                <h5 class="property-name fw-700 mb-2">{{ booking.propertyName }}</h5>
+                <p class="address text-mutedd mb-3">
+                  <i class="fa-solid fa-location-dot me-1"></i>
+                  {{ booking.propertyAddress }}
+                </p>
+
+                <hr class="divider" />
+
+                <!-- Client -->
+                <div class="info-row">
+                  <i class="fa-regular fa-user text-orange"></i>
+                  <div>
+                    <span class="info-label">العميل</span>
+                    <span class="info-value fw-700">{{ booking.clientName }}</span>
+                  </div>
+                </div>
+
+                <!-- Dates -->
+                <div class="dates-row mt-2">
+                  <div class="date-box">
+                    <small class="text-mutedd">وصول</small>
+                    <strong>{{ formatDate(booking.checkInDate) }}</strong>
+                  </div>
+                  <i class="fa-solid fa-arrow-left text-orange"></i>
+                  <div class="date-box text-start">
+                    <small class="text-mutedd">مغادرة</small>
+                    <strong>{{ formatDate(booking.checkOutDate) }}</strong>
+                  </div>
+                </div>
+
+                <!-- Meta row -->
+                <div class="meta-row mt-2">
+                  <span class="meta-chip">
+                    <i class="fa-solid fa-moon"></i> {{ booking.nightsCount }} ليلة
+                  </span>
+                  <span class="meta-chip">
+                    <i class="fa-solid fa-users"></i> {{ booking.guestsCount }} ضيف
+                  </span>
+                </div>
+
+                <hr class="divider" />
+
+                <!-- Footer -->
+                <div class="card-footer-row">
+                  <div class="amount fw-700">
+                    <i class="fa-solid fa-coins text-orange me-1"></i>
+                    {{ booking.totalAmount | number }} ج
+                  </div>
+                  <span class="badge"
+                        [ngClass]="(booking.paymentStatus | status:'PaymentStatus').class">
+                    {{ (booking.paymentStatus | status:'PaymentStatus').text }}
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4">
+        <app-pagination
+          [currentPage]="pageIndex"
+          [totalPages]="totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @if (!isLoading && bookings.length === 0 && !errorMessage) {
+      <div class="empty-state text-center py-5">
+        <i class="fa-regular fa-calendar-xmark empty-icon"></i>
+        <h5 class="mt-3 fw-700">لا توجد حجوزات</h5>
+        <p class="text-mutedd">لم يتم تسجيل أي حجوزات على عقارك حتى الآن</p>
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- =================== Details Modal =================== -->
+<div class="modal fade" id="bookingDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content custom-modal">
+
+      <div class="modal-header bg-orange border-0">
+        <h5 class="modal-title fw-bold fs-5">تفاصيل الحجز</h5>
+        <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
+      </div>
+
+      @if (selectedBooking) {
+        <div class="modal-body p-4">
+
+          <!-- صور العقار -->
+          @if (selectedBooking.propertyImageUrls.length) {
+            <div class="modal-property-img mb-4">
+              <img [src]="selectedBooking.propertyImageUrls[0]"
+                   [alt]="selectedBooking.propertyName"
+                   class="w-100 rounded-3"
+                   style="height: 200px; object-fit: cover;"
+                   onerror="this.src='/assets/img/placeholder.png'" />
+            </div>
+          }
+
+          <!-- معلومات العميل -->
+          <div class="section">
+            <div class="section-title">
+              <i class="fa-regular fa-user text-orange ms-2"></i> معلومات العميل
+            </div>
+            <div class="info-box">
+              <div class="info-row"><span>الاسم :</span><span>{{ selectedBooking.clientName }}</span></div>
+              <div class="info-row"><span>البريد :</span><span>{{ selectedBooking.clientEmail }}</span></div>
+              <div class="info-row"><span>الهاتف :</span><span>{{ selectedBooking.clientPhoneNumber }}</span></div>
+            </div>
+          </div>
+
+          <!-- معلومات العقار -->
+          <div class="section">
+            <div class="section-title">
+              <i class="fa-solid fa-house text-orange ms-2"></i> معلومات العقار
+            </div>
+            <div class="info-box">
+              <div class="info-row"><span>اسم العقار :</span><span>{{ selectedBooking.propertyName }}</span></div>
+              <div class="info-row"><span>العنوان :</span><span>{{ selectedBooking.propertyAddress }}</span></div>
+              <div class="info-row"><span>سعر الليلة :</span><span>{{ selectedBooking.pricePerNight | number }} ج</span></div>
+            </div>
+          </div>
+
+          <!-- معلومات الحجز -->
+          <div class="section">
+            <div class="section-title">
+              <i class="fa-regular fa-calendar text-orange ms-2"></i> معلومات الحجز
+            </div>
+            <div class="info-box">
+              <div class="info-row"><span>تاريخ الوصول :</span><span>{{ formatDate(selectedBooking.checkInDate) }}</span></div>
+              <div class="info-row"><span>تاريخ المغادرة :</span><span>{{ formatDate(selectedBooking.checkOutDate) }}</span></div>
+              <div class="info-row"><span>عدد الليالي :</span><span>{{ selectedBooking.nightsCount }} ليلة</span></div>
+              <div class="info-row"><span>عدد الضيوف :</span><span>{{ selectedBooking.guestsCount }} ضيف</span></div>
+              <div class="info-row">
+                <span>حالة الحجز :</span>
+                <span class="badge" [ngClass]="(selectedBooking.status | status:'status').class">
+                  {{ (selectedBooking.status | status:'status').text }}
+                </span>
+              </div>
+              <div class="info-row">
+                <span>حالة الدفع :</span>
+                <span class="badge" [ngClass]="(selectedBooking.paymentStatus | status:'PaymentStatus').class">
+                  {{ (selectedBooking.paymentStatus | status:'PaymentStatus').text }}
+                </span>
+              </div>
+              <div class="info-row">
+                <span>طريقة الدفع :</span>
+                <span class="badge" [ngClass]="(selectedBooking.paymentMethod | status:'paymentMethod').class">
+                  {{ (selectedBooking.paymentMethod | status:'paymentMethod').text }}
+                </span>
+              </div>
+              <div class="info-row"><span>تاريخ الحجز :</span><span>{{ formatDate(selectedBooking.createdAt) }}</span></div>
+            </div>
+          </div>
+
+          <!-- سبب الإلغاء -->
+          @if (selectedBooking.cancellationReason) {
+            <div class="section">
+              <div class="section-title">
+                <i class="fa-solid fa-ban text-danger ms-2"></i> سبب الإلغاء
+              </div>
+              <div class="info-box">
+                <div class="info-row"><span>السبب :</span><span>{{ selectedBooking.cancellationReason }}</span></div>
+                @if (selectedBooking.cancelledAt) {
+                  <div class="info-row"><span>تاريخ الإلغاء :</span><span>{{ formatDate(selectedBooking.cancelledAt) }}</span></div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- الإجمالي -->
+          <div class="total-amount-box mt-3">
+            <span class="fw-700 fs-5">الإجمالي</span>
+            <span class="amount-value fw-700 fs-4">{{ selectedBooking.totalAmount | number }} ج</span>
+          </div>
+
+        </div>
+      }
+
+      <div class="modal-footer border-0 px-4 pb-4">
+        <button class="btn btn-addModel w-100 fw-bold" data-bs-dismiss="modal">إغلاق</button>
+      </div>
+
+    </div>
+  </div>
+</div>

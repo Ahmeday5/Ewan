@@ -1,29 +1,28 @@
-import { CanActivateFn, Router, Routes } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { map } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
-import { AuthLayoutComponent } from '../../layout/auth-layout/auth-layout.component';
-import { MainLayoutComponent } from '../../layout/main-layout/main-layout.component';
+import { AuthService } from '../services/auth.service';
 
+/** Protects admin-portal pages — requires a valid admin session. */
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  const token = auth.getAccessToken();
 
-  if (token) {
+  if (auth.getAdminToken()) {
     return true;
   }
   return router.createUrlTree(['/auth/login']);
 };
 
+/**
+ * Prevents an already-logged-in admin from seeing the admin login page.
+ * Owner sessions are ignored here — they belong to a different portal.
+ */
 export const loginGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  const token = auth.getAccessToken();
 
-  if (token) {
+  if (auth.getAdminToken()) {
     return router.createUrlTree(['/dashboard']);
   }
-
   return true;
 };

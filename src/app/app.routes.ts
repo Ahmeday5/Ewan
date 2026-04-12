@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { authGuard, loginGuard } from './core/guards/auth.guard';
+import { ownerGuard } from './core/guards/ownerProperties.guard';
 
 export const routes: Routes = [
   {
@@ -9,7 +10,15 @@ export const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'auth/login',
   },
-  // 🔹 Auth Layout (Login)
+
+  // Redirect bare /ownerProperties to the owner login page.
+  {
+    path: 'ownerProperties',
+    pathMatch: 'full',
+    redirectTo: 'ownerProperties/login',
+  },
+
+  // 🔹 Auth Layout (Login) Admin Auth
   {
     path: 'auth',
     component: AuthLayoutComponent,
@@ -18,6 +27,37 @@ export const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+      },
+    ],
+  },
+
+  // 🔹 Owner Auth 🆕
+  {
+    path: 'ownerProperties',
+    component: AuthLayoutComponent,
+    children: [
+      {
+        path: 'login',
+        loadChildren: () =>
+          import('./features/ownerProperties/auth/ownerAuth.routes').then(
+            (m) => m.OWNER_AUTH_ROUTES,
+          ),
+      },
+    ],
+  },
+
+  // 🔹 Owner App 🆕
+  {
+    path: 'ownerProperties',
+    component: MainLayoutComponent,
+    canActivate: [ownerGuard], // 🔥 guard جديد
+    children: [
+      {
+        path: 'properties',
+        loadChildren: () =>
+          import('./features/ownerProperties/booking/propertyBookings.routes').then(
+            (m) => m.OWNER_PROPERTIES_BOOKING_ROUTES,
+          ),
       },
     ],
   },

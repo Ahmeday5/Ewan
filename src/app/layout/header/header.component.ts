@@ -1,14 +1,11 @@
-import { SidebarService } from '../../core/services/sidebar.service';
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../core/services/auth.service';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  Router,
-  RouterModule,
-} from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
+import { SidebarService } from '../../core/services/sidebar.service';
+import { StoredUser } from '../../features/auth/models/login.model';
 
 @Component({
   selector: 'app-header',
@@ -18,67 +15,95 @@ import { filter, map } from 'rxjs/operators';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent implements OnInit {
-  pageTitle: string = '';
-  pageSubtitle: string = '';
+  pageTitle = '';
+  pageSubtitle = '';
+
+  /** True when the current URL belongs to the owner portal. */
+  isOwnerPortal = false;
+
+  /**
+   * Observable for the active portal's user.
+   * Reassigned on every NavigationEnd so the async pipe always reflects
+   * the correct session without needing two separate template bindings.
+   */
+  activeUser$!: Observable<StoredUser | null>;
 
   constructor(
     private sidebarService: SidebarService,
-    private authService: AuthService, // حقن AuthService لتسجيل الخروج
-    private router: Router, // حقن Router للتعامل مع التنقل
-    private activatedRoute: ActivatedRoute, // حقن ActivatedRoute للوصول للروت الحالي
-  ) {}
+    private authService: AuthService,
+    private router: Router,
+  ) {
+    this.activeUser$ = this.authService.adminCurrentUser$;
+  }
 
   ngOnInit(): void {
-    // 👇 أول مرة (بعد الريفريش)
-    this.setPageData();
+    // Sync state immediately (covers hard refresh / direct URL load).
+    this.syncPortalState();
 
-    // 👇 مع كل navigation بعد كده
+    // Re-sync on every navigation so the header stays correct when
+    // the user moves between portals.
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => {
+        this.syncPortalState();
         this.setPageData();
       });
   }
 
-  get currentUser$() {
-    return this.authService.currentUser$;
-  }
-
-  setPageData(): void {
-    let route = this.router.routerState.root;
-
-    while (route.firstChild) {
-      route = route.firstChild;
-    }
-
-    const data = route.snapshot.data;
-
-    this.pageTitle = data['title'] || 'لوحة التحكم الرئيسية';
-    this.pageSubtitle = data['subtitle'] || '';
-  }
-
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.sidebarService.toggle();
   }
 
-  // دالة تسجيل الخروج
-  logoutCurrent() {
+  // ── Admin logout actions ──────────────────────────────────────
+
+  logoutCurrent(): void {
     if (confirm('تسجيل الخروج من هذا الجهاز؟')) {
       this.authService.logoutCurrent();
       this.sidebarService.close();
     }
   }
 
-  logoutAll() {
+  logoutAll(): void {
     if (confirm('تسجيل الخروج من جميع الأجهزة؟')) {
       this.authService.logoutAll();
       this.sidebarService.close();
     }
   }
 
-  logoutOthers() {
+  logoutOthers(): void {
     if (confirm('تسجيل الخروج من باقي الأجهزة؟')) {
       this.authService.logoutOthers();
     }
+  }
+
+  // ── Owner logout action ───────────────────────────────────────
+
+  ownerLogout(): void {
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+      this.authService.ownerLogout();
+      this.sidebarService.close();
+    }
+  }
+
+  // ── Private ───────────────────────────────────────────────────
+
+  private syncPortalState(): void {
+    this.isOwnerPortal = this.router.url.startsWith('/ownerProperties');
+
+    // Bind the async pipe to the correct session observable.
+    this.activeUser$ = this.isOwnerPortal
+      ? this.authService.ownerCurrentUser$
+      : this.authService.adminCurrentUser$;
+
+    this.setPageData();
+  }
+
+  private setPageData(): void {
+    let route = this.router.routerState.root;
+    while (route.firstChild) route = route.firstChild;
+
+    const data = route.snapshot.data;
+    this.pageTitle = data['title'] || 'لوحة التحكم الرئيسية';
+    this.pageSubtitle = data['subtitle'] || '';
   }
 }

@@ -48,11 +48,11 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
                     <input type="text" class="form-control" formControlName="userName" placeholder="مثال: ahmed_admin"
-                      [class.is-invalid]="f['userName']?.invalid && f['userName']?.touched">
+                      [class.is-invalid]="f['userName'].invalid && f['userName'].touched">
                   </div>
-                  <div class="invalid-feedback d-block" *ngIf="f['userName']?.invalid && f['userName']?.touched">
-                    <span *ngIf="f['userName']?.errors?.['required']">الاسم مطلوب</span>
-                    <span *ngIf="f['userName']?.errors?.['minlength']">لا يقل عن 3 أحرف</span>
+                  <div class="invalid-feedback d-block" *ngIf="f['userName'].invalid && f['userName'].touched">
+                    <span *ngIf="f['userName'].errors?.['required']">الاسم مطلوب</span>
+                    <span *ngIf="f['userName'].errors?.['minlength']">لا يقل عن 3 أحرف</span>
                   </div>
                 </div>
 
@@ -62,11 +62,11 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
                     <input type="email" class="form-control" formControlName="email" placeholder="example@gmail.com"
-                      [class.is-invalid]="f['email']?.invalid && f['email']?.touched">
+                      [class.is-invalid]="f['email'].invalid && f['email'].touched">
                   </div>
-                  <div class="invalid-feedback d-block" *ngIf="f['email']?.invalid && f['email']?.touched">
-                    <span *ngIf="f['email']?.errors?.['required']">الإيميل مطلوب</span>
-                    <span *ngIf="f['email']?.errors?.['email']">صيغة الإيميل غير صحيحة</span>
+                  <div class="invalid-feedback d-block" *ngIf="f['email'].invalid && f['email'].touched">
+                    <span *ngIf="f['email'].errors?.['required']">الإيميل مطلوب</span>
+                    <span *ngIf="f['email'].errors?.['email']">صيغة الإيميل غير صحيحة</span>
                   </div>
                 </div>
 
@@ -76,11 +76,11 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
                     <input type="text" class="form-control" formControlName="phoneNumber" placeholder="01xxxxxxxxx"
-                      [class.is-invalid]="f['phoneNumber']?.invalid && f['phoneNumber']?.touched">
+                      [class.is-invalid]="f['phoneNumber'].invalid && f['phoneNumber'].touched">
                   </div>
-                  <div class="invalid-feedback d-block" *ngIf="f['phoneNumber']?.invalid && f['phoneNumber']?.touched">
-                    <span *ngIf="f['phoneNumber']?.errors?.['required']">رقم الهاتف مطلوب</span>
-                    <span *ngIf="f['phoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                  <div class="invalid-feedback d-block" *ngIf="f['phoneNumber'].invalid && f['phoneNumber'].touched">
+                    <span *ngIf="f['phoneNumber'].errors?.['required']">رقم الهاتف مطلوب</span>
+                    <span *ngIf="f['phoneNumber'].errors?.['pattern']">رقم مصري غير صحيح</span>
                   </div>
                 </div>
 
@@ -90,11 +90,11 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                     <input type="password" class="form-control" formControlName="password" placeholder="6 أحرف على الأقل"
-                      [class.is-invalid]="f['password']?.invalid && f['password']?.touched">
+                      [class.is-invalid]="f['password'].invalid && f['password'].touched">
                   </div>
-                  <div class="invalid-feedback d-block" *ngIf="f['password']?.invalid && f['password']?.touched">
-                    <span *ngIf="f['password']?.errors?.['required']">كلمة المرور مطلوبة</span>
-                    <span *ngIf="f['password']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                  <div class="invalid-feedback d-block" *ngIf="f['password'].invalid && f['password'].touched">
+                    <span *ngIf="f['password'].errors?.['required']">كلمة المرور مطلوبة</span>
+                    <span *ngIf="f['password'].errors?.['minlength']">لا تقل عن 6 أحرف</span>
                   </div>
                 </div>
 

@@ -1,36 +1,20 @@
-<div class="properties">
+<div class="users-page">
   <div class="container-fluid mb-3 mt-4">
-    <div class="row p-0 justify-content-center gap-2">
-      <div class="col-lg-3 col-md-5">
-        <input type="search" class="form-control" placeholder="ابحث عن مستخدم....">
-      </div>
-      <div class="col-lg-2 col-md-5">
-        <select class="form-select" aria-label="Status select">
-          <option selected>جميع الحالات</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-        </select>
-      </div>
-      <div class="col-lg-2 col-md-5">
-        <select class="form-select" aria-label="Status select">
-          <option selected>جميع الإدوار</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-        </select>
-      </div>
-      <div class="col-lg-4 col-md-5">
-        <button class="btn btn-addSection fw-bold" data-bs-toggle="modal" data-bs-target="#addUserModal">
-          <i class="fa-solid fa-plus"></i>
-          إضافة مستخدم جديد
-        </button>
-      </div>
+
+    <!-- ===================== Alerts ===================== -->
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show mx-2" role="alert">
+      <i class="fa-solid fa-circle-check me-2"></i> {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mx-2" role="alert">
+      <i class="fa-solid fa-circle-xmark me-2"></i> {{ errorMessage }}
     </div>
 
-    <div class="row p-0 justify-content-center mt-4">
+    <!-- ===================== Stats Cards ===================== -->
+    <div class="row p-0 justify-content-center mt-2">
       <div class="col-12">
-        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-2 row-cols-sm-2 row-cols-1 g-4">
+
+          <!-- إجمالي المستخدمين -->
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
@@ -38,12 +22,14 @@
                   <i class="fa-solid fa-users text-primary"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">5</h5>
+                  <h5 class="fw-700">{{ totalCount }}</h5>
                   <h5 class="text-mutedd">إجمالي المستخدمين</h5>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- نشط -->
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
@@ -51,251 +37,237 @@
                   <i class="fa-solid fa-user-check text-success"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">15</h5>
+                  <h5 class="fw-700">{{ activeCount }}</h5>
                   <h5 class="text-mutedd">نشط</h5>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- غير نشط -->
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
                 <div class="icon-container">
-                  <i class="fa-solid fa-user-clock text-warning"></i>
+                  <i class="fa-solid fa-user-xmark text-danger"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">3</h5>
-                  <h5 class="text-mutedd">معلق</h5>
+                  <h5 class="fw-700">{{ inactiveCount }}</h5>
+                  <h5 class="text-mutedd">غير نشط</h5>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- إجمالي الحجوزات -->
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
                 <div class="icon-container">
-                  <i class="fa-solid fa-user-shield text-purple"></i>
+                  <i class="fa-solid fa-calendar-check text-warning"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">2</h5>
-                  <h5 class="text-mutedd">إدارين</h5>
+                  <h5 class="fw-700">{{ totalBookings }}</h5>
+                  <h5 class="text-mutedd">إجمالي الحجوزات</h5>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- Modal addUser -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <!-- ================= Header ================= -->
-          <div class="modal-header justify-content-between">
-            <h1 class="modal-title fs-5 fw-bold">
-              إضافة مستخدم جديد
-            </h1>
-            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <!-- ================= Form ================= -->
-          <form>
-            <div class="modal-body">
-
-              <div class="row">
-                <div class="col-12">
-                  <!-- ================= Name ================= -->
-                  <div>
-                    <label class="form-label">الاسم بالكامل</label>
-                    <input type="text" class="form-control" name="name" placeholder="مثال : أحمد محمد علي">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <!-- ================= email ================= -->
-                  <div>
-                    <label class="form-label">البريد الإلكتروني</label>
-                    <input type="email" class="form-control" name="email" placeholder="example@gamil.com">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <!-- ================= phone ================= -->
-                  <div>
-                    <label class="form-label">رقم الجوال</label>
-                    <input type="text" class="form-control" name="phone" placeholder="01234567890">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <!-- ================= city ================= -->
-                  <div>
-                    <label class="form-label">المدينة</label>
-                    <input type="text" class="form-control" name="city" placeholder="اسم المدينة">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <!-- ================= validity Select  ================= -->
-                  <div>
-                    <label class="form-label">صلاحية</label>
-                    <select class="form-select" name="validity" aria-label="validity select">
-                      <option selected disabled>اختر الصلاحية</option>
-                      <option value="1">عميل</option>
-                      <option value="2">مدفوع</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6"> <!-- ================= Status Select ================= -->
-
-                  <div>
-                    <label class="form-label">الحالة</label>
-                    <select class="form-select" name="status" aria-label="Status select">
-                      <option selected disabled>اختر الحالة</option>
-                      <option value="1">نشط</option>
-                      <option value="2">غير نشط</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- ================= Footer ================= -->
-
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-addModel w-100 fw-bold">
-                إضافة المستخدم
-              </button>
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Details -->
+    <!-- ===================== Details Modal ===================== -->
     <div class="modal fade" id="DetailsModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal">
 
-          <!-- Header -->
           <div class="modal-header bg-orange border-0">
             <h5 class="modal-title fw-bold fs-4">تفاصيل المستخدم</h5>
             <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
           </div>
 
-          <!-- Body -->
-          <div class="modal-body p-4">
-            <div class="row">
-              <div class="col-12 text-center">
-                <div class="user-image-container mb-3">
+          <div class="modal-body p-4" *ngIf="selectedUser">
+            <div class="row g-3">
+
+              <!-- صورة واسم -->
+              <div class="col-12 text-center mb-2">
+                <div class="user-image-container">
                   <img src="/assets/img/user.png" alt="User Avatar" class="user-avatar">
-                  <h6 class="mt-3">محمد أحمد</h6>
-                  <h6>mohamed12-gamil.com</h6>
+                  <h5 class="mt-3 fw-700">{{ selectedUser.fullName }}</h5>
+                  <p class="text-mutedd">{{ selectedUser.email }}</p>
                 </div>
+                <!-- حالة التفعيل -->
+                <span class="badge" [ngClass]="selectedUser.isActive ? 'bg-success' : 'bg-danger'">
+                  {{ selectedUser.isActive ? 'نشط' : 'غير نشط' }}
+                </span>
               </div>
+
+              <!-- رقم الجوال -->
               <div class="col-md-6">
-                <!-- معلومات العميل -->
                 <div class="section">
                   <div class="info-box">
                     <div>
-                      <h6>رقم الجوال</h6>
-                      <h6 class="text-muted">011454113568</h6>
+                      <h6 class="text-mutedd mb-1">رقم الجوال</h6>
+                      <h6 class="fw-700 m-0">{{ selectedUser.phoneNumber }}</h6>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- تاريخ الانضمام -->
               <div class="col-md-6">
-                <!-- معلومات العميل -->
                 <div class="section">
                   <div class="info-box">
                     <div>
-                      <h6>المدينة</h6>
-                      <h6 class="text-muted">ليبيا</h6>
+                      <h6 class="text-mutedd mb-1">تاريخ الانضمام</h6>
+                      <h6 class="fw-700 m-0">{{ selectedUser.createdAt | date:'dd/MM/yyyy' }}</h6>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- عدد الحجوزات -->
               <div class="col-md-6">
-                <!-- معلومات العميل -->
                 <div class="section">
                   <div class="info-box">
                     <div>
-                      <h6>عدد الحجوازت</h6>
-                      <h6 class="text-muted">15</h6>
+                      <h6 class="text-mutedd mb-1">عدد الحجوزات</h6>
+                      <h6 class="fw-700 m-0 text-primary">{{ selectedUser.bookingsCount }}</h6>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- الانفاق الكلي -->
               <div class="col-md-6">
-                <!-- معلومات العميل -->
                 <div class="section">
                   <div class="info-box">
                     <div>
-                      <h6>الانفاق الكلي</h6>
-                      <h6 class="text-muted">5000 ج</h6>
+                      <h6 class="text-mutedd mb-1">الإنفاق الكلي</h6>
+                      <h6 class="fw-700 m-0 text-danger">{{ selectedUser.totalBookingsAmount | number }} ج.م</h6>
                     </div>
                   </div>
                 </div>
               </div>
 
             </div>
-
           </div>
 
-          <!-- Footer -->
-          <div class="modal-footer border-0 px-4 pb-4">
-            <button class="btn btn-addModel w-100 fw-bold">إغلاق</button>
+          <div class="modal-footer border-0 px-4 pb-4" *ngIf="selectedUser">
+            <button class="btn w-100 fw-bold" [ngClass]="selectedUser.isActive ? 'btn-outline-danger' : 'btn-addModel'"
+              [disabled]="togglingId === selectedUser.id" (click)="toggleActivation(selectedUser)">
+              <span *ngIf="togglingId === selectedUser.id" class="spinner-border spinner-border-sm me-2"></span>
+              <span *ngIf="togglingId !== selectedUser.id">
+                {{ selectedUser.isActive ? 'إلغاء تفعيل المستخدم' : 'تفعيل المستخدم' }}
+              </span>
+            </button>
           </div>
 
         </div>
       </div>
     </div>
 
+    <!-- ===================== Table ===================== -->
     <div class="row mt-4">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center">
+
+            <!-- Loading Spinner -->
+            <div *ngIf="isLoading" class="text-center py-5">
+              <div class="spinner-border text-orange" role="status">
+                <span class="visually-hidden">جاري التحميل...</span>
+              </div>
+              <p class="text-mutedd mt-2">جاري تحميل البيانات...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isLoading && users.length === 0" class="text-center py-5">
+              <i class="fa-solid fa-users-slash fa-3x text-mutedd mb-3"></i>
+              <p class="text-mutedd fs-5">لا يوجد مستخدمين</p>
+            </div>
+
+            <!-- Table -->
+            <div *ngIf="!isLoading && users.length > 0" class="table-responsive">
+              <table class="table custom-table-design text-center align-middle">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>المستخدم</th>
-                    <th>معلومات</th>
-                    <th>المدينة</th>
+                    <th>معلومات التواصل</th>
                     <th>تاريخ الانضمام</th>
                     <th>الحجوزات</th>
-                    <th>الانفاق الكلي</th>
-                    <th>الصلاحية</th>
+                    <th>الإنفاق الكلي</th>
                     <th>الحالة</th>
-                    <th>الاجراءات</th>
+                    <th>الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>محمد احمد</td>
+                  <tr *ngFor="let user of users; let i = index">
+
+                    <!-- # -->
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+
+                    <!-- الاسم -->
+                    <td class="fw-700">{{ user.fullName }}</td>
+
+                    <!-- معلومات التواصل -->
                     <td>
-                      <h6 class="fw-700 m-0">mohammed-gmail.com</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        011154113708</p>
+                      <span class="d-block fw-700">{{ user.email }}</span>
+                      <span class="text-mutedd" style="font-size: 13px;">{{ user.phoneNumber }}</span>
                     </td>
-                    <td>ليبيا</td>
-                    <td>25-3-2026</td>
-                    <td class="text-primary">12</td>
-                    <td class="text-danger">8000 ج</td>
+
+                    <!-- تاريخ الانضمام -->
+                    <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+
+                    <!-- الحجوزات -->
+                    <td class="text-primary fw-700">{{ user.bookingsCount }}</td>
+
+                    <!-- الانفاق الكلي -->
+                    <td class="text-danger fw-700">{{ user.totalBookingsAmount | number }} ج.م</td>
+
+                    <!-- الحالة -->
                     <td>
-                      <div class="badge bg-black">مدفوع</div>
+                      <span class="badge" [ngClass]="user.isActive ? 'bg-success' : 'bg-danger'">
+                        {{ user.isActive ? 'نشط' : 'غير نشط' }}
+                      </span>
                     </td>
+
+                    <!-- الإجراءات -->
                     <td>
-                      <div class="badge bg-success">مدفوع</div>
+                      <div class="d-flex gap-2 justify-content-center align-items-center flex-wrap">
+
+                        <!-- زر التفاصيل -->
+                        <button class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل"
+                          (click)="openDetails(user)">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+
+                        <!-- زر التفعيل / إلغاء التفعيل -->
+                        <button class="btn btn-sm"
+                          [ngClass]="user.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
+                          [disabled]="togglingId === user.id" (click)="toggleActivation(user)"
+                          [title]="user.isActive ? 'إلغاء التفعيل' : 'تفعيل المستخدم'">
+                          <span *ngIf="togglingId === user.id" class="spinner-border spinner-border-sm"></span>
+                          <span *ngIf="togglingId !== user.id">
+                            {{ user.isActive ? 'إلغاء التفعيل' : 'تفعيل المستخدم' }}
+                          </span>
+                        </button>
+
+                      </div>
                     </td>
-                    <td>
-                      <i class="fa-solid fa-eye text-secondary" data-bs-toggle="modal"
-                        data-bs-target="#DetailsModal"></i>
-                      <i class="fa-solid fa-pen text-primary" data-bs-toggle="modal" data-bs-target="#addUserModal"></i>
-                      <i class="fa-solid fa-trash text-danger"></i>
-                    </td>
+
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <!-- Pagination -->
+            <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+            </app-pagination>
+
           </div>
         </div>
       </div>

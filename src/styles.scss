@@ -222,10 +222,16 @@ body {
   color: var(--third-color);
   cursor: pointer;
   height: 100% !important;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-color: #999;
 }
 
 .cards .card .card-body .icon-container i {
