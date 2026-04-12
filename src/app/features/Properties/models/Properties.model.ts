@@ -6,12 +6,13 @@ export interface properties {
   name: string;
   description: string;
   ownerPhoneNumber: string;
-  groupId: number;
-  groupName: string;
+  propertyType: string;
+  bookingMode: number;
   isAvailable: boolean;
   address: string;
   location: string;
   pricePerNight: number;
+  pricePerHour: number;
   roomCount: number;
   guestCount: number;
   imageUrls: string[];
@@ -22,4 +23,14 @@ export interface propertiesResponse {
   properties: properties[];
   totalPages: number;
   totalCount: number;
+}
+
+export interface OwnerCredentials {
+  ownerPhoneNumber: string;
+  ownerPassword: string;
+}
+
+export interface UpdateOwnerCredentialsRequest {
+  ownerPhoneNumber: string;
+  newPassword: string;
 }

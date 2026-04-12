@@ -49,10 +49,10 @@ export interface RecentBooking {
 }
 
 export const enum BookingStatus {
-  Confirmed  = 1,
-  Pending    = 2,
-  Completed  = 3,
-  Cancelled  = 4,
+  Confirmed = 'Confirmed',
+  Pending = 'Pending',
+  Completed = 'Completed',
+  Cancelled = 'Cancelled',
 }
 
 export interface DashboardOverviewLists {

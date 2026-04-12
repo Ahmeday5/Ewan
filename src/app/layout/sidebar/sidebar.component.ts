@@ -277,16 +277,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
-            label: 'الفئات',
-            path: 'categories/mainCategories',
-            icons: 'fa-solid fa-layer-group', // طبقات، مناسب للفئات
-            isOpen: false,
-          },
-        ],
-      },
-      {
-        items: [
-          {
             label: 'المرافق والخدمات',
             path: 'categories/facilities',
             icons: 'fa-solid fa-layer-group', // طبقات، مناسب للفئات
@@ -297,9 +287,9 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
-            label: 'التحليلات',
-            path: 'categories/sub-category',
-            icons: 'fas fa-chart-line', // رسم بياني خطي
+            label: 'المديرين',
+            path: 'admins/admin',
+            icons: 'fas fa-users-cog',
             isOpen: false,
           },
         ],

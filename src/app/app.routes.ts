@@ -68,6 +68,11 @@ export const routes: Routes = [
             (m) => m.NOTIFICATION_ROUTES,
           ),
       },
+      {
+        path: 'admins',
+        loadChildren: () =>
+          import('./features/Admin/admin.routes').then((m) => m.adminRoutes),
+      },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

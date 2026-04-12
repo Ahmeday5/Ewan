@@ -1,0 +1,196 @@
+<div class="admin-page">
+  <div class="container-fluid mb-3 mt-4">
+
+    <!-- ═══════════════ رسائل النجاح والخطأ ═══════════════ -->
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+      <i class="fa-solid fa-circle-check me-2"></i>{{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+      <i class="fa-solid fa-circle-xmark me-2"></i>{{ errorMessage }}
+    </div>
+
+    <!-- ═══════════════ Header ═══════════════ -->
+    <div class="page-header mb-4">
+      <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
+        <i class="fa-solid fa-plus me-1"></i>
+        إضافة مدير جديد
+      </button>
+    </div>
+
+    <!-- ═══════════════ Modal ═══════════════ -->
+    <div class="modal fade" id="AdminModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+
+          <div class="modal-header justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="modal-icon-wrap" [ngClass]="isAddMode ? 'modal-icon-wrap--green' : 'modal-icon-wrap--blue'">
+                <i class="fa-solid" [ngClass]="isAddMode ? 'fa-user-plus' : 'fa-user-pen'"></i>
+              </div>
+              <h5 class="modal-title fw-bold mb-0">
+                {{ isEditMode ? 'تعديل مستخدم' : 'إضافة مستخدم جديد' }}
+              </h5>
+            </div>
+            <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div *ngIf="errorMessageModel" class="alert alert-danger mx-3 mt-3 mb-0 py-2 small">
+            <i class="fa-solid fa-circle-xmark me-1"></i>{{ errorMessageModel }}
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="modal-body">
+              <div class="row g-3">
+
+                <!-- اسم المستخدم -->
+                <div class="col-12">
+                  <label class="form-label fw-semibold">اسم المستخدم <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" class="form-control" formControlName="userName" placeholder="مثال: ahmed_admin"
+                      [class.is-invalid]="f['userName']?.invalid && f['userName']?.touched">
+                  </div>
+                  <div class="invalid-feedback d-block" *ngIf="f['userName']?.invalid && f['userName']?.touched">
+                    <span *ngIf="f['userName']?.errors?.['required']">الاسم مطلوب</span>
+                    <span *ngIf="f['userName']?.errors?.['minlength']">لا يقل عن 3 أحرف</span>
+                  </div>
+                </div>
+
+                <!-- البريد الإلكتروني -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">البريد الإلكتروني <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" class="form-control" formControlName="email" placeholder="example@gmail.com"
+                      [class.is-invalid]="f['email']?.invalid && f['email']?.touched">
+                  </div>
+                  <div class="invalid-feedback d-block" *ngIf="f['email']?.invalid && f['email']?.touched">
+                    <span *ngIf="f['email']?.errors?.['required']">الإيميل مطلوب</span>
+                    <span *ngIf="f['email']?.errors?.['email']">صيغة الإيميل غير صحيحة</span>
+                  </div>
+                </div>
+
+                <!-- رقم الهاتف -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">رقم الهاتف <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                    <input type="text" class="form-control" formControlName="phoneNumber" placeholder="01xxxxxxxxx"
+                      [class.is-invalid]="f['phoneNumber']?.invalid && f['phoneNumber']?.touched">
+                  </div>
+                  <div class="invalid-feedback d-block" *ngIf="f['phoneNumber']?.invalid && f['phoneNumber']?.touched">
+                    <span *ngIf="f['phoneNumber']?.errors?.['required']">رقم الهاتف مطلوب</span>
+                    <span *ngIf="f['phoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                  </div>
+                </div>
+
+                <!-- كلمة المرور (Add فقط) -->
+                <div class="col-md-6" *ngIf="isAddMode">
+                  <label class="form-label fw-semibold">كلمة المرور <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" class="form-control" formControlName="password" placeholder="6 أحرف على الأقل"
+                      [class.is-invalid]="f['password']?.invalid && f['password']?.touched">
+                  </div>
+                  <div class="invalid-feedback d-block" *ngIf="f['password']?.invalid && f['password']?.touched">
+                    <span *ngIf="f['password']?.errors?.['required']">كلمة المرور مطلوبة</span>
+                    <span *ngIf="f['password']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                  </div>
+                </div>
+
+                <!-- الدور -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">الدور</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+                    <select class="form-select" formControlName="role">
+                      <option value="Admin">مسؤول (Admin)</option>
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+              <button type="submit" class="btn fw-bold px-4"
+                [ngClass]="isAddMode ? 'btn-addModel' : 'btn-primary'">
+                <i class="fa-solid me-1" [ngClass]="isAddMode ? 'fa-user-plus' : 'fa-floppy-disk'"></i>
+                {{ isEditMode ? 'حفظ التعديلات' : 'إضافة المستخدم' }}
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ Table ═══════════════ -->
+    <div class="card">
+      <div class="card-body">
+
+        <!-- Loading -->
+        <div *ngIf="!hasLoaded" class="d-flex justify-content-center align-items-center py-5">
+          <div class="spinner-border text-primary spinner-border-sm me-2"></div>
+          <span class="text-muted">جاري التحميل...</span>
+        </div>
+
+        <div *ngIf="hasLoaded" class="table-responsive custom-table">
+          <table class="table custom-table-design text-center">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المستخدم</th>
+                <th>البريد الإلكتروني</th>
+                <th>رقم الهاتف</th>
+                <th>الدور</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="users.length === 0">
+                <td colspan="6" class="text-muted py-4">
+                  <i class="fa-solid fa-users-slash fa-2x d-block mb-2 opacity-25"></i>
+                  لا يوجد مستخدمون
+                </td>
+              </tr>
+              <tr *ngFor="let user of users; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-center gap-2">
+                    <div class="avatar-circle">
+                      {{ user.userName.charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="fw-600">{{ user.userName }}</span>
+                  </div>
+                </td>
+                <td class="text-muted">{{ user.email }}</td>
+                <td>{{ user.phoneNumber ?? '—' }}</td>
+                <td>
+                  <span class="badge badge-role" *ngFor="let role of user.roles">
+                    <i class="fa-solid fa-shield-halved me-1"></i>{{ role }}
+                  </span>
+                </td>
+                <td>
+                  <i class="fa-solid fa-pen text-primary me-3 cursor-pointer"
+                    (click)="openEditModal(user)" title="تعديل"></i>
+                  <i class="fa-solid fa-trash text-danger cursor-pointer"
+                    (click)="deleteUser(user.id)" title="حذف"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination
+          [currentPage]="pageIndex"
+          [totalPages]="totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+
+      </div>
+    </div>
+
+  </div>
+</div>

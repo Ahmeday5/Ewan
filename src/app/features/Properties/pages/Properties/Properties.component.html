@@ -13,13 +13,16 @@
     <!-- ================= Filters ================= -->
     <div class="row p-0 justify-content-center gap-2">
       <div class="col-md-5">
-        <input type="search" class="form-control" placeholder="ابحث عن عقار....">
+        <input type="search" class="form-control" placeholder="ابحث..." [(ngModel)]="searchTerm"
+          (input)="onSearchChange()">
       </div>
       <div class="col-md-3">
-        <select class="form-select">
-          <option selected>جميع الحالات</option>
-          <option value="true">متاح</option>
-          <option value="false">غير متاح</option>
+        <select class="form-select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+          <option value="">كل الأنواع</option>
+          <option value="Chalet">شاليه</option>
+          <option value="Hotel">فندق</option>
+          <option value="Apartment">شقة</option>
+          <option value="Hall">قاعة</option>
         </select>
       </div>
       <div class="col-md-3">
@@ -33,7 +36,7 @@
     <!-- ================= Stats ================= -->
     <div class="row p-0 justify-content-center mt-4">
       <div class="col-12">
-        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+        <div class="row cards row-cols-xl-5 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
           <div class="col">
             <div class="card">
               <div class="card-body text-center">
@@ -41,7 +44,7 @@
                   <i class="fa-solid fa-building text-primary"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">5</h5>
+                  <h5 class="fw-700">{{ typeCounts?.totalCount }}</h5>
                   <h5 class="text-mutedd">إجمالي العقارات</h5>
                 </div>
               </div>
@@ -54,8 +57,8 @@
                   <i class="fa-solid fa-calendar-check text-warning"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">15</h5>
-                  <h5 class="text-mutedd">الحجوزات</h5>
+                  <h5 class="fw-700">{{ typeCounts?.chaletCount }}</h5>
+                  <h5 class="text-mutedd">إجمالي الشاليهات</h5>
                 </div>
               </div>
             </div>
@@ -67,8 +70,8 @@
                   <i class="fa-solid fa-check-circle text-success"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">3</h5>
-                  <h5 class="text-mutedd">محجوزة</h5>
+                  <h5 class="fw-700">{{ typeCounts?.hotelCount }}</h5>
+                  <h5 class="text-mutedd">إجمالي الفنادق</h5>
                 </div>
               </div>
             </div>
@@ -80,8 +83,21 @@
                   <i class="fa-solid fa-tools text-danger"></i>
                 </div>
                 <div class="text-content mt-3">
-                  <h5 class="fw-700">2</h5>
-                  <h5 class="text-mutedd">الصيانة</h5>
+                  <h5 class="fw-700">{{ typeCounts?.apartmentCount }}</h5>
+                  <h5 class="text-mutedd">إجمالي الشقق</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="icon-container">
+                  <i class="fa-solid fa-tools text-danger"></i>
+                </div>
+                <div class="text-content mt-3">
+                  <h5 class="fw-700">{{ typeCounts?.hallCount }}</h5>
+                  <h5 class="text-mutedd">إجمالي القاعات</h5>
                 </div>
               </div>
             </div>
@@ -116,10 +132,10 @@
                 <div class="col-12">
                   <label class="form-label fw-bold">اسم العقار <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" formControlName="name" placeholder="مثال: شالية البحر الفاخر"
-                    [class.is-invalid]="nameControl?.invalid && nameControl?.touched">
+                    [class.is-invalid]="f['name'].invalid && f['name'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="nameControl?.errors?.['required']">الاسم مطلوب</span>
-                    <span *ngIf="nameControl?.errors?.['minlength']">الاسم لا يقل عن 3 أحرف</span>
+                    <span *ngIf="f['name']?.errors?.['required']">الاسم مطلوب</span>
+                    <span *ngIf="f['name']?.errors?.['minlength']">الاسم لا يقل عن 3 أحرف</span>
                   </div>
                 </div>
 
@@ -127,25 +143,27 @@
                 <div class="col-12">
                   <label class="form-label fw-bold">الوصف <span class="text-danger">*</span></label>
                   <textarea class="form-control" rows="3" formControlName="description"
-                    [class.is-invalid]="descriptionControl?.invalid && descriptionControl?.touched">
+                    [class.is-invalid]="f['description'].invalid && f['description'].touched">
                   </textarea>
                   <div class="invalid-feedback">
-                    <span *ngIf="descriptionControl?.errors?.['required']">الوصف مطلوب</span>
-                    <span *ngIf="descriptionControl?.errors?.['minlength']">الوصف لا يقل عن 10 أحرف</span>
+                    <span *ngIf="f['description']?.errors?.['required']">الوصف مطلوب</span>
+                    <span *ngIf="f['description']?.errors?.['minlength']">الوصف لا يقل عن 10 أحرف</span>
                   </div>
                 </div>
 
                 <!-- ─── الفئة (Select من الـ API) ─── -->
                 <div class="col-md-6">
                   <label class="form-label fw-bold">الفئة <span class="text-danger">*</span></label>
-                  <select class="form-select" formControlName="groupId"
-                    [class.is-invalid]="groupControl?.invalid && groupControl?.touched">
-                    <option [ngValue]="null" disabled>-- اختر الفئة --</option>
-                    <option *ngFor="let group of allGroups" [value]="group.id">
-                      {{ group.name }}
-                    </option>
+                  <select class="form-select" formControlName="propertyType">
+                    <option [ngValue]="null" disabled>-- اختر النوع --</option>
+                    <option [value]="PropertyType.Chalet">شاليه</option>
+                    <option [value]="PropertyType.Hotel">فندق</option>
+                    <option [value]="PropertyType.Apartment">شقة</option>
+                    <option [value]="PropertyType.Hall">قاعة</option>
                   </select>
-                  <div class="invalid-feedback">يرجى اختيار الفئة</div>
+                  <div class="invalid-feedback">
+                    <span *ngIf="f['propertyType']?.errors?.['required']">الفئة مطلوبة</span>
+                  </div>
                 </div>
 
                 <!-- ─── الحالة (Edit فقط) ─── -->
@@ -161,10 +179,11 @@
                 <div class="col-md-6">
                   <label class="form-label fw-bold">رقم المالك <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" formControlName="ownerPhoneNumber"
-                    placeholder="مثال: 01xxxxxxxxx" [class.is-invalid]="phoneControl?.invalid && phoneControl?.touched">
+                    placeholder="مثال: 01xxxxxxxxx"
+                    [class.is-invalid]="f['ownerPhoneNumber'].invalid && f['ownerPhoneNumber'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="phoneControl?.errors?.['required']">رقم المالك مطلوب</span>
-                    <span *ngIf="phoneControl?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                    <span *ngIf="f['ownerPhoneNumber']?.errors?.['required']">رقم المالك مطلوب</span>
+                    <span *ngIf="f['ownerPhoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
                   </div>
                 </div>
 
@@ -172,10 +191,10 @@
                 <div class="col-md-6" *ngIf="isAddMode">
                   <label class="form-label fw-bold">كلمة المرور <span class="text-danger">*</span></label>
                   <input type="password" class="form-control" formControlName="ownerPassword"
-                    [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched">
+                    [class.is-invalid]="f['ownerPassword'].invalid && f['ownerPassword'].touched">
                   <div class="invalid-feedback">
-                    <span *ngIf="passwordControl?.errors?.['required']">كلمة المرور مطلوبة</span>
-                    <span *ngIf="passwordControl?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                    <span *ngIf="f['ownerPassword']?.errors?.['required']">كلمة المرور مطلوبة</span>
+                    <span *ngIf="f['ownerPassword']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
                   </div>
                 </div>
 
@@ -183,7 +202,7 @@
                 <div class="col-12">
                   <label class="form-label fw-bold">العنوان <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" formControlName="address"
-                    [class.is-invalid]="addressControl?.invalid && addressControl?.touched">
+                    [class.is-invalid]="f['address'].invalid && f['address'].touched">
                   <div class="invalid-feedback">العنوان مطلوب (5 أحرف على الأقل)</div>
                 </div>
 
@@ -191,35 +210,44 @@
                 <div class="col-12">
                   <label class="form-label fw-bold">الموقع <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" formControlName="location"
-                    [class.is-invalid]="locationControl?.invalid && locationControl?.touched">
+                    [class.is-invalid]="f['location'].invalid && f['location'].touched">
                   <div class="invalid-feedback">الموقع مطلوب (5 أحرف على الأقل)</div>
                 </div>
 
                 <!-- ─── السعر / الغرف / الضيوف ─── -->
-                <div class="col-lg-4">
-                  <label class="form-label fw-bold">السعر/الليلة <span class="text-danger">*</span></label>
-                  <input type="number" class="form-control" min="1" formControlName="pricePerNight"
-                    [class.is-invalid]="priceControl?.invalid && priceControl?.touched">
-                  <div class="invalid-feedback">السعر مطلوب ويجب أن يكون أكبر من 0</div>
+                <!-- سعر الليلة -->
+                <div class="col-lg-4" *ngIf="isNormalProperty">
+                  <label class="form-label fw-bold">السعر / الليلة</label>
+                  <input type="number" class="form-control" formControlName="pricePerNight"
+                    [class.is-invalid]="f['pricePerNight'].invalid && f['pricePerNight'].touched">
+                  <div class="invalid-feedback">سعر الليلة مطلوب</div>
                 </div>
 
-                <div class="col-lg-4">
+                <!-- سعر الساعة -->
+                <div class="col-lg-4" *ngIf="isHall">
+                  <label class="form-label fw-bold">السعر / الساعة</label>
+                  <input type="number" class="form-control" formControlName="pricePerHour"
+                    [class.is-invalid]="f['pricePerHour'].invalid && f['pricePerHour'].touched">
+                  <div class="invalid-feedback">سعر الساعة مطلوب</div>
+                </div>
+
+                <div class="col-lg-4" *ngIf="isNormalProperty">
                   <label class="form-label fw-bold">عدد الغرف <span class="text-danger">*</span></label>
                   <input type="number" class="form-control" min="1" formControlName="roomCount"
-                    [class.is-invalid]="roomControl?.invalid && roomControl?.touched">
+                    [class.is-invalid]="f['roomCount']?.invalid && f['roomCount']?.touched">
                   <div class="invalid-feedback">عدد الغرف مطلوب</div>
                 </div>
 
                 <div class="col-lg-4">
                   <label class="form-label fw-bold">عدد الضيوف <span class="text-danger">*</span></label>
                   <input type="number" class="form-control" min="1" formControlName="guestCount"
-                    [class.is-invalid]="guestControl?.invalid && guestControl?.touched">
+                    [class.is-invalid]="f['guestCount'].invalid && f['guestCount'].touched">
                   <div class="invalid-feedback">عدد الضيوف مطلوب</div>
                 </div>
 
                 <!-- ══════════════════════════════════════════
-     الصور الحالية (Edit mode فقط)
-══════════════════════════════════════════ -->
+                     الصور الحالية (Edit mode فقط)
+                ══════════════════════════════════════════ -->
                 <div class="col-12" *ngIf="isEditMode">
                   <label class="form-label fw-bold">الصور الحالية</label>
 
@@ -250,8 +278,8 @@
                 </div>
 
                 <!-- ══════════════════════════════════════════
-     رفع صور جديدة (Add + Edit)
-══════════════════════════════════════════ -->
+                   رفع صور جديدة (Add + Edit)
+                ══════════════════════════════════════════ -->
                 <div class="col-12">
                   <label class="form-label fw-bold">
                     {{ isEditMode ? 'إضافة صور جديدة' : 'الصور' }}
@@ -342,6 +370,80 @@
       </div>
     </div>
 
+    <!-- ================= Credentials Modal ================= -->
+    <div class="modal fade" id="CredentialsModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+
+          <div class="modal-header justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="credentials-icon-wrap">
+                <i class="fa-solid fa-key"></i>
+              </div>
+              <h1 class="modal-title fs-6 fw-bold mb-0">بيانات المالك</h1>
+            </div>
+            <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+          </div>
+
+          <form [formGroup]="credentialsForm" (ngSubmit)="onSubmitCredentials()">
+            <div class="modal-body">
+
+              <div *ngIf="credentialsError" class="alert alert-danger py-2 small mb-3">
+                {{ credentialsError }}
+              </div>
+
+              <!-- رقم الهاتف -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small">رقم هاتف المالك</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                  <input type="text" class="form-control" formControlName="ownerPhoneNumber"
+                    placeholder="01xxxxxxxxx"
+                    [class.is-invalid]="cf['ownerPhoneNumber']?.invalid && cf['ownerPhoneNumber']?.touched">
+                </div>
+                <div class="invalid-feedback d-block"
+                  *ngIf="cf['ownerPhoneNumber']?.invalid && cf['ownerPhoneNumber']?.touched">
+                  <span *ngIf="cf['ownerPhoneNumber']?.errors?.['required']">الرقم مطلوب</span>
+                  <span *ngIf="cf['ownerPhoneNumber']?.errors?.['pattern']">رقم مصري غير صحيح</span>
+                </div>
+              </div>
+
+              <!-- كلمة المرور الجديدة -->
+              <div class="mb-1">
+                <label class="form-label fw-semibold small">كلمة المرور الجديدة</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                  <input type="password" class="form-control" formControlName="newPassword"
+                    placeholder="6 أحرف على الأقل"
+                    [class.is-invalid]="cf['newPassword']?.invalid && cf['newPassword']?.touched">
+                </div>
+                <div class="invalid-feedback d-block"
+                  *ngIf="cf['newPassword']?.invalid && cf['newPassword']?.touched">
+                  <span *ngIf="cf['newPassword']?.errors?.['required']">كلمة المرور مطلوبة</span>
+                  <span *ngIf="cf['newPassword']?.errors?.['minlength']">لا تقل عن 6 أحرف</span>
+                </div>
+              </div>
+
+              <div class="alert alert-warning py-2 small mt-3 mb-0">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                سيتم تغيير كلمة المرور فور الحفظ
+              </div>
+
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">إلغاء</button>
+              <button type="submit" class="btn btn-warning btn-sm fw-bold px-3">
+                <i class="fa-solid fa-floppy-disk me-1"></i>
+                حفظ التغييرات
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
     <!-- ================= TABLE ================= -->
     <div class="row mt-4">
       <div class="col-12">
@@ -357,7 +459,10 @@
                     <th>الوصف</th>
                     <th>الفئة</th>
                     <th>العنوان</th>
-                    <th>السعر</th>
+                    <th>سعر الليلة</th>
+                    <th>عدد الغرف</th>
+                    <th>سعر الساعة</th>
+                    <th>عدد الضيوف</th>
                     <th>رقم تليفون المالك</th>
                     <th>المرافق والخدمات</th>
                     <th>الحالة</th>
@@ -377,18 +482,18 @@
                           style="width:35px;height:35px;border-radius:6px;object-fit:cover;" alt="صورة العقار">
                         <div class="text-start">
                           <h6 class="fw-700 m-0">{{ item.name }}</h6>
-                          <small class="text-muted">
-                            {{ item.roomCount }} غرف · {{ item.guestCount }} ضيوف
-                          </small>
                         </div>
                       </div>
                     </td>
                     <td style="max-width: 250px; min-width: 200px; font-size: 14px;">{{ item.description }}</td>
                     <td>
-                      <span class="badge bg-secondary">{{ item.groupName }}</span>
+                      <span class="badge bg-secondary">{{ item.propertyType }}</span>
                     </td>
                     <td>{{ item.address }}</td>
                     <td class="text-success fw-bold">{{ item.pricePerNight }} ج</td>
+                    <td class="text-muted fw-bold">{{ item.roomCount }}</td>
+                    <td class="text-success fw-bold">{{ item.pricePerHour }} ج</td>
+                    <td class="text-muted fw-bold">{{ item.guestCount }}</td>
                     <td class="fw-bold">{{ item.ownerPhoneNumber }}</td>
                     <td>
                       <span class="badge bg-success" style="font-size: 12px;">
@@ -400,9 +505,11 @@
                         {{ item.isAvailable ? 'متاح' : 'غير متاح' }}
                       </span>
                     </td>
-                    <td>
-                      <i class="fa-solid fa-pen text-primary me-3 cursor-pointer" (click)="openEditModal(item.id)"
+                    <td class="d-flex align-items-center justify-content-between">
+                      <i class="fa-solid fa-pen text-primary cursor-pointer" (click)="openEditModal(item.id)"
                         title="تعديل"></i>
+                      <i class="fa-solid fa-key text-warning cursor-pointer" (click)="openCredentialsModal(item.id)"
+                        title="بيانات المالك"></i>
                       <i class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteSub(item.id)"
                         title="حذف"></i>
                     </td>

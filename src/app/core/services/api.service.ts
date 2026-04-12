@@ -48,6 +48,13 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
+  // ====================== PATCH ======================
+  patch<T>(endpoint: string, body: any): Observable<T> {
+    return this.http
+      .patch<T>(`${this.baseUrl}${endpoint}`, body)
+      .pipe(catchError(this.handleError));
+  }
+
   // ====================== DELETE ======================
   delete<T>(endpoint: string): Observable<T> {
     return this.http

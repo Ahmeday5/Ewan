@@ -3,19 +3,22 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { properties } from '../../models/Properties.model';
 import { PropertiesService } from '../../services/Properties.service';
-import { propertyGroups } from '../../../Categoiers/models/main-category.model';
 import { facilitiesGroups } from '../../../Categoiers/models/facilities.model';
 import { facilitiesService } from '../../../Categoiers/services/facilities.service';
-import { MainCategoryService } from '../../../Categoiers/services/main-category.service';
-import { forkJoin } from 'rxjs';
 import { OnDestroy } from '@angular/core';
+import { PropertyTypeEnum } from '../../enums/property-type.enum';
+import { PropertyFormService } from '../../services/property-form.service';
+import { PropertyFormHelper } from '../../helpers/property-form.helper';
 
 @Component({
   selector: 'app-real-state',
@@ -25,14 +28,15 @@ import { OnDestroy } from '@angular/core';
     ReactiveFormsModule,
     RouterModule,
     PaginationComponent,
+    FormsModule,
   ],
   templateUrl: './Properties.component.html',
   styleUrl: './Properties.component.scss',
 })
 export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   properties: properties[] = [];
+  PropertyType = PropertyTypeEnum;
   // ====================== Lookups (للسيلكت والمرافق) ======================
-  allGroups: propertyGroups[] = []; // كل الفئات للـ select
   allFacilities: facilitiesGroups[] = []; // كل المرافق للـ checkboxes
   // ====================== إدارة المرافق المختارة ======================
   selectedFacilityIds: number[] = [];
@@ -58,37 +62,52 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   // باخد اوبجكت من البوت استراب عشان اقدر افتح واقفل المودال من الكومبوننت
 
-  // ====================== pagination ======================
+  // ====================== pagination and filter ======================
   totalCount: number = 0;
   pageIndex: number = 1;
   pageSize: number = 10;
   totalPages: number = 1;
+  searchTerm: string = '';
+  selectedType: string = '';
+  typeCounts: any;
+
+  // ====================== debounce ======================
+  private searchSubject = new Subject<void>();
+  private destroy$ = new Subject<void>();
+
+  // ====================== Owner Credentials Modal ======================
+  credentialsForm!: FormGroup;
+  credentialsPropertyId!: number;
+  credentialsError: string | null = null;
+  credentialsModalInstance!: { show: () => void; hide: () => void };
 
   constructor(
     private apiService: PropertiesService,
-    private mainCategoryService: MainCategoryService,
     private facilitiesApiService: facilitiesService,
+    private formService: PropertyFormService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.initForm();
-    this.loadLookups(); // ✅ بنجيب الـ Groups والـ Facilities الأول
+    this.form = this.formService.createForm();
+    this.credentialsForm = this.fb.group({
+      ownerPhoneNumber: ['', [Validators.required, Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+    });
+    this.loadFacilities();
+
+    this.searchSubject
+      .pipe(debounceTime(400), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.pageIndex = 1;
+        this.loadProperties();
+      });
 
     this.route.paramMap.subscribe((params) => {
-      const id = params.get('propertyId');
-      if (id) {
-        this.propertyId = +id;
-        this.apiService.getById(this.propertyId).subscribe({
-          next: (prop) => {
-            this.hasLoaded = true;
-          },
-          error: (err) => {
-            this.errorMessage = err.message;
-            this.hasLoaded = true;
-          },
-        });
+      const propertyId = params.get('propertyId');
+      if (propertyId) {
+        this.loadById(this.propertyId);
       } else {
         this.loadProperties();
       }
@@ -97,106 +116,47 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     const modal = document.getElementById('PropertyModal');
-
     if (modal) {
       this.modalInstance = new (window as any).bootstrap.Modal(modal);
+    }
+
+    const credentialsModal = document.getElementById('CredentialsModal');
+    if (credentialsModal) {
+      this.credentialsModalInstance = new (window as any).bootstrap.Modal(credentialsModal);
     }
   }
 
   ngOnDestroy(): void {
-    // ✅ لما الكومبوننت يتدمر، نحرر كل الـ blob URLs
+    this.destroy$.next();
+    this.destroy$.complete();
     this.newImagePreviews.forEach((url) => URL.revokeObjectURL(url));
   }
 
   // ======================
-  // FORM INIT
+  // service && getter
   // ======================
-  initForm(): void {
-    this.form = this.fb.group({
-      id: [null],
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(100),
-        ],
-      ],
-      description: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(10),
-          Validators.maxLength(500),
-        ],
-      ],
-      ownerPhoneNumber: [
-        '',
-        [Validators.required, Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)],
-      ],
-      ownerPassword: ['', [Validators.required, Validators.minLength(6)]],
-      groupId: [null, [Validators.required]],
-      isAvailable: [true], // ✅ مضاف — بيبدأ بـ true
-      address: ['', [Validators.required, Validators.minLength(5)]],
-      location: ['', [Validators.required, Validators.minLength(5)]],
-      pricePerNight: [null, [Validators.required, Validators.min(1)]],
-      roomCount: [null, [Validators.required, Validators.min(1)]],
-      guestCount: [null, [Validators.required, Validators.min(1)]],
-    });
-  }
 
-  // ======================
-  // GETTERS (سهولة الاستخدام في HTML)
-  // ======================
   get f() {
     return this.form.controls;
   }
-  get nameControl() {
-    return this.form.get('name');
+  get isHall() {
+    return this.formService.isHall(this.form.value.propertyType);
   }
-  get descriptionControl() {
-    return this.form.get('description');
-  }
-  get phoneControl() {
-    return this.form.get('ownerPhoneNumber');
-  }
-  get passwordControl() {
-    return this.form.get('ownerPassword');
-  }
-  get groupControl() {
-    return this.form.get('groupId');
-  }
-  get addressControl() {
-    return this.form.get('address');
-  }
-  get locationControl() {
-    return this.form.get('location');
-  }
-  get priceControl() {
-    return this.form.get('pricePerNight');
-  }
-  get roomControl() {
-    return this.form.get('roomCount');
-  }
-  get guestControl() {
-    return this.form.get('guestCount');
+  get isNormalProperty() {
+    return this.formService.isNormal(this.form.value.propertyType);
   }
 
   // ======================
   // LOAD LOOKUPS (Groups + Facilities)
   // ======================
 
-  loadLookups(): void {
-    // ✅ forkJoin بينفذهم مع بعض وبيستنى الاتنين يخلصوا
-    forkJoin({
-      groups: this.mainCategoryService.getAll(1, 100),
-      facilities: this.facilitiesApiService.getAll(1, 100),
-    }).subscribe({
-      next: ({ groups, facilities }) => {
-        this.allGroups = groups.categories;
-        this.allFacilities = facilities.facilities;
+  loadFacilities(): void {
+    this.hasLoaded = false;
+    this.facilitiesApiService.getAll(1, 100).subscribe({
+      next: (res) => {
+        this.allFacilities = res.facilities;
       },
-      error: (err) => console.error('فشل تحميل البيانات الأساسية', err),
+      error: (err) => console.error('فشل تحميل المرافق والخدمات', err),
     });
   }
 
@@ -207,18 +167,30 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   loadProperties(): void {
     this.hasLoaded = false;
 
-    this.apiService.getAll(this.pageIndex, this.pageSize).subscribe({
-      next: (res) => {
-        this.properties = res.properties;
-        this.totalPages = res.totalPages;
-        this.totalCount = res.totalCount;
-        this.hasLoaded = true;
-      },
-      error: (err) => {
-        this.errorMessage = err.message;
-        this.hasLoaded = true;
-      },
-    });
+    this.apiService
+      .getAll(this.pageIndex, this.pageSize, this.searchTerm, this.selectedType)
+      .subscribe({
+        next: (res) => {
+          this.properties = res.properties;
+          this.totalPages = res.totalPages;
+          this.totalCount = res.totalCount;
+          this.typeCounts = res.typeCounts;
+          this.hasLoaded = true;
+        },
+        error: (err) => {
+          this.errorMessage = err.message;
+          this.hasLoaded = true;
+        },
+      });
+  }
+
+  onSearchChange(): void {
+    this.searchSubject.next();
+  }
+
+  onTypeChange(): void {
+    this.pageIndex = 1;
+    this.loadProperties();
   }
 
   onPageChange(page: number): void {
@@ -230,13 +202,11 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   // FACILITIES HELPERS
   // ======================
 
-  toggleFacility(id: number): void {
-    const index = this.selectedFacilityIds.indexOf(id);
-    if (index > -1) {
-      this.selectedFacilityIds.splice(index, 1); // إزالة
-    } else {
-      this.selectedFacilityIds.push(id); // إضافة
-    }
+  toggleFacility(id: number) {
+    this.selectedFacilityIds = PropertyFormHelper.toggleFacility(
+      this.selectedFacilityIds,
+      id,
+    );
   }
 
   isFacilitySelected(id: number): boolean {
@@ -301,13 +271,14 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
           name: data.name,
           description: data.description,
           ownerPhoneNumber: data.ownerPhoneNumber,
-          groupId: data.groupId,
+          propertyType: data.propertyType,
           isAvailable: data.isAvailable,
           address: data.address,
           location: data.location,
-          pricePerNight: data.pricePerNight,
-          roomCount: data.roomCount,
-          guestCount: data.guestCount,
+          pricePerNight: data.pricePerNight ?? 0,
+          pricePerHour: data.pricePerHour ?? 0,
+          roomCount: data.roomCount ?? 0,
+          guestCount: data.guestCount ?? 0,
         });
 
         setTimeout(() => this.modalInstance.show());
@@ -332,8 +303,17 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newImageFiles = [];
     this.newImagePreviews = [];
 
-    this.form.reset();
-    this.form.patchValue({ isAvailable: true });
+    const pwd = this.form.get('ownerPassword');
+    pwd?.setValidators([Validators.required, Validators.minLength(6)]);
+    pwd?.updateValueAndValidity();
+
+    this.form.reset({
+      isAvailable: true,
+      pricePerNight: 0,
+      pricePerHour: 0,
+      roomCount: 0,
+      guestCount: 0,
+    });
     this.modalInstance.show();
   }
 
@@ -344,6 +324,10 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   openEditModal(id: number) {
     this.isEditMode = true;
     this.isAddMode = false;
+
+    const pwd = this.form.get('ownerPassword');
+    pwd?.clearValidators();
+    pwd?.updateValueAndValidity();
     this.loadById(id); // سيقوم الآن بتحديث الفورم وفتح المودال
   }
 
@@ -354,36 +338,49 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
   onSubmit(): void {
     // ✅ Validate الفورم
     if (this.form.invalid) {
+      console.log('❌ form invalid', this.form.value);
       this.form.markAllAsTouched();
       return;
     }
 
-    // ✅ Validate المرافق
     if (this.selectedFacilityIds.length === 0) {
       this.errorMessageModel = 'يرجى اختيار مرفق واحد على الأقل';
       return;
     }
 
-    // ✅ Validate الصور في Add mode
     if (!this.isEditMode && this.newImageFiles.length === 0) {
       this.errorMessageModel = 'يرجى رفع صورة واحدة على الأقل';
       return;
     }
 
-    const v = this.form.value;
+    console.log('✅ passed validation');
+
+    let v = this.form.value;
+    if (v.propertyType === 'Hall') {
+      v = {
+        ...v,
+        pricePerNight: 0,
+        roomCount: 0,
+      };
+    } else {
+      v = {
+        ...v,
+        pricePerHour: 0,
+      };
+    }
     const formData = new FormData();
-    
+
     // ─── الحقول المشتركة ───
     formData.append('Name', v.name);
     formData.append('Description', v.description);
     formData.append('OwnerPhoneNumber', v.ownerPhoneNumber);
-    formData.append('OwnerPassword', v.ownerPassword);
-    formData.append('GroupId', v.groupId.toString());
+    formData.append('PropertyType', v.propertyType);
     formData.append('Address', v.address);
     formData.append('Location', v.location);
-    formData.append('PricePerNight', v.pricePerNight.toString());
-    formData.append('RoomCount', v.roomCount.toString());
-    formData.append('GuestCount', v.guestCount.toString());
+    formData.append('PricePerNight', (v.pricePerNight ?? 0).toString());
+    formData.append('PricePerHour', (v.pricePerHour ?? 0).toString());
+    formData.append('RoomCount', (v.roomCount ?? 0).toString());
+    formData.append('GuestCount', (v.guestCount ?? 0).toString());
 
     // ─── المرافق ───
     this.selectedFacilityIds.forEach((id) =>
@@ -398,19 +395,20 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
       formData.append('IsAvailable', v.isAvailable.toString());
 
       // ✅ الصور القديمة المتبقية (اللي ملغاش عليهم ×)
-      this.existingImageUrls.forEach((url) =>
-        formData.append('ExistingImageUrls', url),
-      );
+      this.existingImageUrls.forEach((url) => {
+        const cleanUrl = url.replace('https://ewan.runasp.net', '');
+        formData.append('ExistingImageUrls', cleanUrl);
+      });
 
       // ✅ الصور الجديدة المضافة (ممكن تكون 0 أو أكتر)
       this.newImageFiles.forEach((file) => formData.append('NewImages', file));
 
-      request$ = this.apiService.update(v.id, formData);
+      request$ = this.apiService.update(formData);
     } else {
       // ✅ في الإضافة كل الصور جديدة
       this.newImageFiles.forEach((file) => formData.append('Images', file));
-
       request$ = this.apiService.create(formData);
+      formData.append('OwnerPassword', v.ownerPassword);
     }
 
     request$.subscribe({
@@ -445,6 +443,47 @@ export class PropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (err) => (this.errorMessage = err.message),
     });
+  }
+
+  // ======================
+  // OWNER CREDENTIALS
+  // ======================
+
+  get cf() {
+    return this.credentialsForm.controls;
+  }
+
+  openCredentialsModal(id: number): void {
+    this.credentialsPropertyId = id;
+    this.credentialsError = null;
+    this.credentialsForm.reset();
+
+    const property = this.properties.find((p) => p.id === id);
+    this.credentialsForm.patchValue({ ownerPhoneNumber: property?.ownerPhoneNumber ?? '' });
+
+    this.credentialsModalInstance.show();
+  }
+
+  onSubmitCredentials(): void {
+    if (this.credentialsForm.invalid) {
+      this.credentialsForm.markAllAsTouched();
+      return;
+    }
+
+    const { ownerPhoneNumber, newPassword } = this.credentialsForm.value;
+
+    this.apiService
+      .updateOwnerCredentials(this.credentialsPropertyId, { ownerPhoneNumber, newPassword })
+      .subscribe({
+        next: () => {
+          this.credentialsModalInstance.hide();
+          this.showSuccess('تم تحديث بيانات المالك بنجاح');
+        },
+        error: (err) => {
+          this.credentialsError = err.message;
+          setTimeout(() => (this.credentialsError = null), 6000);
+        },
+      });
   }
 
   // ======================

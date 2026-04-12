@@ -34,7 +34,7 @@ interface StatusMeta {
   cssClass: string;
 }
 
-const BOOKING_STATUS_MAP: Record<number, StatusMeta> = {
+const BOOKING_STATUS_MAP: Record<string, StatusMeta> = {
   [BookingStatus.Confirmed]: { label: 'مؤكد', cssClass: 'bg-success' },
   [BookingStatus.Pending]: { label: 'قيد الانتظار', cssClass: 'bg-warning' },
   [BookingStatus.Completed]: { label: 'مكتمل', cssClass: 'bg-info' },
@@ -52,8 +52,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('ReservationsChart')
   ReservationsChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('RevenuesChart') RevenuesChart!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('categoryChartRef')
-  categoryChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('cityChartRef') cityChartRef!: ElementRef<HTMLCanvasElement>;
   private monthsSubject = new Subject<number>();
   private chartsCache = new Map<number, { data: any; timestamp: number }>();
@@ -180,11 +178,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       '#09B479',
     );
 
-    this.categoryChart = this.createDoughnutChart(
-      this.categoryChartRef.nativeElement,
-      data.bookingsByCategory,
-    );
-
     this.cityChart = this.createDoughnutChart(
       this.cityChartRef.nativeElement,
       data.bookingsByCity,
@@ -202,11 +195,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   // ======================
   // BOOKING STATUS HELPERS
   // ======================
-  getStatusLabel(status: number): string {
+  getStatusLabel(status: string): string {
     return BOOKING_STATUS_MAP[status]?.label ?? 'غير معروف';
   }
 
-  getStatusClass(status: number): string {
+  getStatusClass(status: string): string {
     return BOOKING_STATUS_MAP[status]?.cssClass ?? 'bg-secondary';
   }
 
