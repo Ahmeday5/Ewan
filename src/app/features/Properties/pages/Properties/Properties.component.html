@@ -1,15 +1,5 @@
 <div class="properties">
   <div class="container-fluid mb-3 mt-4">
-    <!-- ═══════════════════════════════════════════
-         رسائل النجاح والخطأ العامة
-    ═══════════════════════════════════════════ -->
-    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
-      {{ successMessage }}
-    </div>
-    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
-      {{ errorMessage }}
-    </div>
-
     <!-- ================= Filters ================= -->
     <div class="row p-0 justify-content-center gap-2">
       <div class="col-md-5">
@@ -442,84 +432,211 @@
       </div>
     </div>
 
+    <!-- ================= Property Details Modal ================= -->
+    <div class="modal fade" id="PropDetailModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+        <div class="modal-content">
+
+          <div class="modal-header border-0 pb-1" *ngIf="selectedProp">
+            <div class="d-flex align-items-center gap-3">
+              <img *ngIf="selectedProp.imageUrls?.[0]"
+                [src]="selectedProp.imageUrls[0]"
+                class="detail-thumb" alt="صورة العقار">
+              <div>
+                <h5 class="fw-700 mb-1">{{ selectedProp.name }}</h5>
+                <span class="badge bg-secondary small">{{ selectedProp.propertyType }}</span>
+              </div>
+            </div>
+            <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body pt-2" *ngIf="selectedProp">
+
+            <!-- الوصف -->
+            <div class="detail-section">
+              <p class="detail-label"><i class="fa-solid fa-align-right me-1 text-orange"></i> الوصف</p>
+              <p class="detail-text">{{ selectedProp.description }}</p>
+            </div>
+
+            <!-- العنوان والموقع -->
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-location-dot me-1 text-orange"></i> العنوان</p>
+                  <p class="detail-text">{{ selectedProp.address }}</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-map-pin me-1 text-orange"></i> الموقع</p>
+                  <p class="detail-text">{{ selectedProp.location }}</p>
+                </div>
+              </div>
+              <div class="col-6" *ngIf="selectedProp.pricePerNight">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-moon me-1 text-orange"></i> سعر الليلة</p>
+                  <p class="detail-text fw-700 text-success">{{ selectedProp.pricePerNight }} ج.م</p>
+                </div>
+              </div>
+              <div class="col-6" *ngIf="selectedProp.pricePerHour">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-clock me-1 text-orange"></i> سعر الساعة</p>
+                  <p class="detail-text fw-700 text-success">{{ selectedProp.pricePerHour }} ج.م</p>
+                </div>
+              </div>
+              <div class="col-6" *ngIf="selectedProp.roomCount">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-bed me-1 text-orange"></i> الغرف</p>
+                  <p class="detail-text fw-700">{{ selectedProp.roomCount }}</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="detail-section">
+                  <p class="detail-label"><i class="fa-solid fa-users me-1 text-orange"></i> الضيوف</p>
+                  <p class="detail-text fw-700">{{ selectedProp.guestCount }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- المرافق -->
+            <div class="detail-section mt-2" *ngIf="selectedProp.facilities.length">
+              <p class="detail-label"><i class="fa-solid fa-tools me-1 text-orange"></i> المرافق والخدمات</p>
+              <div class="d-flex flex-wrap gap-2 mt-1">
+                <span *ngFor="let f of selectedProp.facilities" class="facility-badge">{{ f }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ================= TABLE ================= -->
     <div class="row mt-4">
       <div class="col-12">
         <div class="card">
-          <div class="card-body">
+          <div class="card-body p-0 p-md-3">
 
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>العقار</th>
-                    <th>الوصف</th>
-                    <th>الفئة</th>
-                    <th>العنوان</th>
-                    <th>سعر الليلة</th>
-                    <th>عدد الغرف</th>
-                    <th>سعر الساعة</th>
-                    <th>عدد الضيوف</th>
-                    <th>رقم تليفون المالك</th>
-                    <th>المرافق والخدمات</th>
-                    <th>الحالة</th>
-                    <th>الاجراءات</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr *ngIf="properties.length === 0">
-                    <td colspan="7" class="text-muted py-3">لا توجد عقارات</td>
-                  </tr>
-                  <tr *ngFor="let item of properties; let i = index">
-                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-                    <td style="max-width: 200px; min-width: 150px;">
-                      <div class="d-flex justify-content-center align-items-center gap-2">
-                        <img [src]="item.imageUrls[0]"
-                          style="width:35px;height:35px;border-radius:6px;object-fit:cover;" alt="صورة العقار">
-                        <div class="text-start">
-                          <h6 class="fw-700 m-0">{{ item.name }}</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td style="max-width: 250px; min-width: 200px; font-size: 14px;">{{ item.description }}</td>
-                    <td>
-                      <span class="badge bg-secondary">{{ item.propertyType }}</span>
-                    </td>
-                    <td>{{ item.address }}</td>
-                    <td class="text-success fw-bold">{{ item.pricePerNight }} ج</td>
-                    <td class="text-muted fw-bold">{{ item.roomCount }}</td>
-                    <td class="text-success fw-bold">{{ item.pricePerHour }} ج</td>
-                    <td class="text-muted fw-bold">{{ item.guestCount }}</td>
-                    <td class="fw-bold">{{ item.ownerPhoneNumber }}</td>
-                    <td>
-                      <span class="badge bg-success" style="font-size: 12px;">
-                        {{ item.facilities }}
-                      </span>
-                    </td>
-                    <td>
-                      <span class="badge" [ngClass]="item.isAvailable ? 'bg-success' : 'bg-danger'">
-                        {{ item.isAvailable ? 'متاح' : 'غير متاح' }}
-                      </span>
-                    </td>
-                    <td class="d-flex align-items-center justify-content-between">
-                      <i class="fa-solid fa-pen text-primary cursor-pointer" (click)="openEditModal(item.id)"
-                        title="تعديل"></i>
-                      <i class="fa-solid fa-key text-warning cursor-pointer" (click)="openCredentialsModal(item.id)"
-                        title="بيانات المالك"></i>
-                      <i class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteSub(item.id)"
-                        title="حذف"></i>
-                    </td>
-                  </tr>
-                </tbody>
-
-              </table>
+            <!-- Loading -->
+            <div *ngIf="!hasLoaded" class="loading-box">
+              <div class="spinner-border" role="status"></div>
+              <span>جاري تحميل العقارات...</span>
             </div>
 
-            <!-- ================= Pagination ================= -->
-            <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
-            </app-pagination>
+            <ng-container *ngIf="hasLoaded">
+
+              <!-- Empty -->
+              <div *ngIf="properties.length === 0" class="empty-state-box">
+                <i class="fa-solid fa-building empty-icon"></i>
+                <p class="empty-title">لا توجد عقارات</p>
+                <p class="empty-sub">أضف أول عقار للبدء</p>
+              </div>
+              
+              <!-- Table -->
+              <div *ngIf="properties.length > 0" class="table-responsive">
+                <table class="table custom-table-design text-center mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>العقار</th>
+                      <th>الوصف</th>
+                      <th>الفئة</th>
+                      <th class="hide-md">العنوان</th>
+                      <th class="hide-md">السعر</th>
+                      <th class="hide-md">الضيوف</th>
+                      <th class="hide-xs">المرافق</th>
+                      <th>الحالة</th>
+                      <th>الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of properties; let i = index">
+
+                      <!-- # -->
+                      <td class="fw-700">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+
+                      <!-- العقار (صورة + اسم) -->
+                      <td>
+                        <div class="prop-name-cell" (click)="openDetailModal(item)">
+                          <img *ngIf="item.imageUrls?.[0]" [src]="item.imageUrls[0]" class="prop-thumb" alt="">
+                          <span class="text-1line fw-700">{{ item.name }}</span>
+                        </div>
+                      </td>
+
+                      <!-- الوصف — مقتطع + أيقونة توسيع -->
+                      <td class="td-truncate">
+                        <div class="td-expand" (click)="openDetailModal(item)">
+                          <span class="text-1line">{{ item.description }}</span>
+                          <i class="fa-solid fa-up-right-from-square expand-icon"></i>
+                        </div>
+                      </td>
+
+                      <!-- الفئة -->
+                      <td>
+                        <span class="type-badge type-badge--{{ (item.propertyType || '') | lowercase }}">
+                          {{ item.propertyType }}
+                        </span>
+                      </td>
+
+                      <!-- العنوان -->
+                      <td class="td-truncate hide-md">
+                        <span class="text-1line">{{ item.address }}</span>
+                      </td>
+
+                      <!-- السعر -->
+                      <td class="hide-md fw-700 text-success">
+                        <ng-container *ngIf="item.pricePerNight">{{ item.pricePerNight }} ج/ليلة</ng-container>
+                        <ng-container *ngIf="!item.pricePerNight && item.pricePerHour">{{ item.pricePerHour }} ج/ساعة</ng-container>
+                      </td>
+
+                      <!-- الضيوف -->
+                      <td class="hide-md fw-700">{{ item.guestCount }}</td>
+
+                      <!-- المرافق — عدد فقط -->
+                      <td class="hide-xs">
+                        <span class="badge bg-primary" *ngIf="item.facilities.length">
+                          {{ item.facilities.length }} مرافق
+                        </span>
+                        <span class="text-mutedd" *ngIf="!item.facilities.length">—</span>
+                      </td>
+
+                      <!-- الحالة -->
+                      <td>
+                        <span class="badge" [ngClass]="item.isAvailable ? 'bg-success' : 'bg-danger'">
+                          {{ item.isAvailable ? 'متاح' : 'غير متاح' }}
+                        </span>
+                      </td>
+
+                      <!-- الإجراءات -->
+                      <td>
+                        <div class="action-icons-group">
+                          <button class="action-icon action-icon--view" title="التفاصيل" (click)="openDetailModal(item)">
+                            <i class="fa-solid fa-eye"></i>
+                          </button>
+                          <button class="action-icon action-icon--edit" title="تعديل" (click)="openEditModal(item.id)">
+                            <i class="fa-solid fa-pen"></i>
+                          </button>
+                          <button class="action-icon action-icon--key" title="بيانات المالك" (click)="openCredentialsModal(item.id)">
+                            <i class="fa-solid fa-key"></i>
+                          </button>
+                          <button class="action-icon action-icon--delete" title="حذف" (click)="deleteSub(item.id)">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </ng-container>
+
+            <!-- Pagination -->
+            <div class="px-3 pb-2 mt-2" *ngIf="hasLoaded && properties.length > 0">
+              <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+              </app-pagination>
+            </div>
 
           </div>
         </div>

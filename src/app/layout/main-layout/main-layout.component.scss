@@ -1,11 +1,126 @@
+// ─── App Shell ───────────────────────────────────────────────
 .app-layout {
   display: flex;
+
+  // Stacked fallbacks: plain → dvh → JS-computed (most accurate on mobile).
+  // dvh adjusts when the browser chrome shows/hides.
+  // --app-height is set by the component on every resize event.
   height: 100vh;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
+
   overflow: hidden;
   background: var(--bg-main);
 }
 
+// ─── Mobile Sidebar Overlay ──────────────────────────────────
+.sidebar-overlay {
+  display: none;
+
+  @media (max-width: 992px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999; // just below the sidebar (which sits at 1000+)
+    cursor: pointer;
+  }
+}
+
+// ─── Sidebar Wrapper ─────────────────────────────────────────
+.sidebar-wrapper {
+  flex-shrink: 0;
+
+  // On mobile the sidebar uses position:fixed and slides in as an overlay,
+  // so the wrapper must take zero space in the flex row.
+  @media (max-width: 992px) {
+    width: 0;
+    min-width: 0;
+    overflow: visible; // let the fixed sidebar paint outside this box
+  }
+}
+
+// ─── Main Content ────────────────────────────────────────────
 .main-content {
   flex: 1;
+  min-width: 0;          // prevent flex item from overflowing its container
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; // momentum scrolling on iOS
+}
+
+// ─── Toast Host ──────────────────────────────────────────────
+.toast-host {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  min-width: 300px;
+  max-width: min(480px, calc(100vw - 32px)); // never overflow on small screens
+  pointer-events: none;
+}
+
+// ─── Single Toast ────────────────────────────────────────────
+.toast-item {
+  pointer-events: all;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px 14px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  border-inline-start: 4px solid transparent;
+  animation: toast-slide-in 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+
+  &--success { border-inline-start-color: #10b981; .toast-icon { color: #10b981; } }
+  &--error   { border-inline-start-color: #ef4444; .toast-icon { color: #ef4444; } }
+  &--warning { border-inline-start-color: #f59e0b; .toast-icon { color: #f59e0b; } }
+  &--info    { border-inline-start-color: #3b82f6; .toast-icon { color: #3b82f6; } }
+  &--confirm { border-inline-start-color: #f59e0b; .toast-icon { color: #f59e0b; } }
+}
+
+.toast-icon    { font-size: 20px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+.toast-body    { flex: 1; min-width: 0; }
+.toast-message { display: block; font-size: 14px; font-weight: 600; color: #1a1a2e; line-height: 1.5; word-break: break-word; }
+
+.toast-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.toast-btn {
+  padding: 5px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  &:hover { opacity: 0.85; }
+  &--confirm { background: #ef4444; color: #fff; }
+  &--cancel  { background: #f0f0f0; color: #444; }
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: color 0.15s ease;
+  &:hover { color: #555; }
+}
+
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateY(-16px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }

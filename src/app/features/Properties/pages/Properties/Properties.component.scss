@@ -1,14 +1,94 @@
-.credentials-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(255, 193, 7, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.properties {
 
-  i {
-    color: #f59e0b;
+  // ─── Property Name Cell ──────────────────────────────────
+  .prop-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    min-width: 130px;
+    max-width: 180px;
+    text-align: start;
+
+    &:hover span { color: var(--second-color); }
+  }
+
+  .prop-thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  // ─── Type Badges ─────────────────────────────────────────
+  .type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--chalet    { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    &--hotel     { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+    &--apartment { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+    &--hall      { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+  }
+
+  // ─── Details Modal ───────────────────────────────────────
+  .detail-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+  }
+
+  .detail-section { margin-bottom: 14px; }
+
+  .detail-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .detail-text {
     font-size: 14px;
+    font-weight: 500;
+    color: var(--third-color);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .facility-badge {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.05);
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  // ─── Credentials Icon ────────────────────────────────────
+  .credentials-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i { color: #f59e0b; font-size: 14px; }
   }
 }

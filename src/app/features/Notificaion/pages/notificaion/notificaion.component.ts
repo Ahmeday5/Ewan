@@ -1,56 +1,87 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../../../environments/environment.development';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { NotificaionService } from '../../services/notificaion.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-notificaion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './notificaion.component.html',
   styleUrl: './notificaion.component.scss',
 })
-export class NotificaionComponent {
-  title: string = '';
-  body: string = '';
-  topic: string = 'all'; // الافتراضي
-  successMessage: string = '';
-  errorMessage: string = '';
-  isLoading: boolean = false;
-  private readonly baseUrl = environment.apiBaseUrl;
+export class NotificaionComponent implements OnDestroy {
+  form: FormGroup;
+  isLoading = false;
 
-  constructor(private http: HttpClient) {}
+  private readonly destroy$ = new Subject<void>();
 
-  async sendNotification() {
-    this.successMessage = '';
-    this.errorMessage = '';
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly notificationService: NotificaionService,
+    private readonly toastService: ToastService,
+  ) {
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      body: ['', [Validators.required, Validators.maxLength(500)]],
+    });
+  }
+
+  // ─── Getters ────────────────────────────────────────────────
+
+  get title(): string {
+    return this.form.get('title')?.value ?? '';
+  }
+
+  get body(): string {
+    return this.form.get('body')?.value ?? '';
+  }
+
+  get bodyLength(): number {
+    return this.body.length;
+  }
+
+  get showPreview(): boolean {
+    return this.title.trim().length > 0 || this.body.trim().length > 0;
+  }
+
+  isInvalid(field: string): boolean {
+    const control = this.form.get(field);
+    return !!(control?.invalid && control?.touched);
+  }
+
+  // ─── Actions ────────────────────────────────────────────────
+
+  sendNotification(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isLoading = true;
 
-    try {
-      const response = await firstValueFrom(
-        this.http.post<any>(`${this.baseUrl}/api/Notification/send`, {
-          title: this.title,
-          body: this.body,
-          topic: this.topic,
-        }),
-      );
-      console.log('Notification sent:', response);
-      this.successMessage = 'تم إرسال الإشعار بنجاح';
-      setTimeout(() => {
-        this.successMessage = '';
-        // 👇 تفريغ الحقول بعد النجاح
-        this.title = '';
-        this.body = '';
-        this.topic = 'all';
-      }, 2000);
-    } catch (error: any) {
-      console.error('Error sending notification:', error);
-      this.errorMessage = 'فشل في إرسال الإشعار';
-    } finally {
-      this.isLoading = false;
-    }
+    this.notificationService
+      .sendToAllClients(this.form.getRawValue())
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.toastService.success('تم إرسال الإشعار بنجاح لجميع العملاء');
+          this.form.reset();
+        },
+        error: (err: Error) => {
+          this.toastService.error(err.message || 'فشل في إرسال الإشعار، حاول مرة أخرى');
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

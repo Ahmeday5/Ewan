@@ -1,0 +1,362 @@
+.faq-page {
+
+  // ─── Page Header ─────────────────────────────────────────
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .page-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--third-color);
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+  }
+
+  .btn-add-faq {
+    border-radius: 12px !important;
+    padding: 10px 24px !important;
+    font-size: 14px;
+  }
+
+  // ─── Stats Bar ───────────────────────────────────────────
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 50px;
+    padding: 8px 20px 8px 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    &__icon {
+      font-size: 18px;
+      color: var(--second-color);
+    }
+
+    &__value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--third-color);
+    }
+
+    &__label {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+    }
+  }
+
+  // ─── Modal ───────────────────────────────────────────────
+  .modal-custom {
+    border-radius: 20px !important;
+    overflow: hidden;
+  }
+
+  .modal-mode-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+
+    &--add  { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+    &--edit { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+  }
+
+  .btn-cancel-modal {
+    background: #f1f1f1 !important;
+    color: #444 !important;
+    border: none !important;
+    font-weight: 600;
+
+    &:hover { background: #e0e0e0 !important; }
+  }
+
+  // ─── Input Enhancements ──────────────────────────────────
+  .input-group-custom {
+    border-radius: 12px;
+    overflow: hidden;
+
+    .input-group-text {
+      background: #f8f8f8;
+      border-color: rgba(0, 0, 0, 0.12);
+      color: #888;
+    }
+
+    &--invalid .input-group-text {
+      border-color: #ef4444;
+    }
+  }
+
+  .field-error {
+    margin-top: 5px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #ef4444;
+  }
+
+  .char-counter {
+    font-size: 12px;
+    font-weight: 600;
+    color: #bbb;
+    transition: color 0.2s;
+
+    &--warn   { color: #f59e0b; }
+    &--danger { color: #ef4444; }
+  }
+
+  // ─── Loading ─────────────────────────────────────────────
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+  }
+
+  .loading-text {
+    color: #aaa;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  // ─── Empty State ─────────────────────────────────────────
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+  }
+
+  .empty-icon-wrap {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(241, 90, 36, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    i { font-size: 2.2rem; color: var(--second-color); opacity: 0.6; }
+  }
+
+  .empty-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--third-color);
+    margin-bottom: 6px;
+  }
+
+  .empty-subtitle {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 0;
+  }
+
+  // ─── FAQ Grid ────────────────────────────────────────────
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+    gap: 20px;
+  }
+
+  // ─── FAQ Card ────────────────────────────────────────────
+  .faq-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px 22px;
+    // منع الكرد من تجاوز حدود الـ grid cell
+    min-width: 0;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    animation: card-in 0.35s ease both;
+
+    &:hover {
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    // Header row
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    // Question
+    &__question {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      // منع الـ flex item من الطفو برة الكرد
+      min-width: 0;
+    }
+
+    // Divider
+    &__divider {
+      height: 1px;
+      background: rgba(0, 0, 0, 0.06);
+      margin-bottom: 14px;
+    }
+
+    // Answer
+    &__answer {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    @media (max-width: 480px) {
+      padding: 14px 16px;
+    }
+  }
+
+  // Card number badge
+  .faq-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(241, 90, 36, 0.1);
+    color: var(--second-color);
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  // Q / A Labels
+  .question-label,
+  .answer-label {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .question-label {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  .answer-label {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  .question-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--third-color);
+    margin: 0;
+    line-height: 1.6;
+    // النص يلف داخل الكرد ولا يطلع برة
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .answer-text {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #555;
+    margin: 0;
+    line-height: 1.7;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+    flex: 1;
+  }
+
+  // ─── Card Actions ────────────────────────────────────────
+  .faq-card__actions {
+    display: flex;
+    gap: 7px;
+  }
+
+  .faq-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+
+    &--edit {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+
+      &:hover {
+        background: #3b82f6;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        transform: translateY(-1px);
+      }
+    }
+
+    &--delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+
+      &:hover:not(:disabled) {
+        background: #ef4444;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // ─── Animation ───────────────────────────────────────────
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}

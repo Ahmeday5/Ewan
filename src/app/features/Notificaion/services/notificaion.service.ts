@@ -1,9 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiService } from '../../../core/services/api.service';
+import { SendNotificationRequest, SendNotificationResponse } from '../models/notificaion.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class NotificaionService {
+  private readonly api = inject(ApiService);
+  private readonly endpoint = '/api/dashboard/notifications/clients';
 
-  constructor() { }
+  sendToAllClients(payload: SendNotificationRequest): Observable<SendNotificationResponse> {
+    return this.api.post<SendNotificationResponse>(this.endpoint, payload);
+  }
 }

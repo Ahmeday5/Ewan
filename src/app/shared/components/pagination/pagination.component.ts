@@ -1,17 +1,17 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
   EventEmitter,
+  Input,
   OnChanges,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-interface PaginationItem {
-  type: 'page' | 'ellipsis';
-  value?: number;
-}
+type PageItem =
+  | { kind: 'page';     value: number }
+  | { kind: 'ellipsis'; id: string   };
 
 @Component({
   selector: 'app-pagination',
@@ -19,77 +19,104 @@ interface PaginationItem {
   imports: [CommonModule],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationComponent implements OnChanges {
-  @Input() currentPage: number = 1;
-  @Input() totalPages: number = 0;
-  @Input() windowSize: number = 2;
+  @Input() currentPage = 1;
+  @Input() totalPages  = 0;
+  /** عدد أرقام الصفحات يميناً ويساراً حول الصفحة الحالية */
+  @Input() windowSize  = 2;
 
   @Output() pageChange = new EventEmitter<number>();
 
-  pages: PaginationItem[] = [];
+  pages: PageItem[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['currentPage'] || changes['totalPages']) {
-      this.pages = this.getVisiblePages();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentPage'] || changes['totalPages'] || changes['windowSize']) {
+      this.pages = this.buildPages();
     }
   }
 
-  // دالة لحساب الصفحات المرئية
-  getVisiblePages(): PaginationItem[] {
-    const visiblePages: PaginationItem[] = [];
+  // ─── Navigation ──────────────────────────────────────────
 
-    // لو الصفحات قليلة (أقل من أو تساوي 2 * windowSize + 1)، اعرض كلها
-    if (this.totalPages <= 2 * this.windowSize + 1) {
-      for (let i = 1; i <= this.totalPages; i++) {
-        visiblePages.push({ type: 'page', value: i });
-      }
-      return visiblePages;
+  goTo(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) return;
+    this.pageChange.emit(page);
+  }
+
+  goToPrev(): void { this.goTo(this.currentPage - 1); }
+  goToNext(): void { this.goTo(this.currentPage + 1); }
+  goToFirst(): void { this.goTo(1); }
+  goToLast(): void  { this.goTo(this.totalPages); }
+
+  // ─── Helpers ─────────────────────────────────────────────
+
+  get isFirst(): boolean { return this.currentPage === 1; }
+  get isLast():  boolean { return this.currentPage === this.totalPages; }
+
+  trackPage(_: number, item: PageItem): string {
+    return item.kind === 'page' ? `page-${item.value}` : item.id;
+  }
+
+  // ─── Algorithm ───────────────────────────────────────────
+
+  /**
+   * ينتج مصفوفة من عناصر الصفحات والـ ellipsis
+   * مثال لـ totalPages=10, currentPage=5, windowSize=2:
+   *   [1] … [3][4][5][6][7] … [10]
+   *
+   * الخوارزمية:
+   * 1. لو الصفحات قليلة → اعرضها كلها بدون ellipsis
+   * 2. دايماً: أول صفحة + آخر صفحة
+   * 3. نافذة حول الصفحة الحالية [cur-win … cur+win]
+   * 4. اتسع النافذة لو قريبة من البداية أو النهاية
+   * 5. ضع ellipsis في الفجوات
+   */
+  private buildPages(): PageItem[] {
+    const { currentPage: cur, totalPages: total, windowSize: win } = this;
+
+    if (total <= 0) return [];
+
+    // كل الصفحات مرئية بدون ellipsis
+    const threshold = 2 * win + 3; // 1 + win*2 + أول + آخر
+    if (total <= threshold) {
+      return Array.from({ length: total }, (_, i) => ({
+        kind: 'page',
+        value: i + 1,
+      }));
     }
 
-    // أضف الصفحة الأولى دائمًا
-    visiblePages.push({ type: 'page', value: 1 });
+    // حساب نافذة الصفحات الوسطى
+    let start = Math.max(2, cur - win);
+    let end   = Math.min(total - 1, cur + win);
 
-    // حساب بداية النافذة حول الصفحة الحالية
-    let start = Math.max(2, this.currentPage - this.windowSize);
-    let end = Math.min(this.totalPages - 1, this.currentPage + this.windowSize);
-
-    // لو الصفحة الحالية قريبة من البداية، زد النافذة لليمين
-    if (this.currentPage <= this.windowSize + 1) {
-      end = 2 * this.windowSize + 1;
+    // قريب من البداية → وسّع لليمين
+    if (cur - win <= 2) {
+      end = Math.min(total - 1, 2 * win + 2);
     }
-    // لو قريبة من النهاية، زد النافذة للشمال
-    else if (this.currentPage >= this.totalPages - this.windowSize) {
-      start = this.totalPages - 2 * this.windowSize;
+    // قريب من النهاية → وسّع لليسار
+    if (cur + win >= total - 1) {
+      start = Math.max(2, total - 2 * win - 1);
     }
 
-    // أضف النقاط لو فيه فجوة بين 1 والنافذة
+    const items: PageItem[] = [];
+
+    items.push({ kind: 'page', value: 1 });
+
     if (start > 2) {
-      visiblePages.push({ type: 'ellipsis' });
+      items.push({ kind: 'ellipsis', id: 'ellipsis-start' });
     }
 
-    // أضف الصفحات في النافذة
     for (let i = start; i <= end; i++) {
-      visiblePages.push({ type: 'page', value: i });
+      items.push({ kind: 'page', value: i });
     }
 
-    // أضف النقاط لو فيه فجوة بين النافذة والنهاية
-    if (end < this.totalPages - 1) {
-      visiblePages.push({ type: 'ellipsis' });
+    if (end < total - 1) {
+      items.push({ kind: 'ellipsis', id: 'ellipsis-end' });
     }
 
-    // أضف الصفحة الأخيرة دائمًا
-    if (this.totalPages > 1) {
-      visiblePages.push({ type: 'page', value: this.totalPages });
-    }
+    items.push({ kind: 'page', value: total });
 
-    return visiblePages;
-  }
-
- // دالة لتغيير الصفحة (مع التحقق من الـ Type وإرسال الحدث)
-  onPageChange(page: number | undefined): void {
-    if (typeof page === 'number' && page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.pageChange.emit(page); // إرسال الحدث للـ parent component
-    }
+    return items;
   }
 }

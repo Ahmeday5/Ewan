@@ -1,272 +1,467 @@
-<div class="properties">
-  <div class="container-fluid mb-3 mt-4">
-    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
-      {{ errorMessage }}
-    </div>
-    <div class="row p-0 justify-content-between gap-2">
-      <div class="col-md-5">
-        <input type="search" class="form-control" placeholder="ابحث عن حجز....">
-      </div>
-      <div class="col-md-3">
-        <select class="form-select" aria-label="Status select">
-          <option selected>جميع الحالات</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-        </select>
-      </div>
-    </div>
+<div class="bookings-page">
+  <div class="container-fluid px-3 py-4">
 
-    @if (bookingStats) {
-    <div class="row p-0 justify-content-center mt-4">
-      <div class="col-12">
-        <div class="row cards row-cols-xl-5 row-cols-lg-3 row-cols-md-3  row-cols-sm-2 row-cols-1 g-4">
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-layer-group text-primary"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">{{bookingStats.totalBookings}}</h5>
-                  <h5 class="text-mutedd">إجمالي الحجوزات</h5>
-                </div>
-              </div>
-            </div>
+    <!-- ═══════════════════════════════════════════
+         Stats Cards
+    ═══════════════════════════════════════════ -->
+    <div class="row g-3 mb-4">
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--total">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-layer-group"></i>
           </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-circle-check text-success"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">{{bookingStats.completedBookings}}</h5>
-                  <h5 class="text-mutedd">مؤكدة</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-hourglass-half text-warning"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">{{bookingStats.pendingBookings}}</h5>
-                  <h5 class="text-mutedd">معلق</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-money-bill-wave text-info"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">{{bookingStats.completedBookings}}</h5>
-                  <h5 class="text-mutedd">مكتملة</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-money-bill-wave text-info"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">{{bookingStats.cancelledBookings}}</h5>
-                  <h5 class="text-mutedd">ملغية</h5>
-                </div>
-              </div>
-            </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ totalCount }}</span>
+            <span class="stat-card__label">إجمالي الحجوزات</span>
           </div>
         </div>
       </div>
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--pending">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ statusTotals.pending }}</span>
+            <span class="stat-card__label">معلقة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--confirmed">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ statusTotals.confirmed }}</span>
+            <span class="stat-card__label">مؤكدة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--completed">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-badge-check"></i>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ statusTotals.completed }}</span>
+            <span class="stat-card__label">مكتملة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--cancelled">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ statusTotals.cancelled }}</span>
+            <span class="stat-card__label">ملغية</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl col-lg-4 col-sm-6">
+        <div class="stat-card stat-card--revenue">
+          <div class="stat-card__icon">
+            <i class="fa-solid fa-sack-dollar"></i>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__value">{{ formatCurrency(totalRevenue) }}</span>
+            <span class="stat-card__label">الإيرادات</span>
+          </div>
+        </div>
+      </div>
+
     </div>
-    }
 
+    <!-- ═══════════════════════════════════════════
+         Filters Card
+    ═══════════════════════════════════════════ -->
+    <div class="filter-card mb-4">
+      <div class="filter-card__header">
+        <div class="filter-card__title">
+          <i class="fa-solid fa-sliders ms-2 text-orange"></i>
+          فلترة الحجوزات
+          @if (hasActiveFilters) {
+            <span class="active-badge">نشط</span>
+          }
+        </div>
+        @if (hasActiveFilters) {
+          <button class="btn-reset" (click)="resetFilters()">
+            <i class="fa-solid fa-rotate-right"></i>
+            إعادة ضبط
+          </button>
+        }
+      </div>
 
-    <div class="row mt-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>العميل</th>
-                    <th>العقار</th>
-                    <th>عدد الغرف</th>
-                    <th>التاريخ</th>
-                    <th>المبلغ</th>
-                    <th>حالة الحجز</th>
-                    <th>حالة الدفع</th>
-                    <th>طريقة الدفع</th>
-                    <th>الاجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @if (Bookings.length > 0) {
-                  @for (book of Bookings; track book.id; let i = $index) {
-                  <tr>
-                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+      <div class="filter-card__body">
+        <!-- Row 1: Search + Status + Payment -->
+        <div class="row g-3 align-items-end">
+
+          <!-- Search by client name -->
+          <div class="col-lg-4 col-md-6">
+            <label class="filter-label">بحث بالعميل</label>
+            <div class="search-wrap">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input
+                type="search"
+                class="form-control filter-input search-input"
+                placeholder="اكتب اسم العميل..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+              />
+            </div>
+          </div>
+
+          <!-- Status filter -->
+          <div class="col-lg-2 col-md-3 col-sm-6">
+            <label class="filter-label">حالة الحجز</label>
+            <select class="form-select filter-input" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+              <option value="">الكل</option>
+              <option value="Pending">معلقة</option>
+              <option value="Confirmed">مؤكدة</option>
+              <option value="Completed">مكتملة</option>
+              <option value="Cancelled">ملغية</option>
+            </select>
+          </div>
+
+          <!-- Payment Status filter -->
+          <div class="col-lg-2 col-md-3 col-sm-6">
+            <label class="filter-label">حالة الدفع</label>
+            <select class="form-select filter-input" [(ngModel)]="selectedPayment" (change)="onFilterChange()">
+              <option value="">الكل</option>
+              <option value="Pending">معلق</option>
+              <option value="Paid">مدفوع</option>
+              <option value="Failed">فشل</option>
+              <option value="Refunded">مُسترد</option>
+            </select>
+          </div>
+
+          <!-- Property filter -->
+          <div class="col-lg-4 col-md-6">
+            <label class="filter-label">العقار</label>
+            <select class="form-select filter-input" [(ngModel)]="selectedPropertyId" (change)="onFilterChange()">
+              <option [ngValue]="null">كل العقارات</option>
+              @for (prop of properties; track prop.id) {
+                <option [ngValue]="prop.id">{{ prop.name }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Row 2: Date range -->
+        <div class="row g-3 align-items-end mt-1">
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label class="filter-label">من تاريخ</label>
+            <input
+              type="date"
+              class="form-control filter-input"
+              [(ngModel)]="fromDate"
+              (change)="onFilterChange()"
+            />
+          </div>
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label class="filter-label">إلى تاريخ</label>
+            <input
+              type="date"
+              class="form-control filter-input"
+              [(ngModel)]="toDate"
+              [min]="fromDate"
+              (change)="onFilterChange()"
+            />
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Table Card
+    ═══════════════════════════════════════════ -->
+    <div class="card shadow-sm border-0 rounded-3">
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table custom-table-design text-center mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>العميل</th>
+                <th>العقار</th>
+                <th>التاريخ</th>
+                <th>المبلغ</th>
+                <th>حالة الحجز</th>
+                <th>حالة الدفع</th>
+                <th>طريقة الدفع</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (!hasLoaded) {
+                <tr>
+                  <td colspan="9" class="py-5">
+                    <div class="d-flex justify-content-center align-items-center gap-2 text-muted">
+                      <div class="spinner-border spinner-border-sm text-orange" role="status"></div>
+                      جاري التحميل...
+                    </div>
+                  </td>
+                </tr>
+              } @else if (bookings.length === 0) {
+                <tr>
+                  <td colspan="9" class="py-5">
+                    <div class="empty-state">
+                      <i class="fa-solid fa-calendar-xmark empty-state__icon"></i>
+                      <p class="empty-state__text">
+                        @if (hasActiveFilters) { لا توجد نتائج مطابقة للفلتر } @else { لا توجد حجوزات }
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for (book of bookings; track book.id; let i = $index) {
+                  <tr class="table-row">
+                    <td class="text-muted">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+
                     <td>
-                      <h6 class="fw-700 m-0">{{book.clientName}}</h6>
+                      <div class="client-cell">
+                        <div class="client-avatar">{{ book.clientName.charAt(0).toUpperCase() }}</div>
+                        <span class="fw-600">{{ book.clientName }}</span>
+                      </div>
                     </td>
+
                     <td>
-                      <h6 class="fw-700 m-0">{{book.propertyName}}</h6>
-                      <p style="font-size: 12px;" class="text-muted m-0">
-                        {{book.guestsCount}} ليالي •{{book.roomsCount}}  ضيوف</p>
+                      <div class="prop-cell">
+                        <span class="fw-600">{{ book.propertyName }}</span>
+                        <span class="prop-meta">{{ book.nightsCount }} ليالي · {{ book.guestsCount }} ضيوف</span>
+                      </div>
                     </td>
+
                     <td>
-                      <h6 class="fw-700 m-0">{{book.roomsCount}}</h6>
+                      <div class="date-cell">
+                        <span>{{ formatDate(book.checkInDate) }}</span>
+                        <i class="fa-solid fa-arrow-left-long date-arrow"></i>
+                        <span>{{ formatDate(book.checkOutDate) }}</span>
+                      </div>
                     </td>
-                    <td>من : {{formatDate(book.checkInDate)}} الي : {{formatDate(book.checkOutDate)}}</td>
-                    <td class="text-success">{{book.totalAmount}} ج</td>
+
+                    <td class="fw-700 text-success">{{ formatCurrency(book.totalAmount) }}</td>
+
                     <td>
-                      <span class="badge" [ngClass]="(book.status | status:'status').class">
+                      <span class="badge rounded-pill" [ngClass]="(book.status | status:'status').class">
                         {{ (book.status | status:'status').text }}
                       </span>
                     </td>
+
                     <td>
-                      <span class="badge" [ngClass]="(book.paymentStatus | status:'PaymentStatus').class">
+                      <span class="badge rounded-pill" [ngClass]="(book.paymentStatus | status:'PaymentStatus').class">
                         {{ (book.paymentStatus | status:'PaymentStatus').text }}
                       </span>
                     </td>
+
                     <td>
-                      <span class="badge" [ngClass]="(book.paymentMethod | status:'paymentMethod').class">
+                      <span class="badge rounded-pill" [ngClass]="(book.paymentMethod | status:'paymentMethod').class">
                         {{ (book.paymentMethod | status:'paymentMethod').text }}
                       </span>
                     </td>
+
                     <td>
-                      <div class="badge bg-primary" (click)="openModal(book.id)">التفاصيل
-                      </div>
+                      <button class="btn-details" (click)="openModal(book.id)">
+                        <i class="fa-solid fa-eye"></i>
+                        تفاصيل
+                      </button>
                     </td>
                   </tr>
-                  }
-
-                  }@else {
-                  <tr>
-                    <td colspan="7" class="text-muted py-3">لا توجد حجوزات</td>
-                  </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-            <!-- ================= Pagination ================= -->
-            <app-pagination [currentPage]="pageIndex" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
-            </app-pagination>
-          </div>
+                }
+              }
+            </tbody>
+          </table>
         </div>
+
+        <!-- Pagination -->
+        @if (totalPages > 1) {
+          <div class="px-3 pb-3">
+            <app-pagination
+              [currentPage]="pageIndex"
+              [totalPages]="totalPages"
+              (pageChange)="onPageChange($event)"
+            ></app-pagination>
+          </div>
+        }
+
       </div>
     </div>
 
-    <!-- Modal Details -->
-    <div class="modal fade" id="BookingModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content custom-modal">
+  </div>
+</div>
 
-          <!-- Header -->
-          <div class="modal-header bg-orange border-0">
-            <h5 class="modal-title fw-bold fs-4">تفاصيل الحجز</h5>
-            <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
+<!-- ═══════════════════════════════════════════
+     Modal: تفاصيل الحجز
+═══════════════════════════════════════════ -->
+<div class="modal fade" id="BookingModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content custom-modal">
+
+      <div class="modal-header bg-orange border-0">
+        <h5 class="modal-title fw-bold">
+          <i class="fa-solid fa-file-invoice me-2"></i>
+          تفاصيل الحجز
+        </h5>
+        <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
+      </div>
+
+      @if (!bookingDetails) {
+        <div class="modal-body py-5 text-center text-muted">
+          <div class="spinner-border text-orange" role="status"></div>
+        </div>
+      } @else {
+        <div class="modal-body p-4">
+
+          <!-- العميل -->
+          <div class="detail-section">
+            <div class="detail-section__title">
+              <i class="fa-regular fa-user text-orange"></i>
+              معلومات العميل
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-item__label">الاسم</span>
+                <span class="detail-item__value">{{ bookingDetails.clientName }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">البريد الإلكتروني</span>
+                <span class="detail-item__value">{{ bookingDetails.clientEmail }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">رقم الجوال</span>
+                <span class="detail-item__value dir-ltr">{{ bookingDetails.clientPhoneNumber }}</span>
+              </div>
+            </div>
           </div>
 
-          @if(bookingDetails) {
-          <!-- Body -->
-          <div class="modal-body p-4">
-            <!-- معلومات العميل -->
-            <div class="section">
-              <div class="section-title">
-                <i class="fa-regular fa-user text-orange ms-2"></i>
-                معلومات العميل
+          <!-- العقار -->
+          <div class="detail-section">
+            <div class="detail-section__title">
+              <i class="fa-solid fa-house text-orange"></i>
+              معلومات العقار
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-item__label">اسم العقار</span>
+                <span class="detail-item__value">{{ bookingDetails.propertyName }}</span>
               </div>
-
-              <div class="info-box">
-                <div class="info-row">
-                  <span>الاسم :</span>
-                  <span>{{bookingDetails.clientName}}</span>
-                </div>
-                <div class="info-row">
-                  <span>البريد الإلكتروني :</span>
-                  <span>{{bookingDetails.clientEmail}}</span>
-                </div>
-                <div class="info-row">
-                  <span>رقم الجوال :</span>
-                  <span>{{bookingDetails.clientPhoneNumber}}</span>
-                </div>
+              <div class="detail-item">
+                <span class="detail-item__label">العنوان</span>
+                <span class="detail-item__value">{{ bookingDetails.propertyAddress }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">عدد الغرف</span>
+                <span class="detail-item__value">{{ bookingDetails.propertyRoomCount }} غرفة</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">أقصى ضيوف</span>
+                <span class="detail-item__value">{{ bookingDetails.propertyGuestCount }} ضيف</span>
               </div>
             </div>
-
-            <!-- معلومات العقار -->
-            <div class="section">
-              <div class="section-title">
-                <i class="fa-solid fa-house text-orange ms-2"></i>
-                معلومات العقار
-              </div>
-
-              <div class="info-box">
-                <div class="info-row">
-                  <span>اسم العقار :</span>
-                  <span>{{bookingDetails.propertyName}}</span>
-                </div>
-                <div class="info-row">
-                  <span>عدد الغرف :</span>
-                  <span>{{bookingDetails.propertyRoomCount}} غرفه</span>
-                </div>
-                <div class="info-row">
-                  <span>عدد الضيوف :</span>
-                  <span>{{bookingDetails.propertyGuestCount}} ضيف</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- معلومات الحجز -->
-            <div class="section">
-              <div class="section-title">
-                <i class="fa-regular fa-calendar text-orange ms-2"></i>
-                معلومات الحجز
-              </div>
-
-              <div class="info-box">
-                <div class="info-row">
-                  <span>تاريخ الدخول :</span>
-                  <span>{{formatDate(bookingDetails.checkInDate)}}</span>
-                </div>
-                <div class="info-row">
-                  <span>تاريخ الخروج :</span>
-                  <span>{{formatDate(bookingDetails.checkOutDate)}}</span>
-                </div>
-                <div class="info-row">
-                  <span>عدد الليالي :</span>
-                  <span>{{bookingDetails.nightsCount}} ليلة</span>
-                </div>
-                <div class="info-row">
-                  <span>تاريخ الحجز :</span>
-                  <span>{{formatDate(bookingDetails.createdAt)}}</span>
-                </div>
-              </div>
-            </div>
-
           </div>
-          }
 
-          <!-- Footer -->
-          <div class="modal-footer border-0 px-4 pb-4">
-            <button class="btn btn-addModel w-100 fw-bold" data-bs-dismiss="modal">إغلاق</button>
+          <!-- الحجز -->
+          <div class="detail-section">
+            <div class="detail-section__title">
+              <i class="fa-regular fa-calendar text-orange"></i>
+              معلومات الحجز
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-item__label">تاريخ الوصول</span>
+                <span class="detail-item__value">{{ formatDate(bookingDetails.checkInDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">تاريخ المغادرة</span>
+                <span class="detail-item__value">{{ formatDate(bookingDetails.checkOutDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">عدد الليالي</span>
+                <span class="detail-item__value">{{ bookingDetails.nightsCount }} ليلة</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">عدد الغرف المحجوزة</span>
+                <span class="detail-item__value">{{ bookingDetails.roomsCount }} غرفة</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">عدد الضيوف</span>
+                <span class="detail-item__value">{{ bookingDetails.guestsCount }} ضيف</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">سعر الليلة</span>
+                <span class="detail-item__value text-success fw-700">{{ formatCurrency(bookingDetails.pricePerNight) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- المالية والحالة -->
+          <div class="detail-section">
+            <div class="detail-section__title">
+              <i class="fa-solid fa-wallet text-orange"></i>
+              الدفع والحالة
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-item__label">إجمالي المبلغ</span>
+                <span class="detail-item__value text-success fw-700 fs-5">{{ formatCurrency(bookingDetails.totalAmount) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">حالة الحجز</span>
+                <span class="badge rounded-pill" [ngClass]="(bookingDetails.status | status:'status').class">
+                  {{ (bookingDetails.status | status:'status').text }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">حالة الدفع</span>
+                <span class="badge rounded-pill" [ngClass]="(bookingDetails.paymentStatus | status:'PaymentStatus').class">
+                  {{ (bookingDetails.paymentStatus | status:'PaymentStatus').text }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">طريقة الدفع</span>
+                <span class="badge rounded-pill" [ngClass]="(bookingDetails.paymentMethod | status:'paymentMethod').class">
+                  {{ (bookingDetails.paymentMethod | status:'paymentMethod').text }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item__label">تاريخ الحجز</span>
+                <span class="detail-item__value">{{ formatDate(bookingDetails.createdAt) }}</span>
+              </div>
+              @if (bookingDetails.cancelledAt) {
+                <div class="detail-item">
+                  <span class="detail-item__label">تاريخ الإلغاء</span>
+                  <span class="detail-item__value text-danger">{{ formatDate(bookingDetails.cancelledAt) }}</span>
+                </div>
+              }
+            </div>
+            @if (bookingDetails.cancellationReason) {
+              <div class="cancellation-note mt-3">
+                <i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>
+                <span>{{ bookingDetails.cancellationReason }}</span>
+              </div>
+            }
           </div>
 
         </div>
+      }
+
+      <div class="modal-footer border-0 px-4 pb-4">
+        <button class="btn btn-addModel w-100 fw-bold" data-bs-dismiss="modal">إغلاق</button>
       </div>
+
     </div>
-
-
   </div>
 </div>

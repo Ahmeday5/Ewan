@@ -6,7 +6,21 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
+import {
+  Chart,
+  LineController,
+  BarController,
+  DoughnutController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
 import { DashboardService } from '../../services/dashboard.service';
 import { RouterModule } from '@angular/router';
 import {
@@ -18,7 +32,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subject, debounceTime } from 'rxjs';
 
-Chart.register(...registerables);
+Chart.register(
+  LineController, BarController, DoughnutController,
+  CategoryScale, LinearScale,
+  PointElement, LineElement, BarElement, ArcElement,
+  Tooltip, Legend, Filler,
+);
 
 const CHART_COLORS = [
   '#e74c3c',
@@ -144,7 +163,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.renderCharts(cached.data);
       return;
     }
-
+    
     // ❌ لو مفيش كاش أو انتهى
     this.apiService.getChartsData(this.months).subscribe({
       next: (data) => {

@@ -1,24 +1,9 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
-  OnDestroy,
-} from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  fromEvent,
-  map,
-  Subscription,
-} from 'rxjs';
 import { SidebarService } from '../../core/services/sidebar.service';
 import { AuthService } from '../../core/services/auth.service';
-import { HttpHeaders } from '@angular/common/http';
-import { ApiService } from '../../core/services/api.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,22 +12,18 @@ import { ApiService } from '../../core/services/api.service';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
-export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SidebarComponent implements OnInit, AfterViewInit {
   isSidebarOpen: boolean = false;
   isCollapsed: boolean = false;
   isMobile = false;
 
   menuItems: any[] = [];
-  filteredMenuItems: any[] = [];
-  private searchSub: Subscription | null = null;
-  @ViewChild('searchInput', { static: true })
-  searchInputRef!: ElementRef<HTMLInputElement>;
 
   constructor(
     private router: Router,
     private sidebarService: SidebarService,
     private authService: AuthService,
-    private apiService: ApiService,
+     private el: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -61,9 +42,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-    // ⚠️ clone بعد ما تطبق الحالات
-    this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
-
     const savedCollapsed = localStorage.getItem('sidebarCollapsed');
     if (savedCollapsed) {
       this.isCollapsed = savedCollapsed === 'true';
@@ -72,6 +50,14 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sidebarService.sidebar$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.isMobile) {
+          this.sidebarService.close();
+        }
+      });
   }
 
   handleSpecialAction(subItem: any): void {
@@ -84,20 +70,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-
-  /*private deleteMyAccount(): void {
-    this.apiService.deleteMyAccount().subscribe({
-      next: (response) => {
-        alert(response.message || 'تم حذف الحساب بنجاح');
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        this.sidebarService.close(); // اختياري: إغلاق السايدبار
-      },
-      error: (err) => {
-        alert(err.message || 'فشل حذف الحساب، حاول مرة أخرى لاحقًا');
-      },
-    });
-  }*/
 
   closeSidebar() {
     this.sidebarService.close();
@@ -113,21 +85,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     window.addEventListener('resize', () => this.updateSidebarState());
-
-    this.searchSub = fromEvent(this.searchInputRef.nativeElement, 'input')
-      .pipe(
-        map((e: any) => e.target.value as string),
-        map((v) => v.trim()),
-        debounceTime(200),
-        distinctUntilChanged(),
-      )
-      .subscribe((query) => {
-        this.applyFilter(query);
-      });
-  }
-
-  ngOnDestroy(): void {
-    if (this.searchSub) this.searchSub.unsubscribe();
   }
 
   private updateSidebarState(): void {
@@ -142,7 +99,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleSubmenu(sectionIndex: number, itemIndex: number): void {
-    const section = this.filteredMenuItems[sectionIndex];
+    const section = this.menuItems[sectionIndex];
     if (!section?.items) return;
 
     const item = section.items[itemIndex];
@@ -153,83 +110,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     // حفظ حالة الفتح
     if (item.label) {
       localStorage.setItem(`submenu_${item.label}`, item.isOpen.toString());
-    }
-  }
-
-  private applyFilter(query: string): void {
-    if (!query) {
-      this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
-      this.closeAllSubmenus(this.filteredMenuItems);
-      return;
-    }
-
-    const q = query.toLowerCase();
-
-    const result: any[] = [];
-
-    for (const section of this.menuItems) {
-      const clonedSection: any = { ...section };
-      clonedSection.items = [];
-
-      const titleMatches =
-        section.title && section.title.toLowerCase().includes(q);
-
-      if (titleMatches) {
-        clonedSection.items = JSON.parse(JSON.stringify(section.items || []));
-        if (clonedSection.items)
-          clonedSection.items.forEach((it: any) => {
-            if (it.submenu) it.isOpen = true;
-          });
-        result.push(clonedSection);
-        continue;
-      }
-
-      if (section.items && section.items.length) {
-        for (const item of section.items) {
-          const itemLabel = (item.label || '').toLowerCase();
-          let matchedItem: any = null;
-
-          if (itemLabel.includes(q)) {
-            matchedItem = JSON.parse(JSON.stringify(item));
-            if (matchedItem.submenu) matchedItem.isOpen = true;
-          } else if (item.submenu && item.submenu.length) {
-            const matchingSub: any[] = [];
-            for (const sub of item.submenu) {
-              const subKey = (sub.key || '').toLowerCase();
-              if (subKey.includes(q)) {
-                matchingSub.push(JSON.parse(JSON.stringify(sub)));
-              }
-            }
-            if (matchingSub.length) {
-              matchedItem = {
-                ...JSON.parse(JSON.stringify(item)),
-                submenu: matchingSub,
-                isOpen: true,
-              };
-            }
-          }
-
-          if (matchedItem) {
-            clonedSection.items.push(matchedItem);
-          }
-        }
-
-        if (clonedSection.items.length) {
-          result.push(clonedSection);
-        }
-      }
-    }
-
-    this.filteredMenuItems = result;
-  }
-
-  private closeAllSubmenus(list: any[]): void {
-    for (const section of list) {
-      if (section.items && section.items.length) {
-        for (const it of section.items) {
-          if (it.submenu) it.isOpen = false;
-        }
-      }
     }
   }
 
@@ -324,9 +204,39 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
+            label: 'الاسئلة الشائعة',
+            path: 'faq/list',
+            icons: 'fas fa-question-circle',
+            isOpen: false,
+          },
+        ],
+      },
+      {
+        items: [
+          {
             label: 'الاشعارات',
             path: 'Notificaion/MainNotificaion',
             icons: 'fas fa-bell',
+            isOpen: false,
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            label: 'بيانات التواصل',
+            path: 'contact-us',
+            icons: 'fas fa-headset',
+            isOpen: false,
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            label: 'الشروط والأحكام',
+            path: 'terms',
+            icons: 'fas fa-file-contract',
             isOpen: false,
           },
         ],

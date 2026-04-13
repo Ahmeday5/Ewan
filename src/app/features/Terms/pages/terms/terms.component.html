@@ -1,0 +1,90 @@
+<div class="terms-page">
+  <div class="container-fluid py-4 px-3">
+
+    <!-- ═══ Header ═══ -->
+    <div class="page-header mb-4">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="page-icon">
+          <i class="fa-solid fa-file-contract"></i>
+        </div>
+        <div>
+          <h1 class="page-header__title">الشروط والأحكام</h1>
+          <p class="page-header__sub">تحرير محتوى صفحة الشروط والأحكام الظاهرة في التطبيق</p>
+        </div>
+      </div>
+
+      @if (hasLoaded && !isEditing) {
+        <button class="btn btn-edit" (click)="startEditing()">
+          <i class="fa-solid fa-pen me-2"></i>
+          تعديل المحتوى
+        </button>
+      }
+    </div>
+
+    <!-- ═══ Loading ═══ -->
+    @if (!hasLoaded) {
+      <div class="loading-box">
+        <div class="spinner-border" role="status"></div>
+        <span>جاري التحميل...</span>
+      </div>
+    } @else {
+
+      <!-- ═══ Preview Mode ═══ -->
+      @if (!isEditing) {
+        <div class="preview-card">
+          <div class="preview-card__header">
+            <i class="fa-solid fa-eye text-orange me-2"></i>
+            معاينة المحتوى
+          </div>
+          <div class="preview-card__body ck-content" [innerHTML]="editorContent"></div>
+        </div>
+      }
+
+      <!-- ═══ Edit Mode ═══ -->
+      @if (isEditing) {
+        <div class="editor-card">
+
+          <div class="editor-card__header">
+            <i class="fa-solid fa-pen-nib text-orange me-2"></i>
+            تحرير المحتوى
+          </div>
+
+          <div class="editor-card__body">
+            <ckeditor
+              [editor]="Editor"
+              [(ngModel)]="editorContent"
+              [config]="{ language: 'ar' }"
+            ></ckeditor>
+          </div>
+
+          <div class="editor-card__footer">
+            <button
+              class="btn btn-cancel"
+              [disabled]="isSaving"
+              (click)="cancelEditing()"
+            >
+              <i class="fa-solid fa-xmark me-1"></i>
+              إلغاء
+            </button>
+            <button
+              class="btn btn-save"
+              [disabled]="isSaving || !hasChanges"
+              (click)="save()"
+            >
+              @if (isSaving) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                جاري الحفظ...
+              } @else {
+                <i class="fa-solid fa-floppy-disk me-2"></i>
+                حفظ التغييرات
+              }
+            </button>
+          </div>
+
+        </div>
+      }
+
+    }
+
+  </div>
+</div>

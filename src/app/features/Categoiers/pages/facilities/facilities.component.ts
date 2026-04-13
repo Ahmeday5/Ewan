@@ -7,9 +7,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { PaginationComponent } from "../../../../shared/components/pagination/pagination.component";
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { facilitiesService } from '../../services/facilities.service';
 import { facilitiesGroups } from '../../models/facilities.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-main-category',
@@ -20,25 +21,16 @@ import { facilitiesGroups } from '../../models/facilities.model';
 })
 export class FacilitiesComponent implements OnInit, AfterViewInit {
   Facilities: facilitiesGroups[] = [];
-  //أنا مستني Array من facilitiesGroups
   selectedGroup!: facilitiesGroups;
-  // بقوله هاخد من بروبلتي جروب بس مش Array، هاخد عنصر واحد بس
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
   errorMessageModel: string | null = null;
   categoryId!: number;
   form!: FormGroup;
   isEditMode = false;
   editingId: number | null = null;
   hasLoaded = false;
-  // modal
-  modalInstance!: {
-    show: () => void;
-    hide: () => void;
-  };
-  // باخد اوبجكت من البوت استراب عشان اقدر افتح واقفل المودال من الكومبوننت
 
-  // ====================== pagination ======================
+  modalInstance!: { show: () => void; hide: () => void };
+
   totalCount: number = 0;
   pageIndex: number = 1;
   pageSize: number = 10;
@@ -48,23 +40,22 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
     private apiService: facilitiesService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.route.paramMap.subscribe((params) => {
       const id = params.get('categoryId');
-
       if (id) {
         this.categoryId = +id;
-        // جلب اسم الكاتجوري
         this.apiService.getById(this.categoryId).subscribe({
           next: (cat) => {
             this.selectedGroup = cat;
             this.hasLoaded = true;
           },
           error: (err) => {
-            this.errorMessage = err.message;
+            this.toast.error(err.message);
             this.hasLoaded = true;
           },
         });
@@ -76,7 +67,6 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const modal = document.getElementById('CategoryModal');
-
     if (modal) {
       this.modalInstance = new (window as any).bootstrap.Modal(modal);
     }
@@ -88,23 +78,22 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
+
   get nameControl() {
     return this.form.get('name');
   }
 
   loadGroups(): void {
     this.hasLoaded = false;
-
     this.apiService.getAll(this.pageIndex, this.pageSize).subscribe({
       next: (res) => {
         this.Facilities = res.facilities;
         this.totalPages = res.totalPages;
         this.totalCount = res.totalCount;
         this.hasLoaded = true;
-
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
@@ -115,26 +104,12 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
     this.loadGroups();
   }
 
-  // ======================
-  // LOAD BY id
-  // ======================
-
   loadById(id: number) {
     this.apiService.getById(id).subscribe({
       next: (data) => {
-        // 1️⃣ إعادة تعيين الفورم أولاً
         this.form.reset();
-
-        // 2️⃣ تعيين القيمة الجديدة
-        this.form.patchValue({
-          id: data.id, // 👈 ID
-          name: data.name, // 👈 الاسم
-        });
-
-        // 3️⃣ عرض المودال بعد فترة قصيرة لضمان Angular Detect Changes
-        setTimeout(() => {
-          this.modalInstance.show();
-        });
+        this.form.patchValue({ id: data.id, name: data.name });
+        setTimeout(() => this.modalInstance.show());
       },
       error: (err) => {
         this.errorMessageModel = err.message;
@@ -142,27 +117,18 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ======================
-  // ADD MODAL
-  // ======================
   openAddModal() {
     this.isEditMode = false;
+    this.errorMessageModel = null;
     this.form.reset();
     this.modalInstance.show();
   }
 
-  // ======================
-  // EDIT MODAL
-  // ======================
-
   openEditModal(id: number) {
     this.isEditMode = true;
-    this.loadById(id); // سيقوم الآن بتحديث الفورم وفتح المودال
+    this.errorMessageModel = null;
+    this.loadById(id);
   }
-
-  // ======================
-  // SUBMIT
-  // ======================
 
   onSubmit() {
     if (this.form.invalid) {
@@ -171,17 +137,14 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
     }
 
     const body = this.form.value as { id?: number; name: string };
-    
+
     const request$ = this.isEditMode
       ? this.apiService.update(body)
       : this.apiService.create({ name: body.name });
-    //request$ بقول لاي حد هيشتغل بعدي خلي بالك دة observable
 
     request$.subscribe({
       next: () => {
-        this.showSuccess(
-          this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
-        );
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.modalInstance.hide();
         if (this.categoryId) {
           this.loadById(this.categoryId);
@@ -191,41 +154,25 @@ export class FacilitiesComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.errorMessageModel = err.message;
-        setTimeout(() => {
-          this.errorMessageModel = null;
-        }, 6000);
+        setTimeout(() => (this.errorMessageModel = null), 6000);
       },
     });
   }
 
-  // ======================
-  // DELETE
-  // ======================
-
-  deleteSub(id: number) {
-    if (!confirm('هل انت متاكد من الحذف؟')) return;
+  async deleteSub(id: number) {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا العنصر؟');
+    if (!confirmed) return;
 
     this.apiService.delete(id).subscribe({
       next: () => {
-        this.showSuccess('تم الحذف بنجاح');
+        this.toast.success('تم الحذف بنجاح');
         if (this.categoryId) {
           this.loadById(this.categoryId);
         } else {
           this.loadGroups();
         }
       },
-      error: (err) => (this.errorMessage = err.message),
+      error: (err) => this.toast.error(err.message),
     });
-  }
-
-  // ======================
-  // SUCCESS
-  // ======================
-
-  showSuccess(msg: string) {
-    this.successMessage = msg;
-    setTimeout(() => {
-      this.successMessage = null;
-    }, 3000);
   }
 }

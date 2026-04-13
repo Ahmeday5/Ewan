@@ -76,14 +76,31 @@
   width: 17vw;
   max-width: 280px;
   min-width: 250px;
-  min-height: 100vh;
   background: var(--second-color);
   overflow-y: auto;
   overflow-x: hidden;
   transition: all 0.35s ease;
   z-index: 1000;
   padding: 15px 0;
-  position: relative;
+  // ارتفاع ثابت = شرط أساسي لاشتغال overflow-y: auto
+  height: 100vh;
+  height: 100dvh;
+  // يفضل في مكانه لما الصفحة تتسكرول
+  position: sticky;
+  top: 0;
+  // سكرول ناعم على iOS
+  -webkit-overflow-scrolling: touch;
+  // مخفي السكرول بار من الشكل لكن قابل للسكرول
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.507) transparent;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
+  direction: ltr !important;
+}
+
+.sidebar-nav {
+  direction: rtl;
 }
 
 .logo {
@@ -242,18 +259,22 @@
 @media (max-width: 992px) {
   .sidebar {
     position: fixed;
-    top: 77px;
+    top: var(--header-height, 100px);
     right: 0;
-    min-height: 100vh;
+    height: calc(var(--app-height, 100vh) - var(--header-height, 100px));
     transform: translateX(100%);
     z-index: 10000;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+
     &.sidebar-open {
       transform: translateX(0);
     }
+
     &.sidebar-mini {
       width: 280px !important;
     }
   }
+
   .desktop-minimize-btn {
     display: none !important;
   }
@@ -263,8 +284,13 @@
   .desktop-minimize-btn {
     display: block;
   }
+
   .sidebar {
-    position: relative;
+    // على الديسكتوب: sticky + height ثابت = scroll داخلي يشتغل
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
     transform: none !important;
   }
 }

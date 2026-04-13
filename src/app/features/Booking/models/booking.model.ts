@@ -57,6 +57,18 @@ export interface StatusTotals {
 }
 
 // ==============================
+// Booking Filters
+// ==============================
+export interface BookingFilters {
+  search?: string;
+  status?: string;
+  paymentStatus?: string;
+  propertyId?: number | null;
+  fromDate?: string;
+  toDate?: string;
+}
+
+// ==============================
 // Get All Response (API)
 // ==============================
 export interface GetAllBookingsResponse {
@@ -73,10 +85,12 @@ export interface BookingsResponse {
   items: Bookings[];
   totalPages: number;
   totalCount: number;
+  totalRevenue: number;
+  statusTotals: StatusTotals;
 }
 
 // ==============================
-// Booking Stats
+// Booking Stats (لو مطلوب من endpoint منفصل)
 // ==============================
 export interface BookingStats {
   totalBookings: number;
@@ -90,4 +104,12 @@ export interface ApiResponse<T> {
   statusCode: number;
   message: string;
   data: T;
+}
+
+// ==============================
+// Property Option (للـ dropdown)
+// ==============================
+export interface PropertyOption {
+  id: number;
+  name: string;
 }

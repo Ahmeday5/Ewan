@@ -10,7 +10,7 @@ export const NOTIFICATION_ROUTES: Routes = [
     title: 'الاشعارات',
     data: {
       title: 'إدارة الاشعارات',
-      subtitle: 'إرسال إشعارات للعملاء وأصحاب العقارات',
+      subtitle: 'إرسال إشعارات للعملاء',
     },
   },
 ];

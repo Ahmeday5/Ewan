@@ -1,0 +1,181 @@
+.terms-page {
+
+  // ─── Header ───────────────────────────────────────────────
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    &__title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--third-color);
+      margin: 0;
+    }
+
+    &__sub {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  .btn-edit {
+    background: rgba(241, 90, 36, 0.08) !important;
+    color: var(--second-color) !important;
+    border: 1.5px solid rgba(241, 90, 36, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 9px 22px !important;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background 0.15s, transform 0.12s;
+    white-space: nowrap;
+
+    &:hover { background: rgba(241, 90, 36, 0.15) !important; transform: translateY(-1px); }
+    &:focus { box-shadow: none !important; }
+  }
+
+  // ─── Preview Card ─────────────────────────────────────────
+  .preview-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+
+    &__header {
+      padding: 14px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--third-color);
+      background: rgba(0, 0, 0, 0.02);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    &__body {
+      padding: 24px 28px;
+      min-height: 200px;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #333;
+      direction: rtl;
+
+      // جعل المحتوى الـ HTML يبدو صح
+      h1, h2, h3, h4 { font-weight: 700; margin-bottom: 10px; }
+      p  { margin-bottom: 12px; }
+      ul, ol { padding-right: 24px; margin-bottom: 12px; }
+      li { margin-bottom: 4px; }
+      strong { font-weight: 700; }
+
+      @media (max-width: 576px) {
+        padding: 16px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // ─── Editor Card ──────────────────────────────────────────
+  .editor-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+
+    &__header {
+      padding: 14px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--third-color);
+      background: rgba(0, 0, 0, 0.02);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    &__body {
+      padding: 0;
+
+      // CKEditor overrides للتوافق مع التصميم
+      ::ng-deep .ck-editor__editable {
+        min-height: 400px;
+        font-size: 15px;
+        line-height: 1.9;
+        direction: rtl;
+        text-align: right;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 20px 24px !important;
+
+        @media (max-width: 576px) {
+          min-height: 280px;
+          padding: 12px 14px !important;
+          font-size: 14px;
+        }
+      }
+
+      ::ng-deep .ck-toolbar {
+        border: none !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+        border-radius: 0 !important;
+        background: #fafafa !important;
+        flex-wrap: wrap !important; // ← مهم جداً للريسبونسف
+        gap: 2px;
+        padding: 6px 8px !important;
+      }
+
+      ::ng-deep .ck-editor {
+        border: none !important;
+        border-radius: 0 !important;
+      }
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 22px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      background: rgba(0, 0, 0, 0.02);
+      flex-wrap: wrap;
+
+      @media (max-width: 480px) {
+        flex-direction: column-reverse;
+        .btn-save, .btn-cancel { width: 100%; }
+      }
+    }
+  }
+
+  // ─── Buttons ──────────────────────────────────────────────
+  .btn-save {
+    background: var(--second-color) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 10px 24px !important;
+    font-weight: 700;
+    font-size: 14px;
+    transition: opacity 0.2s, transform 0.12s;
+
+    &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &:focus { box-shadow: none !important; }
+  }
+
+  .btn-cancel {
+    background: #f1f1f1 !important;
+    color: #555 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.15s;
+
+    &:hover:not(:disabled) { background: #e2e2e2 !important; }
+    &:focus { box-shadow: none !important; }
+  }
+}

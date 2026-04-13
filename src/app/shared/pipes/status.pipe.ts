@@ -1,5 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { BookingStatus, PaymentStatus, PaymentMethod } from '../enums/status.enum';
+import {
+  BookingStatus,
+  PaymentStatus,
+  PaymentMethod,
+} from '../enums/status.enum';
 
 @Pipe({
   name: 'status',
@@ -7,10 +11,10 @@ import { BookingStatus, PaymentStatus, PaymentMethod } from '../enums/status.enu
 })
 export class StatusPipe implements PipeTransform {
   transform(
-    value: string,
+    value: string | number,
     type: 'status' | 'PaymentStatus' | 'paymentMethod',
   ): { text: string; class: string } {
-    const maps = {
+    const maps: Record<string, Record<string | number, { text: string; class: string }>> = {
       status: {
         [BookingStatus.Confirmed]: { text: 'مؤكدة', class: 'bg-success' },
         [BookingStatus.Completed]: { text: 'مكتملة', class: 'bg-primary' },
@@ -24,13 +28,16 @@ export class StatusPipe implements PipeTransform {
         [PaymentStatus.Refunded]: { text: 'مُسترد', class: 'bg-info' },
       },
       paymentMethod: {
-        [PaymentMethod.CashOnArrival]: { text: 'كاش عند الوصول', class: 'bg-secondary' },
+        [PaymentMethod.CashOnArrival]: {
+          text: 'كاش عند الوصول',
+          class: 'bg-secondary',
+        },
       },
     };
 
-    const map = maps[type] as Record<string, { text: string; class: string }>;
+    const map = maps[type];
     return (
-      map[value] || {
+      map?.[value] ?? {
         text: 'غير معروف',
         class: 'bg-secondary',
       }

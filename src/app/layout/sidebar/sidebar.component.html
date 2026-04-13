@@ -20,7 +20,7 @@
     </div>
     <!-- الأقسام الرئيسية -->
     <div class="nav-sections mt-4">
-      @for (section of filteredMenuItems; track sectionIndex; let sectionIndex = $index) {
+      @for (section of menuItems; track sectionIndex; let sectionIndex = $index) {
       <div class="menu-section mb-4">
         <ul class="nav-menu list-unstyled">
           @for (item of section.items; track itemIndex; let itemIndex = $index) {

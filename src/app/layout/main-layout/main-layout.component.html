@@ -1,18 +1,51 @@
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+<!-- ═══════════════ Toast Host ═══════════════ -->
+<div class="toast-host" aria-live="polite" aria-atomic="false">
   @for (toast of toasts$ | async; track toast.id) {
-  <div class="toast align-items-center text-white bg-{{toast.type}} border-0 show" role="alert">
-    <div class="d-flex">
-      <div class="toast-body fw-bold">
-        {{ toast.message }}
+    <div class="toast-item toast-item--{{ toast.type }}" role="alert">
+
+      <!-- Icon -->
+      <div class="toast-icon">
+        <i class="fa-solid" [ngClass]="{
+          'fa-circle-check':        toast.type === 'success',
+          'fa-circle-xmark':        toast.type === 'error',
+          'fa-circle-info':         toast.type === 'info',
+          'fa-triangle-exclamation': toast.type === 'warning',
+          'fa-circle-question':     toast.type === 'confirm'
+        }"></i>
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto"
-        (click)="toastService.remove(toast.id)"></button>
+
+      <!-- Body -->
+      <div class="toast-body">
+        <span class="toast-message">{{ toast.message }}</span>
+
+        <!-- Confirm Buttons -->
+        @if (toast.type === 'confirm') {
+          <div class="toast-actions">
+            <button class="toast-btn toast-btn--confirm" (click)="toast.onConfirm?.()">
+              <i class="fa-solid fa-check me-1"></i> نعم
+            </button>
+            <button class="toast-btn toast-btn--cancel" (click)="toast.onCancel?.()">
+              <i class="fa-solid fa-xmark me-1"></i> إلغاء
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Close (non-confirm only) -->
+      @if (toast.type !== 'confirm') {
+        <button class="toast-close" (click)="toastService.remove(toast.id)" aria-label="إغلاق">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+
     </div>
-  </div>
   }
 </div>
 
+<!-- ═══════════════ App Layout ═══════════════ -->
 <div class="app-layout">
+  <div class="sidebar-overlay" *ngIf="isSidebarOpen$ | async" (click)="sidebarService.close()"></div>
+
   <aside class="sidebar-wrapper">
     <app-sidebar></app-sidebar>
   </aside>

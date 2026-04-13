@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-
 export class LoaderService {
   private loadingCount = 0;
 
@@ -13,14 +12,20 @@ export class LoaderService {
 
   show() {
     this.loadingCount++;
-    this._loading.next(true);
+    queueMicrotask(() => {
+      // بياجل تنفيذ اللودينج لحد مال اليو اي بتاع الانجلر يترسم
+      this._loading.next(true);
+    });
   }
 
   hide() {
     this.loadingCount--;
+
     if (this.loadingCount <= 0) {
-      this._loading.next(false);
       this.loadingCount = 0;
+      queueMicrotask(() => {
+        this._loading.next(false);
+      });
     }
   }
 }

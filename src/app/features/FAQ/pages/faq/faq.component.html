@@ -1,0 +1,196 @@
+<div class="faq-page">
+  <div class="container-fluid mb-3 mt-4">
+
+    <!-- ═══════════════ Header ═══════════════ -->
+    <div class="page-header mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="page-icon">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <div>
+          <h1 class="page-title mb-0">الأسئلة الشائعة</h1>
+          <p class="page-subtitle mb-0">إدارة الأسئلة والأجوبة الشائعة للتطبيق</p>
+        </div>
+      </div>
+      <button class="btn btn-addSection btn-add-faq" (click)="openAddModal()">
+        <i class="fa-solid fa-plus me-2"></i>
+        إضافة سؤال جديد
+      </button>
+    </div>
+    
+    <!-- ═══════════════ Stats Bar ═══════════════ -->
+    <div class="stats-bar mb-4">
+      <div class="stat-pill">
+        <i class="fa-solid fa-circle-question stat-pill__icon"></i>
+        <span class="stat-pill__value">{{ totalCount }}</span>
+        <span class="stat-pill__label">سؤال مضاف</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════ Modal (Add / Edit) ═══════════════ -->
+    <div class="modal fade" id="FaqModal" tabindex="-1" aria-labelledby="FaqModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-custom">
+
+          <div class="modal-header border-0 pb-1">
+            <div class="d-flex align-items-center gap-2">
+              <div class="modal-mode-icon" [class.modal-mode-icon--add]="isAddMode" [class.modal-mode-icon--edit]="isEditMode">
+                <i class="fa-solid" [ngClass]="isAddMode ? 'fa-plus' : 'fa-pen'"></i>
+              </div>
+              <h5 class="modal-title fw-bold mb-0" id="FaqModalLabel">
+                {{ isEditMode ? 'تعديل السؤال' : 'إضافة سؤال جديد' }}
+              </h5>
+            </div>
+            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div *ngIf="errorMessageModal" class="alert alert-danger mx-4 mt-3 mb-0 py-2 small fw-semibold">
+            <i class="fa-solid fa-circle-xmark me-1"></i>{{ errorMessageModal }}
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+            <div class="modal-body pt-3 pb-2">
+              <div class="row g-4">
+
+                <!-- السؤال -->
+                <div class="col-12">
+                  <label class="form-label fw-semibold">
+                    السؤال <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group input-group-custom" [class.input-group-custom--invalid]="isInvalid('question')">
+                    <span class="input-group-text"><i class="fa-solid fa-question"></i></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="question"
+                      placeholder="اكتب السؤال هنا..."
+                      maxlength="300"
+                      [class.is-invalid]="isInvalid('question')"
+                    />
+                  </div>
+                  <div class="field-error" *ngIf="isInvalid('question')">
+                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                    <span *ngIf="f['question'].errors?.['required']">السؤال مطلوب</span>
+                    <span *ngIf="f['question'].errors?.['maxlength']">لا يتجاوز 300 حرف</span>
+                  </div>
+                </div>
+
+                <!-- الإجابة -->
+                <div class="col-12">
+                  <label class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                    <span>الإجابة <span class="text-danger">*</span></span>
+                    <span class="char-counter"
+                      [class.char-counter--warn]="(f['answer'].value?.length ?? 0) > 800"
+                      [class.char-counter--danger]="(f['answer'].value?.length ?? 0) > 950">
+                      {{ f['answer'].value?.length ?? 0 }} / 1000
+                    </span>
+                  </label>
+                  <div class="input-group input-group-custom align-items-start" [class.input-group-custom--invalid]="isInvalid('answer')">
+                    <span class="input-group-text mt-2"><i class="fa-solid fa-align-right"></i></span>
+                    <textarea
+                      class="form-control"
+                      formControlName="answer"
+                      placeholder="اكتب الإجابة التفصيلية هنا..."
+                      rows="5"
+                      maxlength="1000"
+                      style="resize: none;"
+                      [class.is-invalid]="isInvalid('answer')"
+                    ></textarea>
+                  </div>
+                  <div class="field-error" *ngIf="isInvalid('answer')">
+                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                    <span *ngIf="f['answer'].errors?.['required']">الإجابة مطلوبة</span>
+                    <span *ngIf="f['answer'].errors?.['maxlength']">لا تتجاوز 1000 حرف</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-2">
+              <button type="button" class="btn btn-cancel-modal" data-bs-dismiss="modal">إلغاء</button>
+              <button
+                type="submit"
+                class="btn fw-bold px-4"
+                [class.btn-addModel]="isAddMode"
+                [class.btn-primary]="isEditMode"
+                [disabled]="isSubmitting"
+              >
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!isSubmitting" class="fa-solid me-2" [ngClass]="isAddMode ? 'fa-plus' : 'fa-floppy-disk'"></i>
+                {{ isEditMode ? 'حفظ التعديلات' : 'إضافة السؤال' }}
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ Content ═══════════════ -->
+
+    <!-- Loading -->
+    <div *ngIf="!hasLoaded" class="loading-state">
+      <div class="spinner-border" style="color: var(--second-color); width: 36px; height: 36px;" role="status"></div>
+      <p class="loading-text">جاري تحميل الأسئلة...</p>
+    </div>
+
+    <ng-container *ngIf="hasLoaded">
+
+      <!-- Empty State -->
+      <div *ngIf="faqs.length === 0" class="empty-state">
+        <div class="empty-icon-wrap">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <h5 class="empty-title">لا توجد أسئلة شائعة بعد</h5>
+        <p class="empty-subtitle">ابدأ بإضافة أول سؤال شائع للمستخدمين</p>
+        <button class="btn btn-addSection mt-2" (click)="openAddModal()">
+          <i class="fa-solid fa-plus me-2"></i>إضافة سؤال
+        </button>
+      </div>
+
+      <!-- FAQ Cards Grid -->
+      <div *ngIf="faqs.length > 0" class="faq-grid">
+        <div *ngFor="let faq of faqs; let i = index" class="faq-card">
+
+          <!-- Card Header -->
+          <div class="faq-card__header">
+            <div class="faq-number">{{ i + 1 }}</div>
+            <div class="faq-card__actions">
+              <button class="faq-action faq-action--edit" title="تعديل" (click)="openEditModal(faq)">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button
+                class="faq-action faq-action--delete"
+                title="حذف"
+                [disabled]="deletingId === faq.id"
+                (click)="deleteFaq(faq.id)"
+              >
+                <span *ngIf="deletingId === faq.id" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="deletingId !== faq.id" class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Question -->
+          <div class="faq-card__question">
+            <span class="question-label">س</span>
+            <p class="question-text">{{ faq.question }}</p>
+          </div>
+
+          <!-- Divider -->
+          <div class="faq-card__divider"></div>
+
+          <!-- Answer -->
+          <div class="faq-card__answer">
+            <span class="answer-label">ج</span>
+            <p class="answer-text">{{ faq.answer }}</p>
+          </div>
+
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>

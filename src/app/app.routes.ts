@@ -45,7 +45,7 @@ export const routes: Routes = [
       },
     ],
   },
-
+  
   // 🔹 Owner App 🆕
   {
     path: 'ownerProperties',
@@ -112,6 +112,23 @@ export const routes: Routes = [
         path: 'admins',
         loadChildren: () =>
           import('./features/Admin/admin.routes').then((m) => m.adminRoutes),
+      },
+      {
+        path: 'faq',
+        loadChildren: () =>
+          import('./features/FAQ/faq.routes').then((m) => m.FAQ_ROUTES),
+      },
+      {
+        path: 'contact-us',
+        loadChildren: () =>
+          import('./features/ContactUs/contact-us.routes').then(
+            (m) => m.CONTACT_US_ROUTES,
+          ),
+      },
+      {
+        path: 'terms',
+        loadChildren: () =>
+          import('./features/Terms/terms.routes').then((m) => m.TERMS_ROUTES),
       },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],

@@ -37,6 +37,9 @@
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "@ckeditor/ckeditor5-build-classic"
             ]
           },
           "configurations": {
@@ -49,7 +52,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "5kB",
+                  "maximumWarning": "6kB",
                   "maximumError": "10kB"
                 }
               ],

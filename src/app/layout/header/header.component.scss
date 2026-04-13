@@ -1,8 +1,11 @@
 .header {
-  height: 100px;
+  height: var(--header-height, 100px);
   z-index: 1030;
   color: var(--thrid-color);
   padding: 0 30px;
+  // iOS notch support
+  padding-top: env(safe-area-inset-top, 0);
+  flex-shrink: 0;
 }
 
 .container-fluid {

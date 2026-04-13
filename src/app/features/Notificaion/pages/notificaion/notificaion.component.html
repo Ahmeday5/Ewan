@@ -1,315 +1,123 @@
-<div class="Notification">
-  <div class="container-fluid mb-3 mt-4">
-    <div class="row p-0 justify-content-end">
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <button class="btn btn-addSection fw-bold w-100" data-bs-toggle="modal" data-bs-target="#addNotificationModal">
-          <i class="fa-solid fa-plus"></i>
-          إضافة مستخدم جديد
-        </button>
-      </div>
-    </div>
+<div class="container-fluid mb-3">
 
-    <div class="row p-0 justify-content-center mt-4">
-      <div class="col-12">
-        <div class="row cards row-cols-xl-4 row-cols-lg-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-users text-primary"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">5</h5>
-                  <h5 class="text-mutedd">إجمالي الاشعارات</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-user-check text-success"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">15</h5>
-                  <h5 class="text-mutedd">تم ارسالها</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-user-clock text-warning"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">3</h5>
-                  <h5 class="text-mutedd">مججدولة</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body text-center">
-                <div class="icon-container">
-                  <i class="fa-solid fa-user-shield text-purple"></i>
-                </div>
-                <div class="text-content mt-3">
-                  <h5 class="fw-700">2</h5>
-                  <h5 class="text-mutedd">مجموع القراءات</h5>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="page-header d-flex align-items-center gap-3">
+        <div class="page-icon">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div>
+          <h1 class="page-title mb-0">إرسال إشعار</h1>
+          <p class="page-subtitle mb-0">إرسال إشعار فوري لجميع العملاء المسجلين</p>
         </div>
       </div>
     </div>
-
-    <!-- Modal addNotification -->
-    <div class="modal fade" id="addNotificationModal" tabindex="-1" aria-labelledby="addNotificationModal"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <!-- ================= Header ================= -->
-          <div class="modal-header justify-content-between">
-            <h1 class="modal-title fs-5 fw-bold">
-              إضافة اشعار جديد
-            </h1>
-            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <!-- ================= Form ================= -->
-          <form>
-            <div class="modal-body">
-
-              <div class="row">
-                <div class="col-12">
-                  <!-- ================= Name ================= -->
-                  <div>
-                    <label class="form-label">عنوان الاشعار</label>
-                    <input type="text" class="form-control" name="name"
-                      placeholder="مثال : عرض خاص %30 - خصم %30 واستمتع بخصم %30 على حجز الآن وجميع">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <!-- ================= Message ================= -->
-                  <div>
-                    <label class="form-label">نص الرسالة</label>
-                    <textarea rows="5" type="text" class="form-control" name="Message"
-                      placeholder="اكتب نص الرسالة هنا...."></textarea>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <!-- =================  recipients  ================= -->
-                  <div>
-                    <label class="form-label">المستلمون</label>
-                    <select class="form-select" name="recipients" aria-label="recipients select">
-                      <option selected disabled>اختر المستلمين</option>
-                      <option value="1">اصحاب القاعات</option>
-                      <option value="2">اصحاب الفنادق</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- ================= Footer ================= -->
-
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-addModel w-100 fw-bold">
-                ارسال الاشعار
-              </button>
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Details -->
-    <div class="modal fade" id="DetailsModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content custom-modal">
-
-          <!-- Header -->
-          <div class="modal-header bg-orange border-0">
-            <h5 class="modal-title fw-bold fs-4">تفاصيل الاشعار</h5>
-            <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
-          </div>
-
-          <!-- Body -->
-          <div class="modal-body p-4">
-            <div class="row">
-              <div class="col-12">
-                <div class="user-image-container mb-3">
-                  <h6 class="text-muted">العنوان</h6>
-                  <h6>عرض خاص - خصم 30%</h6>
-                </div>
-              </div>
-              <div class="col-12">
-                <!-- معلومات العميل -->
-                <h5 class="text-muted">الرسالة</h5>
-                <div class="section">
-                  <div class="info-box">
-                    <div>
-                      <h6>احجز الآن واستمتع بخصم 30% على جميع الشاليهات الساحلية</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <!-- معلومات العميل -->
-                <div class="section">
-                  <div class="info-box">
-                    <div>
-                      <h5>المستلمون</h5>
-                      <h6 class="text-muted">الجميع</h6>
-                      <h6 class="text-muted">011454113568</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <!-- معلومات العميل -->
-                <div class="section">
-                  <div class="info-box">
-                    <div>
-                      <h5>تاريخ الارسال</h5>
-                      <h6 class="text-muted">20-3-2026</h6>
-                      <h6 class="text-muted">10:00</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <!-- معلومات العميل -->
-                <div class="section">
-                  <div class="info-box">
-                    <div>
-                      <h5>تم قراءته</h5>
-                      <h6 class="text-success">1205 مستخدم</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <!-- معلومات العميل -->
-                <div class="section">
-                  <div class="info-box">
-                    <div>
-                      <h5>الحالة</h5>
-                      <span class="badge bg-success">تم الإرسال</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- Footer -->
-          <div class="modal-footer border-0 px-4 pb-4">
-            <button class="btn btn-addModel w-100 fw-bold">إغلاق</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="row mt-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center">
-
-                <thead>
-                  <tr>
-                    <th>العنوان</th>
-                    <th>المستلمون</th>
-                    <th>تاريخ الإرسال</th>
-                    <th>معدل القراءة</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr>
-                    <td class="text-end" style="max-width:150px">
-                      <span class="small fw-400 text-muted">عرض خاص %30 - خصم %30 واستمتع بخصم %30 على حجز الآن
-                        وجميع</span>
-                    </td>
-                    <td>
-                      <div>
-                        <span class="badge bg-black px-3 py-2"><i class="fa-solid fa-users me-1"></i>الجميع</span>
-                        <h6 class="text-mutedd">2500 مستلم</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="fw-600">25-3-2026</div>
-                      <div class="text-mutedd small">10:00</div>
-                    </td>
-                    <td>
-                      <div class="d-flex flex-column align-items-center gap-1" style="min-width:120px">
-                        <span class="fw-700 small">2250/2500</span>
-                        <div class="progress w-100 rounded-pill">
-                          <div class="progress-bar bg-success rounded-pill" style="width:80%"></div>
-                        </div>
-                        <span class="text-muted" style="font-size:12px">80%</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-success">تم الإرسال</span>
-                    </td>
-                    <td>
-                      <i class="fa-solid fa-eye text-secondary" role="button" data-bs-toggle="modal"
-                        data-bs-target="#DetailsModal"></i>
-                      <i class="fa-solid fa-trash text-danger me-2" role="button"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-end" style="max-width:150px">
-                      <span class="small fw-400 text-muted">عرض خاص %30 - خصم %30 واستمتع بخصم %30 على حجز الآن
-                        وجميع</span>
-                    </td>
-                    <td>
-                      <div>
-                        <span class="badge bg-black"><i class="fa-solid fa-users me-1"></i>الجميع</span>
-                        <h6 class="text-mutedd">2500 مستلم</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="fw-600">25-3-2026</div>
-                      <div class="text-mutedd small">10:00</div>
-                    </td>
-                    <td>
-                      <div class="d-flex flex-column align-items-center gap-1" style="min-width:120px">
-                        <span class="fw-700 small">2250/2500</span>
-                        <div class="progress w-100 rounded-pill">
-                          <div class="progress-bar bg-success rounded-pill" style="width:80%"></div>
-                        </div>
-                        <span class="text-muted" style="font-size:12px">80%</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-warning">مجدول</span>
-                    </td>
-                    <td>
-                      <i class="fa-solid fa-eye text-secondary" role="button" data-bs-toggle="modal"
-                        data-bs-target="#DetailsModal"></i>
-                      <i class="fa-solid fa-trash text-danger me-2" role="button"></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
+
+  <!-- Form Card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+      <div class="notification-card">
+
+        <!-- Info Banner -->
+        <div class="info-banner">
+          <i class="fas fa-users me-2"></i>
+          <span>سيتم إرسال هذا الإشعار لجميع العملاء المسجلين على التطبيق</span>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="form" (ngSubmit)="sendNotification()" novalidate>
+
+          <!-- Title Field -->
+          <div class="field-group">
+            <label class="field-label">
+              عنوان الإشعار
+              <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper" [class.has-error]="isInvalid('title')">
+              <i class="fas fa-heading input-icon"></i>
+              <input
+                type="text"
+                class="form-control custom-input"
+                formControlName="title"
+                placeholder="أدخل عنوان الإشعار"
+                [class.is-invalid]="isInvalid('title')"
+                maxlength="100"
+              />
+            </div>
+            <div class="field-error" *ngIf="isInvalid('title')">
+              <i class="fas fa-exclamation-circle me-1"></i>
+              عنوان الإشعار مطلوب
+            </div>
+          </div>
+
+          <!-- Body Field -->
+          <div class="field-group">
+            <label class="field-label d-flex justify-content-between align-items-center">
+              <span>
+                محتوى الإشعار
+                <span class="required-star">*</span>
+              </span>
+              <span class="char-counter" [class.counter-warning]="bodyLength > 450" [class.counter-danger]="bodyLength > 490">
+                {{ bodyLength }} / 500
+              </span>
+            </label>
+            <div class="input-wrapper textarea-wrapper" [class.has-error]="isInvalid('body')">
+              <i class="fas fa-align-right input-icon textarea-icon"></i>
+              <textarea
+                class="form-control custom-input custom-textarea"
+                formControlName="body"
+                placeholder="اكتب محتوى الإشعار هنا..."
+                rows="6"
+                maxlength="500"
+                [class.is-invalid]="isInvalid('body')"
+              ></textarea>
+            </div>
+            <div class="field-error" *ngIf="isInvalid('body')">
+              <i class="fas fa-exclamation-circle me-1"></i>
+              محتوى الإشعار مطلوب
+            </div>
+          </div>
+          
+          <!-- Live Preview -->
+          <div class="preview-card" *ngIf="showPreview">
+            <div class="preview-header">
+              <i class="fas fa-eye me-2"></i>
+              معاينة الإشعار
+            </div>
+            <div class="preview-body">
+              <div class="preview-app-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <div class="preview-content">
+                <p class="preview-title">{{ title || 'عنوان الإشعار' }}</p>
+                <p class="preview-message">{{ body || 'محتوى الإشعار...' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-flex justify-content-center mt-4">
+            <button
+              type="submit"
+              class="btn btn-addSection btn-send"
+              [disabled]="isLoading || form.invalid"
+            >
+              <ng-container *ngIf="!isLoading">
+                <i class="fas fa-paper-plane me-2"></i>
+                إرسال الإشعار
+              </ng-container>
+              <ng-container *ngIf="isLoading">
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                جاري الإرسال...
+              </ng-container>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
 </div>

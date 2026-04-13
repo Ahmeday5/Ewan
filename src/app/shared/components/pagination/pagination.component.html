@@ -1,33 +1,73 @@
-<div class="All-Pagination mt-3" dir="ltr" *ngIf="totalPages > 1">
-  <nav>
-    <ul class="pagination justify-content-center">
-      <!-- زر الصفحة السابقة -->
-      <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
-        <button class="page-link" (click)="onPageChange(currentPage - 1)">
-          <i class="fa-solid fa-left-long"></i>
-        </button>
-      </li>
-      <!-- أرقام الصفحات المرئية -->
-      @for (item of pages; track item.type + (item.value || 0)) {
-      @if (item.type === 'page') {
-        <li class="page-item" [ngClass]="{'active': currentPage === item.value}">
-          <button class="page-link" (click)="onPageChange(item.value)">
+@if (totalPages > 1) {
+  <nav class="pagination-nav" dir="ltr" aria-label="Page navigation">
+
+    <div class="pagination-wrap">
+
+      <!-- First -->
+      <button
+        class="pg-btn pg-btn--arrow"
+        [disabled]="isFirst"
+        (click)="goToFirst()"
+        title="الصفحة الأولى"
+        aria-label="الصفحة الأولى"
+      >
+        <i class="fa-solid fa-angles-right"></i>
+      </button>
+
+      <!-- Prev -->
+      <button
+        class="pg-btn pg-btn--arrow"
+        [disabled]="isFirst"
+        (click)="goToPrev()"
+        title="السابق"
+        aria-label="الصفحة السابقة"
+      >
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+
+      <!-- Pages -->
+      @for (item of pages; track trackPage($index, item)) {
+        @if (item.kind === 'page') {
+          <button
+            class="pg-btn"
+            [class.pg-btn--active]="item.value === currentPage"
+            [attr.aria-current]="item.value === currentPage ? 'page' : null"
+            (click)="goTo(item.value)"
+          >
             {{ item.value }}
           </button>
-        </li>
+        } @else {
+          <span class="pg-ellipsis" aria-hidden="true">&hellip;</span>
+        }
       }
-      @if (item.type === 'ellipsis') {
-        <li class="page-item disabled">
-          <span class="page-link ellipsis">...</span>
-        </li>
-      }
-      }
-      <!-- زر الصفحة التالية -->
-      <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
-        <button class="page-link" (click)="onPageChange(currentPage + 1)">
-          <i class="fa-solid fa-right-long"></i>
-        </button>
-      </li>
-    </ul>
+
+      <!-- Next -->
+      <button
+        class="pg-btn pg-btn--arrow"
+        [disabled]="isLast"
+        (click)="goToNext()"
+        title="التالي"
+        aria-label="الصفحة التالية"
+      >
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+
+      <!-- Last -->
+      <button
+        class="pg-btn pg-btn--arrow"
+        [disabled]="isLast"
+        (click)="goToLast()"
+        title="الصفحة الأخيرة"
+        aria-label="الصفحة الأخيرة"
+      >
+        <i class="fa-solid fa-angles-left"></i>
+      </button>
+
+    </div>
+
+    <span class="pg-counter" aria-live="polite">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
+
   </nav>
-</div>
+}

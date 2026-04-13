@@ -1,21 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'confirm';
+
 export interface Toast {
   id: number;
-  type: 'success' | 'error' | 'info' | 'warning';
+  type: ToastType;
   message: string;
-  duration?: number; // ms
+  duration?: number;
+  onConfirm?: () => void;
+  onCancel?: () => void;
 }
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private toasts = new BehaviorSubject<Toast[]>([]);
-  toasts$ = this.toasts.asObservable();
+  private readonly _toasts = new BehaviorSubject<Toast[]>([]);
+  readonly toasts$ = this._toasts.asObservable();
 
   private counter = 0;
 
-  success(message: string, duration = 5000): void {
+  // ─── Notification Methods ────────────────────────────────
+
+  success(message: string, duration = 4000): void {
     this.show({ type: 'success', message, duration });
   }
 
@@ -23,43 +29,51 @@ export class ToastService {
     this.show({ type: 'error', message, duration });
   }
 
-  info(message: string, duration = 5000): void {
+  info(message: string, duration = 4500): void {
     this.show({ type: 'info', message, duration });
   }
 
-  warning(message: string, duration = 6000): void {
+  warning(message: string, duration = 5000): void {
     this.show({ type: 'warning', message, duration });
   }
 
-  // لتأكيد الحذف (يمكن توسيعه لاحقًا ليرجع Promise<boolean>)
-  async confirm(message: string = 'هل أنت متأكد؟'): Promise<boolean> {
+  // ─── Confirm Dialog ──────────────────────────────────────
+  // Returns Promise<boolean>: true = user confirmed, false = user cancelled
+
+  confirm(message: string): Promise<boolean> {
     return new Promise((resolve) => {
       const id = this.counter++;
-      this.toasts.next([
-        ...this.toasts.value,
-        {
-          id,
-          type: 'warning',
-          message: `${message} <br><button class="btn btn-sm btn-danger me-2" data-id="${id}">نعم</button><button class="btn btn-sm btn-secondary" data-id="${id}">لا</button>`,
-          duration: 0 // ما يختفيش تلقائي
-        }
-      ]);
-
-      // هنا بننتظر click على الأزرار (هنحتاج directive أو host listener في الـ toast component)
-      // للتبسيط حاليًا، بنستخدم confirm الأصلي
-      resolve(window.confirm(message));
+      const toast: Toast = {
+        id,
+        type: 'confirm',
+        message,
+        duration: 0, // stays until user responds
+        onConfirm: () => {
+          this.remove(id);
+          resolve(true);
+        },
+        onCancel: () => {
+          this.remove(id);
+          resolve(false);
+        },
+      };
+      this._toasts.next([...this._toasts.value, toast]);
     });
   }
 
+  // ─── Remove ──────────────────────────────────────────────
+
   remove(id: number): void {
-    this.toasts.next(this.toasts.value.filter(t => t.id !== id));
+    this._toasts.next(this._toasts.value.filter((t) => t.id !== id));
   }
+
+  // ─── Internal ────────────────────────────────────────────
 
   private show(toast: Omit<Toast, 'id'>): void {
     const id = this.counter++;
-    this.toasts.next([...this.toasts.value, { ...toast, id }]);
+    this._toasts.next([...this._toasts.value, { ...toast, id }]);
 
-    if (toast.duration) {
+    if (toast.duration && toast.duration > 0) {
       setTimeout(() => this.remove(id), toast.duration);
     }
   }

@@ -1,14 +1,6 @@
 <div class="admin-page">
   <div class="container-fluid mb-3 mt-4">
 
-    <!-- ═══════════════ رسائل النجاح والخطأ ═══════════════ -->
-    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
-      <i class="fa-solid fa-circle-check me-2"></i>{{ successMessage }}
-    </div>
-    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
-      <i class="fa-solid fa-circle-xmark me-2"></i>{{ errorMessage }}
-    </div>
-
     <!-- ═══════════════ Header ═══════════════ -->
     <div class="page-header mb-4">
       <button class="btn btn-addSection fw-bold" (click)="openAddModal()">

@@ -1,40 +1,96 @@
-/********* All-Padination *************/
-.All-Padination {
+.pagination-nav {
   display: flex;
-  justify-content: space-around;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 0 4px;
 }
 
-.pagination .page-item {
-  border: 1px solid var(--second-color);
-  border-radius: 12px;
-  margin-right: 5px;
+.pagination-wrap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
 }
 
-.pagination .page-item.active {
-  background: var(--third-color);
-  color: var(--main-color) !important;
+// ─── Base Button ─────────────────────────────────────────────
+.pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 9px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: var(--third-color, #1e293b);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background   0.15s ease,
+    border-color 0.15s ease,
+    color        0.15s ease,
+    transform    0.12s ease,
+    box-shadow   0.15s ease;
+
+  &:hover:not(:disabled):not(.pg-btn--active) {
+    border-color: var(--second-color, #f15a24);
+    color: var(--second-color, #f15a24);
+    background: rgba(241, 90, 36, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(241, 90, 36, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &--active {
+    background: var(--second-color, #f15a24);
+    border-color: var(--second-color, #f15a24);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(241, 90, 36, 0.35);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--arrow {
+    color: #64748b;
+    font-size: 12px;
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
 }
 
-.pagination .page-link {
-  border: none;
-  color: var(--thrid-color);
-  font-weight: bold;
-  font-size: 15px;
-  line-height: 22px;
-  vertical-align: middle;
-  box-shadow: none !important;
-  background: transparent !important;
-  transition: border 0.3s ease;
+// ─── Ellipsis ─────────────────────────────────────────────────
+.pg-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 36px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  user-select: none;
 }
 
-.ellipsis {
-  color: #6c757d;
-  cursor: default;
-  pointer-events: none;
+// ─── Page Counter ─────────────────────────────────────────────
+.pg-counter {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+  direction: ltr;
 }

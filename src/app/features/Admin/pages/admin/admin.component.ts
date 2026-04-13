@@ -10,6 +10,7 @@ import {
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { AdminUser } from '../../model/admin.model';
 import { AdminService } from '../../Service/admin.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin',
@@ -19,30 +20,27 @@ import { AdminService } from '../../Service/admin.service';
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent implements OnInit, AfterViewInit {
-  // ====================== Data ======================
+  // ─── Data ────────────────────────────────────────────────
   users: AdminUser[] = [];
   hasLoaded = false;
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
   errorMessageModel: string | null = null;
 
-  // ====================== Form & Modal ======================
+  // ─── Form & Modal ────────────────────────────────────────
   form!: FormGroup;
   isAddMode = false;
   isEditMode = false;
   modalInstance!: { show: () => void; hide: () => void };
 
-  // ====================== Pagination & Search ======================
+  // ─── Pagination ──────────────────────────────────────────
   totalCount = 0;
   pageIndex = 1;
   pageSize = 10;
   totalPages = 1;
 
-  // ====================== Debounce ======================
-
   constructor(
     private adminService: AdminService,
     private fb: FormBuilder,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -65,12 +63,14 @@ export class AdminComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ====================== Getters ======================
+  // ─── Getters ─────────────────────────────────────────────
+
   get f() {
     return this.form.controls;
   }
 
-  // ====================== Load ======================
+  // ─── Load ────────────────────────────────────────────────
+
   loadUsers(): void {
     this.hasLoaded = false;
     this.adminService.getAll(this.pageIndex, this.pageSize).subscribe({
@@ -81,7 +81,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
         this.hasLoaded = true;
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
@@ -92,7 +92,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.loadUsers();
   }
 
-  // ====================== Add Modal ======================
+  // ─── Add Modal ───────────────────────────────────────────
+
   openAddModal(): void {
     this.isAddMode = true;
     this.isEditMode = false;
@@ -106,7 +107,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.modalInstance.show();
   }
 
-  // ====================== Edit Modal ======================
+  // ─── Edit Modal ──────────────────────────────────────────
+
   openEditModal(user: AdminUser): void {
     this.isEditMode = true;
     this.isAddMode = false;
@@ -127,7 +129,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.modalInstance.show();
   }
 
-  // ====================== Submit ======================
+  // ─── Submit ──────────────────────────────────────────────
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -143,7 +146,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
     request$.subscribe({
       next: () => {
         this.modalInstance.hide();
-        this.showSuccess(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.loadUsers();
       },
       error: (err) => {
@@ -153,21 +156,18 @@ export class AdminComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ====================== Delete ======================
-  deleteUser(id: string): void {
-    if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟')) return;
+  // ─── Delete ──────────────────────────────────────────────
+
+  async deleteUser(id: string): Promise<void> {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا المدير؟');
+    if (!confirmed) return;
+
     this.adminService.delete(id).subscribe({
       next: () => {
-        this.showSuccess('تم حذف المستخدم بنجاح');
+        this.toast.success('تم حذف المدير بنجاح');
         this.loadUsers();
       },
-      error: (err) => (this.errorMessage = err.message),
+      error: (err) => this.toast.error(err.message),
     });
-  }
-
-  // ====================== Success ======================
-  showSuccess(msg: string): void {
-    this.successMessage = msg;
-    setTimeout(() => (this.successMessage = null), 3000);
   }
 }
