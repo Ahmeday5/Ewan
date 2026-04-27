@@ -99,8 +99,15 @@
           <div class="card-header text-right py-3">
             <h5 class="mb-0 fw-bold">التوزيع حسب المدن</h5>
           </div>
-          <div class="card-body p-3 d-flex justify-content-center align-items-center">
-            <canvas id="cityChartRef" #cityChartRef></canvas>
+          <div class="card-body p-3 d-flex justify-content-center align-items-center city-chart-body">
+            <canvas id="cityChartRef" #cityChartRef [class.d-none]="!bookingsByCity.length"></canvas>
+            @if (!bookingsByCity.length) {
+              <div class="empty-state text-center">
+                <i class="fa-solid fa-chart-pie empty-icon"></i>
+                <h6 class="empty-title">لا توجد بيانات لعرضها</h6>
+                <p class="empty-desc mb-0">لم يتم تسجيل حجوزات في أي مدينة حتى الآن</p>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -123,8 +130,8 @@
         </div>
       </div>
     </div>
-
-    <div class="row mt-4">
+    
+    <div class="row mt-4 g-3">
       <!-- احدث الحجوزات -->
       <div class="col-md-6">
         <div class="card">
@@ -133,25 +140,33 @@
           </div>
           <div class="card-body p-3">
             @if (overviewLists) {
-            @for (booking of overviewLists.recentBookings; track booking.bookingId) {
-            <div class="content mt-2">
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="text-contetn">
-                  <h4 class="fw-800">{{ booking.propertyName }}</h4>
-                  <h5 class="text-mutedd">{{ booking.clientName }}</h5>
-                  <h6 class="text-mutedd">{{ booking.createdAt | date: 'yyyy-MM-dd' }}</h6>
-                </div>
-                <div class="number">
-                  <p>{{ booking.totalAmount | number }} ج</p>
-                  <div class="badge" [ngClass]="getStatusClass(booking.status)">
-                    {{ getStatusLabel(booking.status) }}
+              @if (overviewLists.recentBookings.length) {
+                @for (booking of overviewLists.recentBookings; track booking.bookingId) {
+                <div class="content mt-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-contetn">
+                      <h4 class="fw-800">{{ booking.propertyName }}</h4>
+                      <h5 class="text-mutedd">{{ booking.clientName }}</h5>
+                      <h6 class="text-mutedd">{{ booking.createdAt | date: 'yyyy-MM-dd' }}</h6>
+                    </div>
+                    <div class="number">
+                      <p>{{ booking.totalAmount | number }} ج</p>
+                      <div class="badge" [ngClass]="getStatusClass(booking.status)">
+                        {{ getStatusLabel(booking.status) }}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            }
+                }
+              } @else {
+                <div class="empty-state text-center py-5">
+                  <i class="fa-regular fa-calendar-xmark empty-icon"></i>
+                  <h6 class="empty-title">لا توجد حجوزات حتى الآن</h6>
+                  <p class="empty-desc mb-0">سيتم عرض أحدث الحجوزات هنا فور تسجيل أول حجز</p>
+                </div>
+              }
             } @else {
-            <div class="text-center text-mutedd py-3">جاري التحميل...</div>
+              <div class="text-center text-mutedd py-3">جاري التحميل...</div>
             }
           </div>
         </div>
@@ -165,27 +180,35 @@
           </div>
           <div class="card-body p-3">
             @if (overviewLists) {
-            @for (property of overviewLists.topBookedProperties; track property.propertyId) {
-            <div class="Morecontent mt-2">
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="text-contetn">
-                  <h4 class="fw-800">{{ property.propertyName }}</h4>
-                  <div class="d-flex align-items-center gap-3 text-mutedd">
-                    <div class="d-flex align-items-center gap-1">
-                      <i class="fas fa-calendar-alt"></i>
-                      <span>{{ property.bookingsCount }}</span>
+              @if (overviewLists.topBookedProperties.length) {
+                @for (property of overviewLists.topBookedProperties; track property.propertyId) {
+                <div class="Morecontent mt-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-contetn">
+                      <h4 class="fw-800">{{ property.propertyName }}</h4>
+                      <div class="d-flex align-items-center gap-3 text-mutedd">
+                        <div class="d-flex align-items-center gap-1">
+                          <i class="fas fa-calendar-alt"></i>
+                          <span>{{ property.bookingsCount }}</span>
+                        </div>
+                        <span>حجز</span>
+                      </div>
                     </div>
-                    <span>حجز</span>
+                    <div class="number">
+                      <p>{{ property.revenue | number }} ج</p>
+                    </div>
                   </div>
                 </div>
-                <div class="number">
-                  <p>{{ property.revenue | number }} ج</p>
+                }
+              } @else {
+                <div class="empty-state text-center py-5">
+                  <i class="fa-regular fa-building empty-icon"></i>
+                  <h6 class="empty-title">لا توجد عقارات محجوزة بعد</h6>
+                  <p class="empty-desc mb-0">سيتم عرض العقارات الأكثر حجزاً هنا عند توفر بيانات</p>
                 </div>
-              </div>
-            </div>
-            }
+              }
             } @else {
-            <div class="text-center text-mutedd py-3">جاري التحميل...</div>
+              <div class="text-center text-mutedd py-3">جاري التحميل...</div>
             }
           </div>
         </div>

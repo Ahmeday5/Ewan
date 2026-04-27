@@ -10,13 +10,13 @@
   }
 
   .page-title {
-    font-size: 1.35rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: var(--third-color);
   }
 
   .page-subtitle {
-    font-size: 13px;
+    font-size: 9px;
     color: #888;
     font-weight: 500;
   }
@@ -24,7 +24,7 @@
   .btn-add-faq {
     border-radius: 12px !important;
     padding: 10px 24px !important;
-    font-size: 14px;
+    font-size: 10px;
   }
 
   // ─── Stats Bar ───────────────────────────────────────────
@@ -45,18 +45,18 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
     &__icon {
-      font-size: 18px;
+      font-size: 14px;
       color: var(--second-color);
     }
 
     &__value {
-      font-size: 1.15rem;
+      font-size: 0.9rem;
       font-weight: 800;
       color: var(--third-color);
     }
 
     &__label {
-      font-size: 13px;
+      font-size: 9px;
       color: #888;
       font-weight: 500;
     }
@@ -75,7 +75,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 10px;
     flex-shrink: 0;
 
     &--add  { background: rgba(16, 185, 129, 0.12); color: #10b981; }
@@ -109,13 +109,13 @@
 
   .field-error {
     margin-top: 5px;
-    font-size: 12.5px;
+    font-size: 9px;
     font-weight: 600;
     color: #ef4444;
   }
 
   .char-counter {
-    font-size: 12px;
+    font-size: 8px;
     font-weight: 600;
     color: #bbb;
     transition: color 0.2s;
@@ -137,7 +137,7 @@
   .loading-text {
     color: #aaa;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 10px;
     margin: 0;
   }
 
@@ -161,18 +161,18 @@
     justify-content: center;
     margin-bottom: 20px;
 
-    i { font-size: 2.2rem; color: var(--second-color); opacity: 0.6; }
+    i { font-size: 1.8rem; color: var(--second-color); opacity: 0.6; }
   }
 
   .empty-title {
-    font-size: 1.1rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--third-color);
     margin-bottom: 6px;
   }
 
   .empty-subtitle {
-    font-size: 13px;
+    font-size: 9px;
     color: #aaa;
     margin-bottom: 0;
   }
@@ -248,7 +248,7 @@
     border-radius: 8px;
     background: rgba(241, 90, 36, 0.1);
     color: var(--second-color);
-    font-size: 13px;
+    font-size: 9px;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -262,7 +262,7 @@
     width: 26px;
     height: 26px;
     border-radius: 7px;
-    font-size: 13px;
+    font-size: 9px;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -282,7 +282,7 @@
   }
 
   .question-text {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--third-color);
     margin: 0;
@@ -295,7 +295,7 @@
   }
 
   .answer-text {
-    font-size: 13.5px;
+    font-size: 10px;
     font-weight: 500;
     color: #555;
     margin: 0;
@@ -321,7 +321,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 8px;
     transition: all 0.2s ease;
 
     &--edit {

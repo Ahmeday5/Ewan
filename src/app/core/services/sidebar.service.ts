@@ -18,3 +18,4 @@
       this.sidebarState.next(false);
     }
   }
+  

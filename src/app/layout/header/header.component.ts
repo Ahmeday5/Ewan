@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit {
   /** True when the current URL belongs to the owner portal. */
   isOwnerPortal = false;
 
-  /**
+  /*
    * Observable for the active portal's user.
    * Reassigned on every NavigationEnd so the async pipe always reflects
    * the correct session without needing two separate template bindings.

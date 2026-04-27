@@ -9,14 +9,14 @@
     gap: 16px;
 
     &__title {
-      font-size: 1.35rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: var(--third-color);
       margin: 0;
     }
 
     &__sub {
-      font-size: 13px;
+      font-size: 9px;
       color: #888;
       font-weight: 500;
       margin: 0;
@@ -30,7 +30,7 @@
     border-radius: 12px !important;
     padding: 9px 22px !important;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 10px;
     transition: background 0.15s, transform 0.12s;
     white-space: nowrap;
 
@@ -48,7 +48,7 @@
 
     &__header {
       padding: 14px 22px;
-      font-size: 13px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--third-color);
       background: rgba(0, 0, 0, 0.02);
@@ -58,7 +58,7 @@
     &__body {
       padding: 24px 28px;
       min-height: 200px;
-      font-size: 15px;
+      font-size: 11px;
       line-height: 1.9;
       color: #333;
       direction: rtl;
@@ -72,7 +72,7 @@
 
       @media (max-width: 576px) {
         padding: 16px;
-        font-size: 14px;
+        font-size: 10px;
       }
     }
   }
@@ -87,7 +87,7 @@
 
     &__header {
       padding: 14px 22px;
-      font-size: 13px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--third-color);
       background: rgba(0, 0, 0, 0.02);
@@ -100,7 +100,7 @@
       // CKEditor overrides للتوافق مع التصميم
       ::ng-deep .ck-editor__editable {
         min-height: 400px;
-        font-size: 15px;
+        font-size: 11px;
         line-height: 1.9;
         direction: rtl;
         text-align: right;
@@ -112,7 +112,7 @@
         @media (max-width: 576px) {
           min-height: 280px;
           padding: 12px 14px !important;
-          font-size: 14px;
+          font-size: 10px;
         }
       }
 
@@ -157,7 +157,7 @@
     border-radius: 12px !important;
     padding: 10px 24px !important;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 10px;
     transition: opacity 0.2s, transform 0.12s;
 
     &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
@@ -172,7 +172,7 @@
     border-radius: 12px !important;
     padding: 10px 20px !important;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 10px;
     transition: background 0.15s;
 
     &:hover:not(:disabled) { background: #e2e2e2 !important; }

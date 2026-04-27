@@ -27,7 +27,7 @@
     display: inline-block;
     padding: 4px 12px;
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 8px;
     font-weight: 700;
     white-space: nowrap;
 
@@ -50,7 +50,7 @@
   .detail-section { margin-bottom: 14px; }
 
   .detail-label {
-    font-size: 11px;
+    font-size: 8px;
     font-weight: 700;
     color: #999;
     margin-bottom: 4px;
@@ -59,7 +59,7 @@
   }
 
   .detail-text {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--third-color);
     margin: 0;
@@ -70,7 +70,7 @@
     display: inline-block;
     background: rgba(0, 0, 0, 0.05);
     color: #555;
-    font-size: 12px;
+    font-size: 8px;
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 20px;
@@ -89,6 +89,6 @@
     justify-content: center;
     flex-shrink: 0;
 
-    i { color: #f59e0b; font-size: 14px; }
+    i { color: #f59e0b; font-size: 10px; }
   }
 }

@@ -42,10 +42,10 @@
   }
 </div>
 
-<!-- ═══════════════ App Layout ═══════════════ -->
+<!-- ══════════════ App Layout ═══════════════ -->
 <div class="app-layout">
   <div class="sidebar-overlay" *ngIf="isSidebarOpen$ | async" (click)="sidebarService.close()"></div>
-
+  
   <aside class="sidebar-wrapper">
     <app-sidebar></app-sidebar>
   </aside>

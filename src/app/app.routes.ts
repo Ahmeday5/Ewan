@@ -45,7 +45,7 @@ export const routes: Routes = [
       },
     ],
   },
-  
+
   // 🔹 Owner App 🆕
   {
     path: 'ownerProperties',
@@ -133,7 +133,7 @@ export const routes: Routes = [
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
-
+  
   // 🔹 Fallback
   { path: '**', redirectTo: '/auth/login' },
 ];

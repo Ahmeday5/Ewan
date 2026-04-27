@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   months = 4;
   kpisStats: kpisStats | null = null;
   overviewLists: DashboardOverviewLists | null = null;
+  bookingsByCity: ChartCategoryItem[] = [];
   errorMessage: string | null = null;
 
   private bookingsChart: Chart | null = null;
@@ -180,6 +181,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private renderCharts(data: any): void {
     this.destroyAllCharts();
+    this.bookingsByCity = data.bookingsByCity ?? [];
 
     this.bookingsChart = this.createLineChart(
       this.ReservationsChart.nativeElement,
@@ -197,10 +199,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       '#09B479',
     );
 
-    this.cityChart = this.createDoughnutChart(
-      this.cityChartRef.nativeElement,
-      data.bookingsByCity,
-    );
+    if (this.bookingsByCity.length && this.cityChartRef) {
+      this.cityChart = this.createDoughnutChart(
+        this.cityChartRef.nativeElement,
+        this.bookingsByCity,
+      );
+    }
   }
 
   onMonthsChange(event: Event): void {

@@ -4,9 +4,7 @@
 
       <!-- Left: hamburger + page title -->
       <div class="d-flex align-items-center gap-4">
-        <button class="btn btn-link p-0 mobile-toggle d-lg-none"
-                (click)="toggleSidebar()"
-                type="button">
+        <button class="btn btn-link p-0 mobile-toggle d-lg-none" (click)="toggleSidebar()" type="button">
           <i class="fas fa-bars fs-4 text-muted"></i>
         </button>
 
@@ -16,64 +14,119 @@
         </div>
       </div>
 
-      <!-- Right: user avatar + dropdown -->
-      <div class="d-flex align-items-center gap-3">
-        <div class="dropdown">
-          <button class="btn btn-link p-0 dropdown-toggle d-flex align-items-center gap-3 text-decoration-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
 
-            <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center">
-              <i class="fas fa-user text-white"></i>
+      <!-- Right: user profile trigger -->
+      <div class="dropdown user-menu">
+        <button class="user-trigger dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-offset="0,10"
+          aria-expanded="false" aria-label="قائمة المستخدم">
+          <!-- Avatar + online dot -->
+          <div class="ua-wrap">
+            <div class="ua-circle">
+              @if (activeUser$ | async; as user) {
+              <span class="ua-initial">{{ user.userName.charAt(0).toUpperCase() }}</span>
+              } @else {
+              <i class="fas fa-user ua-icon"></i>
+              }
             </div>
+            <span class="ua-online"></span>
+          </div>
 
-            @if (activeUser$ | async; as user) {
-              <div class="d-none d-md-block text-end">
-                <div class="fw-medium text-dark">{{ user.userName }}</div>
-                @if (!isOwnerPortal && user.email) {
-                  <div class="text-muted small">{{ user.email }}</div>
-                }
+          <!-- Name + role (desktop only) -->
+          @if (activeUser$ | async; as user) {
+          <div class="ut-info d-none d-md-flex">
+            <span class="ut-name">{{ user.userName }}</span>
+            <span class="ut-role">
+              @if (isOwnerPortal) { صاحب العقار } @else { مدير النظام }
+            </span>
+          </div>
+          }
+
+          <!-- Chevron -->
+          <i class="fas fa-chevron-down ut-chevron d-none d-md-flex"></i>
+        </button>
+
+        <!-- ─── Dropdown panel ─── -->
+        <ul class="dropdown-menu user-dropdown dropdown-menu-end">
+
+          <!-- User identity card -->
+          @if (activeUser$ | async; as user) {
+          <li class="ud-profile">
+            <div class="udp-avatar">
+              <span>{{ user.userName.charAt(0).toUpperCase() }}</span>
+              <span class="ua-online ua-online--lg"></span>
+            </div>
+            <div class="udp-info">
+              <span class="udp-name">{{ user.userName }}</span>
+              @if (!isOwnerPortal && user.email) {
+              <span class="udp-email">{{ user.email }}</span>
+              }
+              <span class="udp-badge">
                 @if (isOwnerPortal) {
-                  <div class="text-muted small">صاحب العقار</div>
+                <i class="fas fa-home"></i> صاحب العقار
+                } @else {
+                <i class="fas fa-shield-halved"></i> مدير النظام
                 }
+              </span>
+            </div>
+          </li>
+          }
+
+          <li>
+            <div class="ud-sep"></div>
+          </li>
+
+          <!-- ── Owner portal ── -->
+          @if (isOwnerPortal) {
+          <li>
+            <a class="ud-item ud-item--danger" (click)="ownerLogout()">
+              <span class="udi-icon udi-icon--danger"><i class="fas fa-sign-out-alt"></i></span>
+              <div class="udi-body">
+                <span class="udi-label">تسجيل الخروج</span>
               </div>
-            }
-          </button>
+            </a>
+          </li>
+          }
 
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+          <!-- ── Admin portal ── -->
+          @if (!isOwnerPortal) {
+          <li class="ud-section-label">جلسات تسجيل الدخول</li>
 
-            <!-- Owner portal: single logout -->
-            @if (isOwnerPortal) {
-              <li>
-                <a class="dropdown-item text-danger fw-bold" (click)="ownerLogout()">
-                  <i class="fas fa-sign-out-alt me-2"></i>
-                  تسجيل الخروج
-                </a>
-              </li>
-            }
+          <li>
+            <a class="ud-item" (click)="logoutCurrent()">
+              <span class="udi-icon udi-icon--blue"><i class="fas fa-display"></i></span>
+              <div class="udi-body">
+                <span class="udi-label">هذا الجهاز</span>
+                <span class="udi-sub">إنهاء الجلسة الحالية فقط</span>
+              </div>
+            </a>
+          </li>
 
-            <!-- Admin portal: three logout options -->
-            @if (!isOwnerPortal) {
-              <li>
-                <a class="dropdown-item text-danger fw-bold" (click)="logoutCurrent()">
-                  تسجيل الخروج من هذا الجهاز
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item text-danger fw-bold" (click)="logoutOthers()">
-                  تسجيل الخروج من الأجهزة الأخرى
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item text-danger fw-bold" (click)="logoutAll()">
-                  تسجيل الخروج من كل الأجهزة
-                </a>
-              </li>
-            }
+          <li>
+            <a class="ud-item" (click)="logoutOthers()">
+              <span class="udi-icon udi-icon--amber"><i class="fas fa-mobile-screen"></i></span>
+              <div class="udi-body">
+                <span class="udi-label">الأجهزة الأخرى</span>
+                <span class="udi-sub">إنهاء جميع الجلسات الأخرى</span>
+              </div>
+            </a>
+          </li>
 
-          </ul>
-        </div>
+          <li>
+            <div class="ud-sep ud-sep--sm"></div>
+          </li>
+
+          <li>
+            <a class="ud-item ud-item--danger" (click)="logoutAll()">
+              <span class="udi-icon udi-icon--danger"><i class="fas fa-right-from-bracket"></i></span>
+              <div class="udi-body">
+                <span class="udi-label">تسجيل الخروج الكامل</span>
+                <span class="udi-sub">إنهاء جميع الجلسات في كل مكان</span>
+              </div>
+            </a>
+          </li>
+          }
+
+        </ul>
       </div>
 
     </div>

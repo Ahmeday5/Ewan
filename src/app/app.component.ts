@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LoaderComponent,CommonModule, NgIf, AsyncPipe],
+  imports: [RouterOutlet, LoaderComponent, CommonModule, NgIf, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
